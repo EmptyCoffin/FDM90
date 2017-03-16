@@ -1,0 +1,15 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/FDM90/bin
+/FDM90/Controllers
+/FDM90/obj
+/FDM90/Web.Release.config
+/FDM90/Web.Debug.config
+/FDM90/Web.config
+/FDM90UnitTests/bin/Debug
+/FDM90UnitTests/obj/Debug
+/packages
+/FDM90/App_Start

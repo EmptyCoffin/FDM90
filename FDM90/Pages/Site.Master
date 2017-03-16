@@ -1,0 +1,56 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="FDM90.Pages.Site" %>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head runat="server">
+    <title>Social Media Analytics</title>
+    <script src="../Content/bootstrap.min.js"></script>
+    <script src="../Content/jquery-3.1.1.min.js"></script>
+    <link href="../Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../Styles/LocalStyles.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <form runat="server">
+        <div class="container">
+            <div class="header">
+                <div class="title">
+                    <h1>Social Media Analytics
+                    </h1>
+                </div>
+                <div class="pull-right">
+                    <ul class="nav nav-tabs">
+                        <li role="presentation">
+                            <a class="btn btn-lg" href="~/Pages/Account/Login.aspx" id="LogIn" runat="server">Log In</a>
+                            <asp:Label runat="server" ID="welcomeMessage" Visible="false"></asp:Label>
+                        </li>
+                        <li role="presentation">
+                            <a class="btn btn-lg" href="~/Pages/Account/Register.aspx" id="SignUp" runat="server">Sign Up</a>
+                            <a class="btn btn-lg" href="~/Pages/Account/Logout.aspx" visible="false" id="LogOut" runat="server">Log Out</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <ul class="nav nav-tabs">
+                    <li role="presentation" class="active">
+                        <a href="~/Pages/Content/Home.aspx" title="Home" runat="server">Home</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="~/Pages/Content/Facebook.aspx" id="FacebookLinked" visible="false" runat="server">Facebook</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="~/Pages/Content/Twitter.aspx" id="TwitterLinked" visible="false" runat="server">Twitter</a>
+                    </li>
+                </ul>
+            </div>
+            <br />
+            <div class="container">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+            </div>
+        </div>
+    </form>
+    <script src="../Scripts/jquery-3.1.1.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+</body>
+</html>
