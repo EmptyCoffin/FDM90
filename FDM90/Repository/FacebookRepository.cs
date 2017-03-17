@@ -1,6 +1,7 @@
 ﻿using FDM90.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Data.SqlClient;
@@ -56,7 +57,7 @@ namespace FDM90.Repository
             return SendReaderCommand(sql, parameters).FirstOrDefault();
         }
 
-        public override FacebookCredentials SetProperties(SqlDataReader reader)
+        public override FacebookCredentials SetProperties(IDataReader reader)
         {
             FacebookCredentials creds = new FacebookCredentials();
             creds.UserId = Guid.Parse(reader["UserId"].ToString());

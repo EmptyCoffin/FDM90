@@ -137,7 +137,7 @@ namespace FDM90.Repository
         /// </summary>
         /// <param name="reader">Database reader value</param>
         /// <param name="stockRequest">Object to populate</param>
-        public override User SetProperties(SqlDataReader reader)
+        public override User SetProperties(IDataReader reader)
         {
             User user = new User();
             user.UserId = Guid.Parse(reader["UserId"].ToString());

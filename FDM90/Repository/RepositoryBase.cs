@@ -10,12 +10,25 @@ using System.Text;
 
 namespace FDM90.Repository
 {
-    public abstract class RepositoryBase<T> where T:class
+    public abstract class RepositoryBase<T> where T : class
     {
+        private static IDbConnection _connection;
         private static object _lockableObject = new object();
         protected abstract string _table { get; }
 
-        public abstract T SetProperties(SqlDataReader reader);
+        protected RepositoryBase(IDbConnection connection)
+        {
+            _connection = connection;
+        }
+
+        protected RepositoryBase()
+            : this(
+                new SqlConnection(ConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ToString())
+            )
+        {
+        }
+
+        public abstract T SetProperties(IDataReader reader);
 
         protected void SendVoidCommand(string sqlText, SqlParameter[] parameters)
         {
@@ -23,17 +36,24 @@ namespace FDM90.Repository
             {
                 try
                 {
-                    using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ToString()))
-                    {
-                        conn.Open();
+                    _connection.Open();
+                    IDbCommand command = _connection.CreateCommand();
+                    command.CommandText = sqlText;
 
-                        SqlCommand command = new SqlCommand(sqlText, conn);
-                        command.Parameters.AddRange(parameters);
-                        command.ExecuteNonQuery();
+                    foreach (SqlParameter parameter in parameters)
+                    {
+                        command.Parameters.Add(parameter);
                     }
+
+                    command.ExecuteNonQuery();
+
                 }
                 catch (Exception ex)
                 {
+                }
+                finally
+                {
+                    _connection.Dispose();
                 }
             }
         }
@@ -44,30 +64,33 @@ namespace FDM90.Repository
             {
                 try
                 {
-                    using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ToString()))
+                    _connection.Open();
+                    IDbCommand command = _connection.CreateCommand();
+                    command.CommandText = sqlText;
+
+                    foreach (SqlParameter parameter in parameters)
                     {
-                        conn.Open();
-
-                        var instanceList = Activator.CreateInstance<List<T>>();
-
-                        SqlCommand command = new SqlCommand(sqlText, conn);
-                        command.Parameters.AddRange(parameters);
-                        command.ExecuteNonQuery();
-
-                        using (var result = command.ExecuteReader(CommandBehavior.CloseConnection))
-                        {
-                            while(result.Read())
-                            {
-                                instanceList.Add(SetProperties(result));
-                            }
-                        }
-
-                        return instanceList;
+                        command.Parameters.Add(parameter);
                     }
+                    var instanceList = Activator.CreateInstance<List<T>>();
+
+                    using (var result = command.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while (result.Read())
+                        {
+                            instanceList.Add(SetProperties(result));
+                        }
+                    }
+
+                    return instanceList;
                 }
                 catch (Exception ex)
                 {
                     return null;
+                }
+                finally
+                {
+                    _connection.Dispose();
                 }
             }
         }
