@@ -25,7 +25,7 @@
                             <asp:Label runat="server" ID="welcomeMessage" Visible="false"></asp:Label>
                         </li>
                         <li role="presentation">
-                            <a class="btn btn-lg" href="~/Pages/Account/Register.aspx" id="SignUp" runat="server">Sign Up</a>
+                            <a class="btn btn-lg" href="~/Pages/Account/Registration.aspx" id="SignUp" runat="server">Sign Up</a>
                             <a class="btn btn-lg" href="~/Pages/Account/Logout.aspx" visible="false" id="LogOut" runat="server">Log Out</a>
                         </li>
                     </ul>
