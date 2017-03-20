@@ -50,7 +50,7 @@ namespace FDM90.Repository
                             new SqlParameter("@Email", newUser.EmailAddress),
                             new SqlParameter("@UserName", newUser.UserName),
                             new SqlParameter("@Password", newUser.Password),
-                            new SqlParameter("@FacebookLinked", newUser.FacebookLinked)
+                            new SqlParameter("@Facebook", newUser.Facebook)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -99,7 +99,7 @@ namespace FDM90.Repository
         public void Update(User updatedUser)
         {
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
-                "[UserName] = @UserName, [EmailAddress] = @EmailAddress, [Password] = @Password, [FacebookLinked] = @FacebookLinked"
+                "[UserName] = @UserName, [EmailAddress] = @EmailAddress, [Password] = @Password, [Facebook] = @Facebook"
                 + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
@@ -107,7 +107,7 @@ namespace FDM90.Repository
                             new SqlParameter("@EmailAddress", updatedUser.EmailAddress),
                             new SqlParameter("@UserName", updatedUser.UserName),
                             new SqlParameter("@Password", updatedUser.Password),
-                            new SqlParameter("@FacebookLinked", updatedUser.FacebookLinked)
+                            new SqlParameter("@Facebook", updatedUser.Facebook)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -144,7 +144,7 @@ namespace FDM90.Repository
             user.EmailAddress = reader["EmailAddress"].ToString();
             user.UserName = reader["UserName"].ToString();
             user.Password = reader["Password"].ToString();
-            user.FacebookLinked = bool.Parse(reader["FacebookLinked"].ToString());
+            user.Facebook = bool.Parse(reader["Facebook"].ToString());
             return user;
         }
 

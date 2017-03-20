@@ -37,7 +37,7 @@
                         <a href="~/Pages/Content/Home.aspx" title="Home" runat="server">Home</a>
                     </li>
                     <li role="presentation">
-                        <a href="~/Pages/Content/Facebook.aspx" id="FacebookLinked" visible="false" runat="server">Facebook</a>
+                        <a href="~/Pages/Content/Facebook.aspx" id="Facebook" visible="false" runat="server">Facebook</a>
                     </li>
                     <li role="presentation">
                         <a href="~/Pages/Content/Twitter.aspx" id="TwitterLinked" visible="false" runat="server">Twitter</a>
