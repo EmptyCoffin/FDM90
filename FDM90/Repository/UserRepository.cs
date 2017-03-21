@@ -31,6 +31,10 @@ namespace FDM90.Repository
         {
         }
 
+        public UserRepository(IDbConnection connection):base(connection)
+        {
+        }
+
         #endregion
 
         #region Public Methods
@@ -47,10 +51,9 @@ namespace FDM90.Repository
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", newUser.UserId),
-                            new SqlParameter("@Email", newUser.EmailAddress),
                             new SqlParameter("@UserName", newUser.UserName),
-                            new SqlParameter("@Password", newUser.Password),
-                            new SqlParameter("@Facebook", newUser.Facebook)
+                            new SqlParameter("@Email", newUser.EmailAddress),
+                            new SqlParameter("@Password", newUser.Password)
                         };
 
             SendVoidCommand(sql, parameters);
