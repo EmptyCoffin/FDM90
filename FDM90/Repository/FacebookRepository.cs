@@ -69,24 +69,11 @@ namespace FDM90.Repository
         public void Update(FacebookCredentials objectToUpdate)
         {
             FacebookCredentials currentDetails = ReadSpecific(objectToUpdate.UserId.ToString());
-
-            string valuesToSet = string.Empty;
             List<SqlParameter> parameters = new List<SqlParameter>();
 
-            foreach (var property in currentDetails.GetType().GetProperties())
-            {
-                if(property.GetValue(objectToUpdate) != null && property.GetValue(objectToUpdate).ToString() != property.GetValue(currentDetails).ToString())
-                {
-                    valuesToSet += string.Format("[{0}] = @{0},", property.Name);
-                    parameters.Add(new SqlParameter(string.Format("@{0}", property.Name), property.GetValue(objectToUpdate)));
-                }
-            }
-
-            valuesToSet = valuesToSet.Substring(0, valuesToSet.Length - 1);
-
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
-                valuesToSet
-                + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
+                 SetUpdateValues(currentDetails, objectToUpdate, out parameters)
+            + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
             parameters.Add(new SqlParameter("@UserID", objectToUpdate.UserId));
 

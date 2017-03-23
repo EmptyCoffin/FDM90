@@ -94,5 +94,23 @@ namespace FDM90.Repository
                 }
             }
         }
+
+        protected string SetUpdateValues(T existingObject, T updatedObject, out List<SqlParameter> parameters)
+        {
+            string valuesToSet = string.Empty;
+            List<SqlParameter> param = new List<SqlParameter>();
+
+            foreach (var property in existingObject.GetType().GetProperties())
+            {
+                if (property.GetValue(updatedObject) != null && property.GetValue(updatedObject).ToString() != property.GetValue(existingObject).ToString())
+                {
+                    valuesToSet += string.Format("[{0}] = @{0},", property.Name);
+                    param.Add(new SqlParameter(string.Format("@{0}", property.Name), property.GetValue(updatedObject)));
+                }
+            }
+
+            parameters = param;
+            return string.IsNullOrEmpty(valuesToSet) ? valuesToSet : valuesToSet.Substring(0, valuesToSet.Length - 1);
+        }
     }
 }

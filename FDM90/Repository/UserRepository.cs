@@ -71,10 +71,11 @@ namespace FDM90.Repository
                 + _table + SQLHelper.Where;
 
             Guid test;
-            sql += !Guid.TryParse(userName, out test) ? " [UserName] = @UserName " + SQLHelper.EndingSemiColon : " [UserId] = @UserName " + SQLHelper.EndingSemiColon;
+            sql += !Guid.TryParse(userName, out test) ? "[UserName] = @SpecificUser" + SQLHelper.EndingSemiColon 
+                                                        : "[UserId] = @SpecificUser" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
-                            new SqlParameter("@UserName", userName),
+                            new SqlParameter("@SpecificUser", userName),
                         };
 
             return SendReaderCommand(sql, parameters).First();
@@ -101,19 +102,16 @@ namespace FDM90.Repository
         /// <param name="objectToUpdate"></param>
         public void Update(User updatedUser)
         {
+            User currentDetails = ReadSpecific(updatedUser.UserId.ToString());
+            List<SqlParameter> parameters = new List<SqlParameter>();
+
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
-                "[UserName] = @UserName, [EmailAddress] = @EmailAddress, [Password] = @Password, [Facebook] = @Facebook"
+                SetUpdateValues(currentDetails, updatedUser, out parameters)
                 + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
-            SqlParameter[] parameters = new SqlParameter[]{
-                            new SqlParameter("@UserID", updatedUser.UserId),
-                            new SqlParameter("@EmailAddress", updatedUser.EmailAddress),
-                            new SqlParameter("@UserName", updatedUser.UserName),
-                            new SqlParameter("@Password", updatedUser.Password),
-                            new SqlParameter("@Facebook", updatedUser.Facebook)
-                        };
+            parameters.Add(new SqlParameter("@UserID", updatedUser.UserId));
 
-            SendVoidCommand(sql, parameters);
+            SendVoidCommand(sql, parameters.ToArray());
         }
 
         /// <summary>
