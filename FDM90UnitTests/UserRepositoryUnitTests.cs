@@ -109,7 +109,6 @@ namespace FDM90UnitTests
             Assert.IsNotNull(_userRepo);
         }
 
-
         [TestMethod]
         public void CreateUser_GivenValues_CorrectValuesSentToConnection()
         {

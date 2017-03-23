@@ -102,7 +102,7 @@ namespace FDM90.Repository
 
             foreach (var property in existingObject.GetType().GetProperties())
             {
-                if (property.GetValue(updatedObject) != null && property.GetValue(updatedObject).ToString() != property.GetValue(existingObject).ToString())
+                if (property.GetValue(updatedObject) != null && property.GetValue(updatedObject).ToString() != property.GetValue(existingObject)?.ToString())
                 {
                     valuesToSet += string.Format("[{0}] = @{0},", property.Name);
                     param.Add(new SqlParameter(string.Format("@{0}", property.Name), property.GetValue(updatedObject)));
