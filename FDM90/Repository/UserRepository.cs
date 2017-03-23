@@ -31,6 +31,10 @@ namespace FDM90.Repository
         {
         }
 
+        public UserRepository(IDbConnection connection):base(connection)
+        {
+        }
+
         #endregion
 
         #region Public Methods
@@ -47,10 +51,9 @@ namespace FDM90.Repository
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", newUser.UserId),
-                            new SqlParameter("@Email", newUser.EmailAddress),
                             new SqlParameter("@UserName", newUser.UserName),
-                            new SqlParameter("@Password", newUser.Password),
-                            new SqlParameter("@FacebookLinked", newUser.FacebookLinked)
+                            new SqlParameter("@Email", newUser.EmailAddress),
+                            new SqlParameter("@Password", newUser.Password)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -99,7 +102,7 @@ namespace FDM90.Repository
         public void Update(User updatedUser)
         {
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
-                "[UserName] = @UserName, [EmailAddress] = @EmailAddress, [Password] = @Password, [FacebookLinked] = @FacebookLinked"
+                "[UserName] = @UserName, [EmailAddress] = @EmailAddress, [Password] = @Password, [Facebook] = @Facebook"
                 + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
@@ -107,7 +110,7 @@ namespace FDM90.Repository
                             new SqlParameter("@EmailAddress", updatedUser.EmailAddress),
                             new SqlParameter("@UserName", updatedUser.UserName),
                             new SqlParameter("@Password", updatedUser.Password),
-                            new SqlParameter("@FacebookLinked", updatedUser.FacebookLinked)
+                            new SqlParameter("@Facebook", updatedUser.Facebook)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -137,14 +140,14 @@ namespace FDM90.Repository
         /// </summary>
         /// <param name="reader">Database reader value</param>
         /// <param name="stockRequest">Object to populate</param>
-        public override User SetProperties(SqlDataReader reader)
+        public override User SetProperties(IDataReader reader)
         {
             User user = new User();
             user.UserId = Guid.Parse(reader["UserId"].ToString());
             user.EmailAddress = reader["EmailAddress"].ToString();
             user.UserName = reader["UserName"].ToString();
             user.Password = reader["Password"].ToString();
-            user.FacebookLinked = bool.Parse(reader["FacebookLinked"].ToString());
+            user.Facebook = bool.Parse(reader["Facebook"].ToString());
             return user;
         }
 

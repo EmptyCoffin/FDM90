@@ -9,7 +9,7 @@ namespace FDM90.Handlers
 {
     public interface IUserHandler
     {
-        User RegisterUser(User newUser);
+        User RegisterUser(string userName, string emailAddress, string password);
         User LoginUser(User newUser);
         User UpdateUserMediaActivation(User user, string socialMedia);
     }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
 using System.Reflection;
+using FDM90.Models.Helpers;
 
 namespace FDM90.Handlers
 {
@@ -25,10 +26,18 @@ namespace FDM90.Handlers
             _userSpecific = (IReadSpecific<User>)userRepo;
         }
 
-        public User RegisterUser(User newUser)
+        public User RegisterUser(string userName, string emailAddress, string password)
         {
+            User newUser = null;
             try
             {
+                newUser = new User()
+                {
+                    UserName = userName,
+                    EmailAddress = emailAddress,
+                    Password = EncryptionHelper.EncryptString(password)
+                };
+
                 //perform checks
                 newUser.UserId = Guid.NewGuid();
                 //encrypt password
@@ -54,7 +63,7 @@ namespace FDM90.Handlers
             }
 
             //check password
-            if (test.Password != user.Password)
+            if (EncryptionHelper.DecryptString(test.Password) != user.Password)
             {
                 test.UserName = "Password is incorrect";
             }

@@ -187,6 +187,7 @@
     <Compile Include="Handlers\UserHandler.cs" />
     <Compile Include="Models\FacebookCredentials.cs" />
     <Compile Include="Models\FacebookData.cs" />
+    <Compile Include="Models\Helpers\EncryptionHelper.cs" />
     <Compile Include="Models\Helpers\FacebookHelper.cs" />
     <Compile Include="Models\Helpers\JsonHelper.cs" />
     <Compile Include="Models\Helpers\SQLHelper.cs" />

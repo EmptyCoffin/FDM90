@@ -14,7 +14,7 @@ namespace FDM90.Pages.Content
         {
             if(UserSingleton.Instance.CurrentUser != null)
             {
-                facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.FacebookLinked;
+                facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
             }
         }
 
