@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using FDM90.Singleton;
 
 namespace FDM90.Models.Helpers
 {
@@ -11,6 +12,7 @@ namespace FDM90.Models.Helpers
         public static string FieldParameter = "me?fields=";
         public static string InsightParameter = "/insights/";
         public static string AccountParameter = "/accounts?access_token=";
+        public static string PostAuthParameter = "oauth/access_token";
 
         public static string AccessToken = "access_token";
         public static string Id = "id";

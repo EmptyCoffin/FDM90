@@ -10,7 +10,7 @@ namespace FDM90.Handlers
     public interface IFacebookHandler
     {
         FacebookCredentials GetLogInDetails(Guid userId);
-        FacebookCredentials SaveLogInDetails(FacebookCredentials credentials);
+        FacebookCredentials SaveLogInDetails(Guid userId, string pageName);
         string SetAccessToken(string shortTermToken, Guid userId, string pageName);
         FacebookData GetInitialFacebookData(string accessToken);
         FacebookData GetPostDetails(FacebookData currentData);
