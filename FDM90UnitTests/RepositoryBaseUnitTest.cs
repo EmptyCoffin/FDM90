@@ -65,6 +65,18 @@ namespace FDM90UnitTests
         }
 
         [TestMethod]
+        public void ConstructorTest_CallToParameterlessConstructor_ReturnsTrueIfObjectIsNotNull()
+        {
+            //arrange
+
+            //act
+            _derivedClass = new TestDerivedClass();
+
+            //assert
+            Assert.IsNotNull(_derivedClass);
+        }
+
+        [TestMethod]
         public void RepositoryBase_SendVoidCommand_MethodsVerfied()
         {
             //arrange
@@ -151,6 +163,61 @@ namespace FDM90UnitTests
             //Assert.IsTrue(Regex.IsMatch(setSqlString, ".*?\bTest_Table\b.*?\bId\b.*?\bName\b.*?\\s.*"));
             //StringAssert.Matches(setSqlString, new Regex(".*?\bTest_Table\b.*?\bId\b.*?\bName\b.*?\\s.*"));
         }
+
+        [TestMethod]
+        public void SetUpdateValues_GivenUpdatedObjectDifferentValues_OnlyDifferentValueInReturningString()
+        {
+            //arrange
+            TestObject existing = new TestObject("123", "Test Name");
+            TestObject updated = new TestObject("123", "Test Name 2");
+            List<SqlParameter> paramsList = new List<SqlParameter>();
+
+            //act
+            var result = _derivedClass.UpdateValues(existing, updated, out paramsList);
+
+            //assert
+            Assert.AreEqual("[Name] = @Name", result);
+
+            Assert.AreEqual(1, paramsList.Count);
+            Assert.AreEqual("@Name", paramsList[0].ParameterName);
+            Assert.AreEqual("Test Name 2", paramsList[0].Value);
+        }
+
+        [TestMethod]
+        public void SetUpdateValues_GivenUpdatedObjectSameValues_EmptyParamsAndString()
+        {
+            //arrange
+            TestObject existing = new TestObject("123", "Test Name");
+            TestObject updated = new TestObject("123", "Test Name");
+            List<SqlParameter> paramsList = new List<SqlParameter>();
+
+            //act
+            var result = _derivedClass.UpdateValues(existing, updated, out paramsList);
+
+            //assert
+            Assert.AreEqual(string.Empty, result);
+            Assert.AreEqual(0, paramsList.Count);
+        }
+
+        [TestMethod]
+        public void SetUpdateValues_GivenUpdatedObjectWithNullValues_NullValueNotInStringOrParams()
+        {
+            //arrange
+            TestObject existing = new TestObject("123", "Test Name");
+            TestObject updated = new TestObject(null, "Test Name 2");
+            List<SqlParameter> paramsList = new List<SqlParameter>();
+
+            //act
+            var result = _derivedClass.UpdateValues(existing, updated, out paramsList);
+
+            //assert
+            Assert.AreEqual("[Name] = @Name", result);
+
+            Assert.AreEqual(1, paramsList.Count);
+            Assert.AreEqual("@Name", paramsList[0].ParameterName);
+            Assert.AreEqual("Test Name 2", paramsList[0].Value);
+        }
+
     }
 
     public class TestDerivedClass : RepositoryBase<TestObject>
@@ -160,6 +227,16 @@ namespace FDM90UnitTests
         public TestDerivedClass(IDbConnection connection):base(connection)
         {
                 
+        }
+
+        public TestDerivedClass()
+        {
+            
+        }
+
+        public string UpdateValues(TestObject existingObject, TestObject updatedObject, out List<SqlParameter> parameters)
+        {
+            return SetUpdateValues(existingObject, updatedObject, out parameters);
         }
 
         public void NonQuery(TestObject objectToCreate)

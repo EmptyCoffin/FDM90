@@ -33,67 +33,65 @@ namespace FDM90.Handlers
             {
                 newUser = new User()
                 {
+                    UserId = Guid.NewGuid(),
                     UserName = userName,
                     EmailAddress = emailAddress,
                     Password = EncryptionHelper.EncryptString(password)
                 };
 
-                //perform checks
-                newUser.UserId = Guid.NewGuid();
-                //encrypt password
-
                 //write to db
                 _userRepo.Create(newUser);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
             return newUser;
         }
 
-        public User LoginUser(User user)
+        public User LoginUser(User loginUser)
         {
             //Check user exists
-            var test = _userSpecific.ReadSpecific(user.UserName);
+            var user = _userSpecific.ReadSpecific(loginUser.UserName);
 
-            if (test == null)
+            if (user.UserId.Equals(Guid.Empty))
             {
-                test.UserName = "User doesn't exist";
+                user.UserName = "User doesn't exist";
             }
-
-            //check password
-            if (EncryptionHelper.DecryptString(test.Password) != user.Password)
+            else if (EncryptionHelper.DecryptString(user.Password) != loginUser.Password)
             {
-                test.UserName = "Password is incorrect";
+                //check password
+                user.UserName = "Password is incorrect";
             }
 
             //login
-            return test;
+            return user;
         }
 
         public User UpdateUserMediaActivation(User user, string socialMedia)
         {
-            User test = user;
+            bool updated = false;
             try
             {
-                test = _userSpecific.ReadSpecific(user.UserId.ToString());
+                user = _userSpecific.ReadSpecific(user.UserId.ToString());
 
-                foreach (PropertyInfo property in test.GetType().GetProperties())
+                foreach (PropertyInfo property in user.GetType().GetProperties())
                 {
-                    if (property.Name.Contains(socialMedia) && !(bool)property.GetValue(test))
+                    if (property.Name.Contains(socialMedia) && !(bool)property.GetValue(user))
                     {
-                        property.SetValue(test, true);
+                        property.SetValue(user, true);
+                        updated = true;
                     }
                 }
 
-                _userRepo.Update(test);
+                if(updated)
+                    _userRepo.Update(user);
             }
             catch(Exception ex)
             {
 
             }
-            return test;
+            return user;
         }
     }
 }

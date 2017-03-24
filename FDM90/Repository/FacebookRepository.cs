@@ -11,6 +11,16 @@ namespace FDM90.Repository
 {
     public class FacebookRepository : RepositoryBase<FacebookCredentials>, IRepository<FacebookCredentials>, IReadSpecific<FacebookCredentials>
     {
+        public FacebookRepository()
+        {
+            
+        }
+
+        public FacebookRepository(IDbConnection connection):base(connection)
+        {
+            
+        }
+
         protected override string _table
         {
             get
@@ -22,14 +32,14 @@ namespace FDM90.Repository
         public void Create(FacebookCredentials objectToCreate)
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
-                        "[UserId], [FacebookPageName]" 
+                        "[UserId], [PageName]" 
                         + SQLHelper.CloseBracket + SQLHelper.Values + SQLHelper.OpenBracket 
-                        + "@UserID, @FacebookPageName" 
+                        + "@UserID, @PageName" 
                         + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", objectToCreate.UserId),
-                            new SqlParameter("@FacebookPageName", objectToCreate.PageName),
+                            new SqlParameter("@PageName", objectToCreate.PageName),
                         };
 
             SendVoidCommand(sql, parameters);
@@ -48,7 +58,7 @@ namespace FDM90.Repository
         public FacebookCredentials ReadSpecific(string userId)
         {
             string sql = SQLHelper.SelectAll
-                         + _table + SQLHelper.Where + "[UserId] = @UserId";
+                         + _table + SQLHelper.Where + "[UserId] = @UserId" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserId", userId),
@@ -61,32 +71,19 @@ namespace FDM90.Repository
         {
             FacebookCredentials creds = new FacebookCredentials();
             creds.UserId = Guid.Parse(reader["UserId"].ToString());
-            creds.PageName = reader["FacebookPageName"].ToString();
-            creds.PermanentAccessToken = reader["PermanentAccessToken"].ToString();
+            creds.PageName = reader["PageName"].ToString();
+            creds.PermanentAccessToken = reader["PermanentAccessToken"]?.ToString();
             return creds;
         }
 
         public void Update(FacebookCredentials objectToUpdate)
         {
             FacebookCredentials currentDetails = ReadSpecific(objectToUpdate.UserId.ToString());
-
-            string valuesToSet = string.Empty;
             List<SqlParameter> parameters = new List<SqlParameter>();
 
-            foreach (var property in currentDetails.GetType().GetProperties())
-            {
-                if(property.GetValue(objectToUpdate) != null && property.GetValue(objectToUpdate).ToString() != property.GetValue(currentDetails).ToString())
-                {
-                    valuesToSet += string.Format("[{0}] = @{0},", property.Name);
-                    parameters.Add(new SqlParameter(string.Format("@{0}", property.Name), property.GetValue(objectToUpdate)));
-                }
-            }
-
-            valuesToSet = valuesToSet.Substring(0, valuesToSet.Length - 1);
-
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
-                valuesToSet
-                + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
+                 SetUpdateValues(currentDetails, objectToUpdate, out parameters)
+            + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
             parameters.Add(new SqlParameter("@UserID", objectToUpdate.UserId));
 
