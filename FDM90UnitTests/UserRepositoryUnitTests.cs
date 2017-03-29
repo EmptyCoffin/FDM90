@@ -125,7 +125,7 @@ namespace FDM90UnitTests
             _userRepo.Create(testUser);
 
             //assert
-            Assert.AreEqual(4, _parameterObjects.Count);
+            Assert.AreEqual(5, _parameterObjects.Count);
             foreach (var property in testUser.GetType().GetProperties())
             {
                 if (property.GetValue(testUser) == null) continue;
@@ -145,7 +145,7 @@ namespace FDM90UnitTests
                     "[FDM90].[dbo].[User]",
                     testUser.GetType()
                         .GetProperties()
-                        .Where(x => x.GetValue(testUser) != null && x.Name != "Facebook")
+                        .Where(x => x.GetValue(testUser) != null)
                         .Select(s => s.Name)
                         .ToArray(),
                     _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));

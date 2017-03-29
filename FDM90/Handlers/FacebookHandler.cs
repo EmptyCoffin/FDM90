@@ -35,7 +35,7 @@ namespace FDM90.Handlers
 
         public FacebookCredentials GetLogInDetails(Guid userId)
         {
-            var result = _facebookReadRepo.ReadSpecific(userId.ToString());
+            var result = _facebookReadRepo.ReadSpecific(userId.ToString()) ?? new FacebookCredentials();
 
             result.PermanentAccessToken = result.PermanentAccessToken ?? _facebookClientWrapper.GetLoginUrl();
 
@@ -92,18 +92,18 @@ namespace FDM90.Handlers
             return data;
         }
 
-        public FacebookData GetLikeFacebookData(FacebookData currentData)
-        {
-            dynamic facebookData =
-                _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
-                    {
-                        FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount,
-                        FacebookHelper.TalkingAboutCount
-                    }),
-                    currentData.AccessToken);
+        //public FacebookData GetLikeFacebookData(FacebookData currentData)
+        //{
+        //    dynamic facebookData =
+        //        _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
+        //            {
+        //                FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount,
+        //                FacebookHelper.TalkingAboutCount
+        //            }),
+        //            currentData.AccessToken);
 
-            return JsonHelper.Parse(facebookData, currentData);
-        }
+        //    return JsonHelper.Parse(facebookData, currentData);
+        //}
 
         public FacebookData GetPostDetails(FacebookData currentData)
         {

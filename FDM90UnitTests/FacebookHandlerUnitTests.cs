@@ -5,6 +5,7 @@ using FDM90.Models.Helpers;
 using FDM90.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Facebook;
 
 namespace FDM90UnitTests
 {
@@ -308,6 +309,66 @@ namespace FDM90UnitTests
 
             Assert.AreEqual(newCredPageName, callBackPageName);
             Assert.AreEqual(shortTermToken, callBackShortTermToken);
+        }
+
+        [TestMethod]
+        public void GetInitialFacebookData_GivenParameters_ReturnsTrueIfValuesAreCorrect()
+        {
+            //arrange
+            var mainData = new JsonObject();
+            mainData.Add("id", "1233456789");
+            mainData.Add("name", "Test Name");
+            mainData.Add("fan_count", 951);
+            mainData.Add("talking_about_count", 159);
+
+            var postData = new JsonObject();
+            postData.Add("id", "123456789_987564321");
+            postData.Add("message", "This Is A Test Message");
+
+            var dataData = new JsonObject();
+            dataData.Add("data", new JsonArray { postData });
+
+            mainData.Add("posts", dataData);
+
+            string accessToken = "TestShortTerm";
+
+            //act
+            var result = _facebookHandler.GetInitialFacebookData(accessToken);
+
+            //assert
+        }
+
+        [TestMethod]
+        public void GetPostDetails_GivenParameters_ReturnsTrueIfValuesAreCorrect()
+        {
+            //arrange
+            var postInsightData1 = new JsonObject();
+            postInsightData1.Add("name", "Test_Name");
+            postInsightData1.Add("period", "Forever");
+            postInsightData1.Add("title", "Test_This_is");
+            postInsightData1.Add("description", "Test_Description");
+            postInsightData1.Add("id", "132456789");
+            var valueObject = new JsonObject();
+            valueObject.Add("value", 3);
+            postInsightData1.Add("value", new JsonArray { valueObject });
+
+            var postInsightData2 = new JsonObject();
+            postInsightData2.Add("name", "Test_Name2");
+            postInsightData2.Add("period", "Forever2");
+            postInsightData2.Add("title", "Test_This_is2");
+            postInsightData2.Add("description", "Test_Description2");
+            postInsightData2.Add("id", "123456789");
+            var valueObject1 = new JsonObject();
+            valueObject1.Add("value", 6);
+            postInsightData1.Add("value", new JsonArray { valueObject1 });
+
+            var dataData = new JsonObject();
+            dataData.Add("data", new JsonArray { postInsightData1, postInsightData2 });
+
+            //act
+            var result = _facebookHandler.GetPostDetails(new FacebookData());
+
+            //assert
         }
     }
 }

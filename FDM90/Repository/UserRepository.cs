@@ -46,14 +46,15 @@ namespace FDM90.Repository
         public void Create(User newUser)
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
-                        "[UserId], [UserName], [EmailAddress], [Password]" + SQLHelper.CloseBracket + SQLHelper.Values
-                        + SQLHelper.OpenBracket + "@UserID, @UserName, @Email, @Password" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
+                        "[UserId], [UserName], [EmailAddress], [Password], [Facebook]" + SQLHelper.CloseBracket + SQLHelper.Values
+                        + SQLHelper.OpenBracket + "@UserID, @UserName, @Email, @Password, @Facebook" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", newUser.UserId),
                             new SqlParameter("@UserName", newUser.UserName),
                             new SqlParameter("@Email", newUser.EmailAddress),
-                            new SqlParameter("@Password", newUser.Password)
+                            new SqlParameter("@Password", newUser.Password),
+                            new SqlParameter("@Facebook", false)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -145,7 +146,7 @@ namespace FDM90.Repository
             user.EmailAddress = reader["EmailAddress"].ToString();
             user.UserName = reader["UserName"].ToString();
             user.Password = reader["Password"].ToString();
-            user.Facebook = bool.Parse(reader["Facebook"].ToString());
+            user.Facebook = reader["Facebook"] == null ? bool.Parse(reader["Facebook"].ToString()) : false;
             return user;
         }
 

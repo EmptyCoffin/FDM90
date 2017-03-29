@@ -40,7 +40,7 @@ namespace FDM90.Models.Helpers
             });
 
             //get user id
-            dynamic userFacebookId = _fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Field, "",
+            dynamic userFacebookId = _fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Id, "",
                                                 new string[] { FacebookHelper.AccessToken }) + "=" + result.access_token);
             //get permanent token
             dynamic permanentTokenResponse = _fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Account, userFacebookId.id,

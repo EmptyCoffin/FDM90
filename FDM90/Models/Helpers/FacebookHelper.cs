@@ -9,6 +9,7 @@ namespace FDM90.Models.Helpers
     public class FacebookHelper
     {
         public static string BaseUrl = "https://graph.facebook.com/v2.8/";
+        public static string IdParameter = "me?";
         public static string FieldParameter = "me?fields=";
         public static string InsightParameter = "/insights/";
         public static string AccountParameter = "/accounts?access_token=";
@@ -29,6 +30,10 @@ namespace FDM90.Models.Helpers
 
             switch(parameter)
             {
+                case FacebookParameters.Id:
+                    url = BaseUrl + IdParameter + string.Join(",", fields);
+                    break;
+
                 case FacebookParameters.Field:
                     url = BaseUrl + FieldParameter + string.Join(",", fields);
                     break;
@@ -48,6 +53,7 @@ namespace FDM90.Models.Helpers
 
     public enum FacebookParameters
     {
+        Id,
         Field,
         Insight,
         Account
