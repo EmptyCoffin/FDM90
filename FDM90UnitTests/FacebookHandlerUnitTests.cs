@@ -6,6 +6,7 @@ using FDM90.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Facebook;
+using System.Collections.Generic;
 
 namespace FDM90UnitTests
 {
@@ -330,12 +331,23 @@ namespace FDM90UnitTests
 
             mainData.Add("posts", dataData);
 
+            _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData(It.IsAny<string>(), It.IsAny<string>())).Returns(mainData);
+
             string accessToken = "TestShortTerm";
 
             //act
             var result = _facebookHandler.GetInitialFacebookData(accessToken);
 
             //assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual("1233456789", result.Id);
+            Assert.AreEqual("Test Name", result.Name);
+            Assert.AreEqual(951, result.FanCount);
+            Assert.AreEqual(159, result.TalkingAboutCount);
+            Assert.AreEqual(1, result.Posts.Count);
+            Assert.AreEqual("123456789_987564321", result.Posts[0].Id);
+            Assert.AreEqual("This Is A Test Message", result.Posts[0].Message);
+            Assert.AreEqual("TestShortTerm", result.AccessToken);
         }
 
         [TestMethod]
@@ -343,32 +355,42 @@ namespace FDM90UnitTests
         {
             //arrange
             var postInsightData1 = new JsonObject();
-            postInsightData1.Add("name", "Test_Name");
+            postInsightData1.Add("name", "post_fan_reach");
             postInsightData1.Add("period", "Forever");
             postInsightData1.Add("title", "Test_This_is");
             postInsightData1.Add("description", "Test_Description");
             postInsightData1.Add("id", "132456789");
             var valueObject = new JsonObject();
             valueObject.Add("value", 3);
-            postInsightData1.Add("value", new JsonArray { valueObject });
+            postInsightData1.Add("values", new JsonArray { valueObject });
 
             var postInsightData2 = new JsonObject();
-            postInsightData2.Add("name", "Test_Name2");
+            postInsightData2.Add("name", "post_negative_feedback");
             postInsightData2.Add("period", "Forever2");
             postInsightData2.Add("title", "Test_This_is2");
             postInsightData2.Add("description", "Test_Description2");
             postInsightData2.Add("id", "123456789");
             var valueObject1 = new JsonObject();
             valueObject1.Add("value", 6);
-            postInsightData1.Add("value", new JsonArray { valueObject1 });
+            postInsightData2.Add("values", new JsonArray { valueObject1 });
 
             var dataData = new JsonObject();
             dataData.Add("data", new JsonArray { postInsightData1, postInsightData2 });
+            _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData(It.IsAny<string>(), It.IsAny<string>())).Returns(dataData);
 
             //act
-            var result = _facebookHandler.GetPostDetails(new FacebookData());
+            var result = _facebookHandler.GetPostDetails(new FacebookData() { Posts = new List<FacebookPostData>() { new FacebookPostData() { Id = "123456789" } } });
 
             //assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Posts.Count);
+            Assert.AreEqual("123456789", result.Posts[0].Id);
+            Assert.AreEqual("post_fan_reach", result.Posts[0].TotalReach.Name);
+            Assert.AreEqual("Forever", result.Posts[0].TotalReach.Period);
+            Assert.AreEqual(3, result.Posts[0].TotalReach.Values[0].Value);
+            Assert.AreEqual("post_negative_feedback", result.Posts[0].NegativeFeedback.Name);
+            Assert.AreEqual("Forever2", result.Posts[0].NegativeFeedback.Period);
+            Assert.AreEqual(6, result.Posts[0].NegativeFeedback.Values[0].Value);
         }
     }
 }
