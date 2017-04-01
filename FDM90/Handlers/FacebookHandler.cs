@@ -17,60 +17,42 @@ namespace FDM90.Handlers
         private IReadSpecific<FacebookCredentials> _facebookReadRepo;
         private IRepository<FacebookCredentials> _facebookRepo;
         private IUserHandler _userHandler;
+        private IFacebookClientWrapper _facebookClientWrapper;
 
-        public FacebookHandler():this(new FacebookRepository(), new UserHandler())
+        public FacebookHandler() : this(new FacebookRepository(), new UserHandler(), new FacebookClientWrapper())
         {
 
         }
 
-        public FacebookHandler(IRepository<FacebookCredentials> facebookRepo, IUserHandler userHandler)
+        public FacebookHandler(IRepository<FacebookCredentials> facebookRepo, IUserHandler userHandler,
+            IFacebookClientWrapper facebookClientWrapper)
         {
             _facebookRepo = facebookRepo;
-            _facebookReadRepo = (IReadSpecific<FacebookCredentials>)facebookRepo;
+            _facebookReadRepo = (IReadSpecific<FacebookCredentials>) facebookRepo;
             _userHandler = userHandler;
+            _facebookClientWrapper = facebookClientWrapper;
         }
 
         public FacebookCredentials GetLogInDetails(Guid userId)
         {
-            //returning username, password, name of page?
-            var result = _facebookReadRepo.ReadSpecific(userId.ToString());
+            var result = _facebookReadRepo.ReadSpecific(userId.ToString()) ?? new FacebookCredentials();
 
-            if(result == null || result.PermanentAccessToken == null)
-            {
-                result = result == null ? new FacebookCredentials() : result;
-                result.PermanentAccessToken = GetLoginUrl();
-            }
+            result.PermanentAccessToken = result.PermanentAccessToken ?? _facebookClientWrapper.GetLoginUrl();
 
             //login
-             return result;
+            return result;
         }
 
-        public string GetLoginUrl()
+        public FacebookCredentials SaveLogInDetails(Guid userId, string pageName)
         {
-            var fbClient = new FacebookClient();
-
-            dynamic login = fbClient.GetLoginUrl(new {
-                client_id = ConfigSingleton.FacebookClientId,
-
-                redirect_uri = "http://localhost:1900/Pages/Content/Facebook.aspx",
-
-                response_type = "code",
-
-                scope = "manage_pages,read_insights"
-            });
-
-            return login.AbsoluteUri;
-        }
-
-        public FacebookCredentials SaveLogInDetails(FacebookCredentials credentials)
-        {
+            FacebookCredentials credentials = new FacebookCredentials(userId, pageName);
             try
             {
                 _facebookRepo.Create(credentials);
 
                 _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), "Facebook");
 
-                credentials.PermanentAccessToken = GetLoginUrl();
+                credentials.PermanentAccessToken = _facebookClientWrapper.GetLoginUrl();
             }
             catch (Exception ex)
             {
@@ -82,39 +64,26 @@ namespace FDM90.Handlers
 
         public string SetAccessToken(string shortTermToken, Guid userId, string pageName)
         {
-            var fbClient = new FacebookClient();
-
-            //generate longer live token
-            dynamic result = fbClient.Post("oauth/access_token", new
-            {
-                client_id = ConfigSingleton.FacebookClientId,
-                client_secret = ConfigSingleton.FacebookClientSecret,
-                redirect_uri = "http://localhost:1900/Pages/Content/Facebook.aspx",
-                code = shortTermToken
-            });
-
-            //get user id
-            dynamic userFacebookId = fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", 
-                                                new string[] { FacebookHelper.AccessToken }) + "=" + result.access_token);
-            //get permanent token
-            dynamic permanentTokenResponse = fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Account, userFacebookId.id,
-                                                new string[] { result.access_token }));
-
-            JsonArray permanentData = permanentTokenResponse.data;
-            var pToken = permanentData.OfType<JsonObject>().Where(page => page["name"].ToString() == pageName.Trim()).First();
+            var permanentTokenString = _facebookClientWrapper.GetPermanentAccessToken(shortTermToken, pageName);
 
             //save token to user
-            _facebookRepo.Update(new FacebookCredentials() { UserId = UserSingleton.Instance.CurrentUser.UserId, PermanentAccessToken = pToken["access_token"].ToString() });
+            _facebookRepo.Update(new FacebookCredentials()
+            {
+                UserId = userId,
+                PermanentAccessToken = permanentTokenString
+            });
 
-            return pToken["access_token"].ToString();
+            return permanentTokenString;
         }
 
         public FacebookData GetInitialFacebookData(string accessToken)
         {
-            var fbClient = new FacebookClient(accessToken);
-
-            dynamic facebookData = fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[] 
-                            { FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount, FacebookHelper.TalkingAboutCount, FacebookHelper.Posts }));
+            dynamic facebookData =
+                _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
+                {
+                    FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount, FacebookHelper.TalkingAboutCount,
+                    FacebookHelper.Posts
+                }), accessToken);
 
             FacebookData data = JsonHelper.Parse(facebookData, new FacebookData());
 
@@ -123,24 +92,30 @@ namespace FDM90.Handlers
             return data;
         }
 
-        public FacebookData GetLikeFacebookData(FacebookData currentData)
-        {
-            var fbClient = new FacebookClient(currentData.AccessToken);
+        //public FacebookData GetLikeFacebookData(FacebookData currentData)
+        //{
+        //    dynamic facebookData =
+        //        _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
+        //            {
+        //                FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount,
+        //                FacebookHelper.TalkingAboutCount
+        //            }),
+        //            currentData.AccessToken);
 
-            dynamic facebookData = fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
-                            { FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount, FacebookHelper.TalkingAboutCount }));
-
-            return JsonHelper.Parse(facebookData, currentData);
-        }
+        //    return JsonHelper.Parse(facebookData, currentData);
+        //}
 
         public FacebookData GetPostDetails(FacebookData currentData)
         {
-            var fbClient = new FacebookClient(currentData.AccessToken);
             List<FacebookPostData> updatedPosts = new List<FacebookPostData>();
+
             foreach (FacebookPostData post in currentData.Posts)
             {
-                dynamic postData = fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Insight, post.Id, new string[]
-                                { FacebookHelper.PostDetails }));
+                dynamic postData =
+                    _facebookClientWrapper.GetData(
+                        FacebookHelper.UrlBuilder(FacebookParameters.Insight, post.Id, new string[]
+                            {FacebookHelper.PostDetails}),
+                        currentData.AccessToken);
 
                 updatedPosts.Add(JsonHelper.Parse(postData.data, post));
             }

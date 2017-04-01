@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Web.Configuration;
 
 namespace FDM90.Repository
 {
@@ -15,16 +16,17 @@ namespace FDM90.Repository
         private static IDbConnection _connection;
         private static object _lockableObject = new object();
         protected abstract string _table { get; }
+        public IDbConnection Connection
+        {
+            get { return _connection == null ? new SqlConnection(WebConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ConnectionString) : _connection; }
+        }
 
-        protected RepositoryBase(IDbConnection connection)
+    protected RepositoryBase(IDbConnection connection)
         {
             _connection = connection;
         }
 
         protected RepositoryBase()
-            : this(
-                new SqlConnection(ConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ToString())
-            )
         {
         }
 
@@ -36,24 +38,22 @@ namespace FDM90.Repository
             {
                 try
                 {
-                    _connection.Open();
-                    IDbCommand command = _connection.CreateCommand();
-                    command.CommandText = sqlText;
-
-                    foreach (SqlParameter parameter in parameters)
+                    using (IDbConnection connection = Connection)
                     {
-                        command.Parameters.Add(parameter);
+                        IDbCommand command = connection.CreateCommand();
+                        command.CommandText = sqlText;
+
+                        foreach (SqlParameter parameter in parameters)
+                        {
+                            command.Parameters.Add(parameter);
+                        }
+                        connection.Open();
+
+                        command.ExecuteNonQuery();
                     }
-
-                    command.ExecuteNonQuery();
-
                 }
                 catch (Exception ex)
                 {
-                }
-                finally
-                {
-                    _connection.Dispose();
                 }
             }
         }
@@ -64,33 +64,33 @@ namespace FDM90.Repository
             {
                 try
                 {
-                    _connection.Open();
-                    IDbCommand command = _connection.CreateCommand();
-                    command.CommandText = sqlText;
-
-                    foreach (SqlParameter parameter in parameters)
+                    using (IDbConnection connection = Connection)
                     {
-                        command.Parameters.Add(parameter);
-                    }
-                    var instanceList = Activator.CreateInstance<List<T>>();
 
-                    using (var result = command.ExecuteReader(CommandBehavior.CloseConnection))
-                    {
-                        while (result.Read())
+                        IDbCommand command = connection.CreateCommand();
+                        command.CommandText = sqlText;
+
+                        foreach (SqlParameter parameter in parameters)
                         {
-                            instanceList.Add(SetProperties(result));
+                            command.Parameters.Add(parameter);
                         }
-                    }
+                        var instanceList = Activator.CreateInstance<List<T>>();
+                        connection.Open();
 
-                    return instanceList;
+                        using (var result = command.ExecuteReader(CommandBehavior.CloseConnection))
+                        {
+                            while (result.Read())
+                            {
+                                instanceList.Add(SetProperties(result));
+                            }
+                        }
+
+                        return instanceList;
+                    }
                 }
                 catch (Exception ex)
                 {
                     return null;
-                }
-                finally
-                {
-                    _connection.Dispose();
                 }
             }
         }

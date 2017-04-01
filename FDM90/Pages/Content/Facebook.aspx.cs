@@ -53,7 +53,7 @@ namespace FDM90.Pages.Content
 
         protected void facebookLoginButton_Click(object sender, EventArgs e)
         {
-            facebookCreds = _facebookHandler.SaveLogInDetails(new FacebookCredentials(UserSingleton.Instance.CurrentUser.UserId, inputPageName.Text));
+            facebookCreds = _facebookHandler.SaveLogInDetails(UserSingleton.Instance.CurrentUser.UserId, inputPageName.Text);
             Response.Redirect(facebookCreds.PermanentAccessToken);
         }
 

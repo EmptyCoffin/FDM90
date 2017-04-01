@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using FDM90.Singleton;
 
 namespace FDM90.Models.Helpers
 {
     public class FacebookHelper
     {
         public static string BaseUrl = "https://graph.facebook.com/v2.8/";
+        public static string IdParameter = "me?";
         public static string FieldParameter = "me?fields=";
         public static string InsightParameter = "/insights/";
         public static string AccountParameter = "/accounts?access_token=";
+        public static string PostAuthParameter = "oauth/access_token";
 
         public static string AccessToken = "access_token";
         public static string Id = "id";
@@ -27,6 +30,10 @@ namespace FDM90.Models.Helpers
 
             switch(parameter)
             {
+                case FacebookParameters.Id:
+                    url = BaseUrl + IdParameter + string.Join(",", fields);
+                    break;
+
                 case FacebookParameters.Field:
                     url = BaseUrl + FieldParameter + string.Join(",", fields);
                     break;
@@ -46,6 +53,7 @@ namespace FDM90.Models.Helpers
 
     public enum FacebookParameters
     {
+        Id,
         Field,
         Insight,
         Account

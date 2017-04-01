@@ -73,11 +73,9 @@ namespace FDM90.Handlers
             bool updated = false;
             try
             {
-                user = _userSpecific.ReadSpecific(user.UserId.ToString());
-
                 foreach (PropertyInfo property in user.GetType().GetProperties())
                 {
-                    if (property.Name.Contains(socialMedia) && !(bool)property.GetValue(user))
+                    if (property.Name.Contains(socialMedia))
                     {
                         property.SetValue(user, true);
                         updated = true;
