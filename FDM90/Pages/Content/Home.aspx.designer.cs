@@ -20,5 +20,14 @@ namespace FDM90.Pages.Content {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button facebookSetUpButton;
+        
+        /// <summary>
+        /// twitterSetUpButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button twitterSetUpButton;
     }
 }

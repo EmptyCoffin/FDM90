@@ -15,6 +15,7 @@ namespace FDM90.Pages.Content
             if(UserSingleton.Instance.CurrentUser != null)
             {
                 facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
+                twitterSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Twitter;
             }
         }
 
@@ -22,5 +23,10 @@ namespace FDM90.Pages.Content
         {
             Response.Redirect("Facebook.aspx");
         }
+        protected void twitterSetUpButton_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Twitter.aspx");
+        }
+
     }
 }
