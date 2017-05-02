@@ -26,5 +26,6 @@ namespace FDM90.Models
         public string EmailAddress { get; set; }
         public string Password { get; set; }
         public bool Facebook { get; set; }
+        public bool Twitter { get; set; }
     }
 }

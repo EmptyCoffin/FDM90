@@ -125,7 +125,7 @@ namespace FDM90UnitTests
             _userRepo.Create(testUser);
 
             //assert
-            Assert.AreEqual(5, _parameterObjects.Count);
+            Assert.AreEqual(6, _parameterObjects.Count);
             foreach (var property in testUser.GetType().GetProperties())
             {
                 if (property.GetValue(testUser) == null) continue;

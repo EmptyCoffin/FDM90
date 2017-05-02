@@ -58,13 +58,13 @@ namespace FDM90.Pages {
         protected global::System.Web.UI.HtmlControls.HtmlAnchor Facebook;
         
         /// <summary>
-        /// TwitterLinked control.
+        /// Twitter control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor TwitterLinked;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor Twitter;
         
         /// <summary>
         /// MainContent control.

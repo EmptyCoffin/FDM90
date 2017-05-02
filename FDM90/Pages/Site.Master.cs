@@ -15,7 +15,7 @@ namespace FDM90.Pages
             if (UserSingleton.Instance.CurrentUser != null)
             {
                 Page.Master.FindControl("Facebook").Visible = UserSingleton.Instance.CurrentUser.Facebook;
-                Page.Master.FindControl("TwitterLinked").Visible = false;
+                Page.Master.FindControl("Twitter").Visible = UserSingleton.Instance.CurrentUser.Twitter;
 
                 Label welcomeLabel = (Label)Page.Master.FindControl("welcomeMessage");
                 welcomeLabel.Visible = true;
@@ -27,7 +27,7 @@ namespace FDM90.Pages
             else
             {
                 Page.Master.FindControl("Facebook").Visible = false;
-                Page.Master.FindControl("TwitterLinked").Visible = false;
+                Page.Master.FindControl("Twitter").Visible = false;
 
                 Page.Master.FindControl("LogOut").Visible = false;
                 Page.Master.FindControl("LogIn").Visible = true;
