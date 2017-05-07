@@ -21,6 +21,7 @@ namespace FDM90.Pages.Content
                 goalArea.Visible = true;
                 string[] userGoals = null;
                 currentGoalDropDown.DataSource = userGoals?.Count() > 0 ? userGoals : new string[] { "No Current Goals" };
+                currentGoalDropDown.DataBind();
                 SetUpTableControls();
                 startDateButton.Click += new EventHandler(StartCalendar);
                 endDateButton.Click += new EventHandler(StartCalendar);
@@ -56,14 +57,14 @@ namespace FDM90.Pages.Content
             }
             else
             {
-                if (calendar.SelectedDate < DateTime.Parse(startDateButton.Text))
+                if (calendar.SelectedDate > DateTime.Parse(startDateButton.Text) && calendar.SelectedDate < DateTime.Parse(startDateButton.Text).AddYears(1))
                 {
                     endDateButton.Text = calendar.SelectedDate.ToShortDateString();
                 }
                 else
                 {
                     calendarErrorLabel.Visible = true;
-                    calendarErrorLabel.Text = "End date must be greater than start date";
+                    calendarErrorLabel.Text = "End date must be greater than start date and within a year of the start date";
                 }
             }
             calendarArea.Visible = !string.IsNullOrWhiteSpace(calendarErrorLabel.Text);
