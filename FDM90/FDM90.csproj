@@ -182,11 +182,11 @@
     <Content Include="Pages\Account\Login.aspx" />
     <Content Include="Pages\Account\Registration.aspx" />
     <Content Include="Pages\Content\Facebook.aspx" />
-    <Content Include="Pages\Content\Home.aspx" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Pages\Content\Home.aspx" />
     <Content Include="Pages\Content\Twitter.aspx" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
