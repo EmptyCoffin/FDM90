@@ -58,7 +58,7 @@
                 </asp:Table>
                 <br />
                 <br />
-                <asp:Button ID="newGoalButton" runat="server" Text="Set Goal" />
+                <asp:Button ID="newGoalButton" runat="server" Text="Set Goal" OnClick="newGoalButton_Click" />
             </div>
         </div>
         <br />

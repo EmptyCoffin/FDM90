@@ -12,6 +12,7 @@ namespace FDM90.Pages.Content
     public partial class Home : System.Web.UI.Page
     {
         private string[] metrics = { "Exposure", "Influence" };
+        private ILogic<>
         protected void Page_Load(object sender, EventArgs e)
         {
             if (UserSingleton.Instance.CurrentUser != null)
@@ -128,6 +129,11 @@ namespace FDM90.Pages.Content
                 var overallControl = (Label)newGoalGrid.FindControl("overall" + metric);
                 overallControl.Text = runningTotal.ToString();
             }
+        }
+
+        protected void newGoalButton_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
