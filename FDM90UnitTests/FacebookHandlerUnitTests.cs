@@ -355,7 +355,7 @@ namespace FDM90UnitTests
         {
             //arrange
             var postInsightData1 = new JsonObject();
-            postInsightData1.Add("name", "post_fan_reach");
+            postInsightData1.Add("name", "post_impressions_organic_unique");
             postInsightData1.Add("period", "Forever");
             postInsightData1.Add("title", "Test_This_is");
             postInsightData1.Add("description", "Test_Description");
@@ -385,12 +385,73 @@ namespace FDM90UnitTests
             Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Posts.Count);
             Assert.AreEqual("123456789", result.Posts[0].Id);
-            Assert.AreEqual("post_fan_reach", result.Posts[0].TotalReach.Name);
+            Assert.AreEqual("post_impressions_organic_unique", result.Posts[0].TotalReach.Name);
             Assert.AreEqual("Forever", result.Posts[0].TotalReach.Period);
             Assert.AreEqual(3, result.Posts[0].TotalReach.Values[0].Value);
             Assert.AreEqual("post_negative_feedback", result.Posts[0].NegativeFeedback.Name);
             Assert.AreEqual("Forever2", result.Posts[0].NegativeFeedback.Period);
             Assert.AreEqual(6, result.Posts[0].NegativeFeedback.Values[0].Value);
+        }
+
+        [TestMethod]
+        public void GetGoalInfo_GivenParameters_ReturnsTrueIfValuesAreCorrect()
+        {
+            //arrange
+            FacebookCredentials creds = new FacebookCredentials(Guid.NewGuid(), "TestPage");
+            _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<string>()))
+                .Returns(() =>
+                {
+                    creds.PermanentAccessToken = "PermanentAccessToken";
+                    return creds;
+                });
+            var mainData = new JsonObject();
+            mainData.Add("id", "1233456789");
+            mainData.Add("name", "Test Name");
+            mainData.Add("fan_count", 951);
+            mainData.Add("talking_about_count", 159);
+
+            var postData = new JsonObject();
+            postData.Add("id", "123456789_987564321");
+            postData.Add("message", "This Is A Test Message");
+            postData.Add("created_time", "05/06/2016");
+
+            var dataData = new JsonObject();
+            dataData.Add("data", new JsonArray { postData });
+
+            mainData.Add("posts", dataData);
+
+            _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=posts{id,message,created_time,picture,likes,comments}", It.IsAny<string>())).Returns(mainData);
+
+            var postInsightData1 = new JsonObject();
+            postInsightData1.Add("name", "post_impressions_organic_unique");
+            postInsightData1.Add("period", "Forever");
+            postInsightData1.Add("title", "Test_This_is");
+            postInsightData1.Add("description", "Test_Description");
+            postInsightData1.Add("id", "132456789");
+            var valueObject = new JsonObject();
+            valueObject.Add("value", 3);
+            postInsightData1.Add("values", new JsonArray { valueObject });
+
+            var postInsightData2 = new JsonObject();
+            postInsightData2.Add("name", "post_negative_feedback");
+            postInsightData2.Add("period", "Forever2");
+            postInsightData2.Add("title", "Test_This_is2");
+            postInsightData2.Add("description", "Test_Description2");
+            postInsightData2.Add("id", "123456789");
+            var valueObject1 = new JsonObject();
+            valueObject1.Add("value", 6);
+            postInsightData2.Add("values", new JsonArray { valueObject1 });
+
+            var insightData = new JsonObject();
+            insightData.Add("data", new JsonArray { postInsightData1, postInsightData2 });
+            _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/123456789_987564321/insights/post_impressions_organic_unique,post_negative_feedback", It.IsAny<string>())).Returns(insightData);
+
+            //act
+            var result = _facebookHandler.GetGoalInfo(Guid.NewGuid(), new DateTime(2016, 05, 05), new DateTime(2016, 08, 05));
+
+            //assert
+            Assert.IsNotNull(result);
         }
     }
 }

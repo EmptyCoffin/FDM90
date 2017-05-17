@@ -123,7 +123,7 @@ namespace FDM90UnitTests
             valueData.Add("value", 54);
 
             var metricData = new JsonObject();
-            metricData.Add("name", "post_fan_reach");
+            metricData.Add("name", "post_impressions_organic_unique");
             metricData.Add("period", "lifetime");
             metricData.Add("values", new JsonArray { valueData });
 
@@ -141,7 +141,7 @@ namespace FDM90UnitTests
 
             //assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.TotalReach.Name, "post_fan_reach");
+            Assert.AreEqual(result.TotalReach.Name, "post_impressions_organic_unique");
             Assert.AreEqual(result.TotalReach.Period, "lifetime");
             Assert.AreEqual(result.TotalReach.Values.Count, 1);
             Assert.AreEqual(result.TotalReach.Values[0].Value, 54);

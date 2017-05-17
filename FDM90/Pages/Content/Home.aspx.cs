@@ -1,5 +1,7 @@
-﻿using FDM90.Models;
+﻿using FDM90.Handlers;
+using FDM90.Models;
 using FDM90.Singleton;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,19 @@ namespace FDM90.Pages.Content
     public partial class Home : System.Web.UI.Page
     {
         private string[] metrics = { "Exposure", "Influence" };
-        private ILogic<>
+        private IGoalHandler _goalHandler;
+        private List<string> tableIds = new List<string>();
+
+        public Home() : this(new GoalHandler())
+        {
+
+        }
+
+        public Home(IGoalHandler goalHandler)
+        {
+            _goalHandler = goalHandler;
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (UserSingleton.Instance.CurrentUser != null)
@@ -96,6 +110,7 @@ namespace FDM90.Pages.Content
                     TableCell mediaCell = new TableCell();
                     TextBox textBox = new TextBox();
                     textBox.ID = media + metric;
+                    tableIds.Add(media + metric);
                     textBox.TextChanged += new EventHandler(textBox_Changed);
                     textBox.Text = "0";
                     mediaCell.Controls.Add(textBox);
@@ -116,7 +131,7 @@ namespace FDM90.Pages.Content
         {
             string metricSender = ((TextBox)sender).ID;
 
-            foreach(string metric in metrics.Where(w => metricSender.Contains(w)))
+            foreach (string metric in metrics.Where(w => metricSender.Contains(w)))
             {
                 int runningTotal = 0;
                 foreach (string media in UserSingleton.Instance.CurrentUser.GetType().GetProperties().Where(x =>
@@ -133,7 +148,23 @@ namespace FDM90.Pages.Content
 
         protected void newGoalButton_Click(object sender, EventArgs e)
         {
+            JObject targets = new JObject();
 
+            foreach (string media in UserSingleton.Instance.CurrentUser.GetType().GetProperties().Where(x =>
+                    x.PropertyType == typeof(bool) && bool.Parse(x.GetValue(UserSingleton.Instance.CurrentUser).ToString()))
+                       .Select(s => s.Name))
+            {
+                JObject mediaTarget = new JObject();
+
+                foreach (string metric in metrics)
+                {
+                    mediaTarget.Add(metric, ((TextBox)newGoalGrid.FindControl(media + metric)).Text);
+                }
+
+                targets.Add(media, mediaTarget);
+            }
+            _goalHandler.CreateGoal(UserSingleton.Instance.CurrentUser.UserId, 
+                                goalName.Text, startDateButton.Text, endDateButton.Text, targets.ToString());
         }
     }
 }

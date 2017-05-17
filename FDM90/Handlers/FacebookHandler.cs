@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
@@ -28,7 +29,7 @@ namespace FDM90.Handlers
             IFacebookClientWrapper facebookClientWrapper)
         {
             _facebookRepo = facebookRepo;
-            _facebookReadRepo = (IReadSpecific<FacebookCredentials>) facebookRepo;
+            _facebookReadRepo = (IReadSpecific<FacebookCredentials>)facebookRepo;
             _userHandler = userHandler;
             _facebookClientWrapper = facebookClientWrapper;
         }
@@ -123,6 +124,93 @@ namespace FDM90.Handlers
             currentData.Posts = updatedPosts;
 
             return currentData;
+        }
+
+        public string GetGoalInfo(Guid userId, DateTime startDate, DateTime endDate)
+        {
+            var userPermanentAcessToken = _facebookReadRepo.ReadSpecific(userId.ToString()).PermanentAccessToken;
+
+            DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
+            Calendar calendar = dateInfo.Calendar;
+            int currentWeekNumber = calendar.GetWeekOfYear(DateTime.Now, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
+
+            // check start date isn't in this week
+            int startDateWeekNumber = calendar.GetWeekOfYear(startDate, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
+
+            startDate = currentWeekNumber == startDateWeekNumber ? GetEndDateOfPreviousWeek(startDate) : startDate;
+
+            // exposure - fan reach group by week
+            JObject facebookTargets = new JObject();
+            FacebookData data = new FacebookData();
+            int limit = 25;
+            while (data.Posts.Last() == null || data.Posts.Last().CreatedTime > startDate)
+            {
+                dynamic facebookData =
+                    _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
+                        {
+                        FacebookHelper.Posts
+                        }), userPermanentAcessToken, new { limit = limit.ToString(), offset = data.Posts.Count });
+
+                data = JsonHelper.Parse(facebookData, new FacebookData());
+
+                limit += 25;
+            }
+
+            // influence
+            while (data.PageLikes.Values == null || data.PageLikes.Values.Last().EndTime > startDate)
+            {
+                dynamic facebookData =
+                    _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Insight, "", new string[]
+                        {
+                        FacebookHelper.PageLikes
+                        }), userPermanentAcessToken, new { limit = limit.ToString(), offset = data.Posts.Count });
+
+                data = JsonHelper.Parse(facebookData, new FacebookData());
+
+                limit += 25;
+            }
+
+            // check within date
+            foreach (FacebookPostData post in data.Posts.Where(post => post.CreatedTime > startDate && post.CreatedTime < endDate))
+            {
+                dynamic postData =
+                    _facebookClientWrapper.GetData(
+                        FacebookHelper.UrlBuilder(FacebookParameters.Insight, post.Id, new string[]
+                            {FacebookHelper.PostDetails}),
+                        userPermanentAcessToken);
+
+                FacebookPostData postDataParsed = JsonHelper.Parse(postData.data, post);
+
+                int weekNumber = calendar.GetWeekOfYear(postDataParsed.CreatedTime, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
+                JObject week = new JObject();
+                // add to object / update object
+                JToken weekExisting;
+                JToken existingValue;
+                if (facebookTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting) && week.TryGetValue("Exposure", out existingValue))
+                {
+                    week.GetValue("Exposure").Replace(int.Parse(existingValue.ToString()) + postDataParsed.TotalReach.Values[0].Value);
+                }
+                else
+                {
+                    week.Add("Exposure", postDataParsed.TotalReach.Values[0].Value);
+                }
+
+                if (facebookTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
+                {
+                    facebookTargets.GetValue("Week" + weekNumber).Replace(int.Parse(weekExisting.ToString()) + postDataParsed.TotalReach.Values[0].Value);
+                }
+                else
+                {
+                    facebookTargets.Add("Week" + weekNumber, week);
+                }
+            }
+
+            return facebookTargets.ToString();
+        }
+
+        private DateTime GetEndDateOfPreviousWeek(DateTime startDate)
+        {
+            return startDate.AddDays(-((int)startDate.DayOfWeek == 0 ? 7 : (int)startDate.DayOfWeek)); 
         }
     }
 }

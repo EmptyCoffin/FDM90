@@ -23,13 +23,13 @@ namespace FDM90.Repository
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
                         "[UserId], [GoalName], [WeekStart], [WeekEnd], [Targets], [Progress]" + SQLHelper.CloseBracket + SQLHelper.Values
-                        + SQLHelper.OpenBracket + "@UserID, @GoalName, @WeekStart, @WeekEnd, @Targets, @Progress" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
+                        + SQLHelper.OpenBracket + "@UserID, @GoalName, @StartDate, @EndDate, @Targets, @Progress" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", objectToCreate.UserId),
                             new SqlParameter("@GoalName", objectToCreate.GoalName),
-                            new SqlParameter("@WeekStart", objectToCreate.WeekStart),
-                            new SqlParameter("@WeekEnd", objectToCreate.WeekEnd),
+                            new SqlParameter("@StartDate", objectToCreate.StartDate),
+                            new SqlParameter("@EndDate", objectToCreate.EndDate),
                             new SqlParameter("@Targets", objectToCreate.Targets),
                             new SqlParameter("@Progress", objectToCreate.Progress)
                         };
@@ -64,8 +64,8 @@ namespace FDM90.Repository
             Goals goal = new Goals();
             goal.UserId = Guid.Parse(reader["UserId"].ToString());
             goal.GoalName = reader["GoalName"].ToString();
-            goal.WeekStart = int.Parse(reader["WeekStart"].ToString());
-            goal.WeekEnd = int.Parse(reader["WeekEnd"].ToString());
+            goal.StartDate = DateTime.Parse(reader["WeekStart"].ToString());
+            goal.EndDate = DateTime.Parse(reader["WeekEnd"].ToString());
             goal.Targets = reader["Targets"].ToString();
             goal.Progress = reader["Progress"].ToString();
             return goal;

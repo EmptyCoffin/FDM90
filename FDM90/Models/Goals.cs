@@ -9,8 +9,8 @@ namespace FDM90.Models
     {
         public Guid UserId { get; set; }
         public string GoalName { get; set; }
-        public int WeekStart { get; set; }
-        public int WeekEnd { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string Targets { get; set; }
         public string Progress { get; set; }
     }

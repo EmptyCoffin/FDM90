@@ -23,7 +23,8 @@ namespace FDM90.Models
         public int TalkingAboutCount { get; set; }
         [JsonProperty("posts")]
         public List<FacebookPostData> Posts { get; set; }
-
+        [JsonProperty("page_fans")]
+        public FacebookInsightsData PageLikes { get; set; }
     }
 
     public class FacebookPostData
@@ -34,7 +35,7 @@ namespace FDM90.Models
         public string Message { get; set; }
         [JsonProperty("created_time")]
         public DateTime CreatedTime { get; set; }
-        [JsonProperty("post_fan_reach")]
+        [JsonProperty("post_impressions_organic_unique")]
         public FacebookInsightsData TotalReach { get; set; }
         [JsonProperty("post_negative_feedback")]
         public FacebookInsightsData NegativeFeedback { get; set; }

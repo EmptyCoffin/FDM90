@@ -14,5 +14,6 @@ namespace FDM90.Handlers
         string SetAccessToken(string shortTermToken, Guid userId, string pageName);
         FacebookData GetInitialFacebookData(string accessToken);
         FacebookData GetPostDetails(FacebookData currentData);
+        string GetGoalInfo(Guid userId, DateTime startDate, DateTime endDate);
     }
 }

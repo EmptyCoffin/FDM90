@@ -8,6 +8,6 @@ namespace FDM90.Handlers
 {
     public interface IGoalHandler
     {
-        void CreateGoal(Guid userId, string name, DateTime weekStart, DateTime weekEnd, string targets)
+        void CreateGoal(Guid userId, string name, string weekStart, string weekEnd, string targets);
     }
 }
