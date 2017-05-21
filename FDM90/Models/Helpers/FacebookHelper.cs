@@ -10,7 +10,7 @@ namespace FDM90.Models.Helpers
     {
         public static string BaseUrl = "https://graph.facebook.com/v2.8/";
         public static string IdParameter = "me?";
-        public static string InsightIdParameter = "me/";
+        public static string InsightIdParameter = "me";
         public static string FieldParameter = "me?fields=";
         public static string InsightParameter = "/insights/";
         public static string AccountParameter = "/accounts?access_token=";
@@ -23,8 +23,12 @@ namespace FDM90.Models.Helpers
         public static string TalkingAboutCount = "talking_about_count";
         public static string PageFansCity = "page_fans_city";
         public static string Posts = "posts{id,message,created_time,picture,likes,comments}";
-        public static string PostDetails = "post_impressions_organic_unique,post_negative_feedback";
+        public static string PostReach = "post_impressions_organic_unique";
+        public static string PostNegativity = "post_negative_feedback";
         public static string PageLikes = "page_fans";
+        public static string PostEngagedUsers = "post_engaged_users";
+        public static string PageStories = "page_stories/day";
+
 
         public static string UrlBuilder(FacebookParameters parameter, string id, string[] fields)
         {

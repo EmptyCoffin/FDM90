@@ -31,7 +31,7 @@ namespace FDM90.Repository
                             new SqlParameter("@StartDate", objectToCreate.StartDate),
                             new SqlParameter("@EndDate", objectToCreate.EndDate),
                             new SqlParameter("@Targets", objectToCreate.Targets),
-                            new SqlParameter("@Progress", objectToCreate.Progress)
+                            new SqlParameter("@Progress", string.IsNullOrEmpty(objectToCreate.Progress) ? (object)DBNull.Value : objectToCreate.Progress)
                         };
 
             SendVoidCommand(sql, parameters);

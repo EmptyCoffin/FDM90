@@ -102,7 +102,7 @@ namespace FDM90UnitTests
             facebookData.Add("name", "Facebook Page");
             facebookData.Add("fan_count", 123);
 
-            FacebookData originalData = new FacebookData() { Id="123654789" };
+            FacebookData originalData = new FacebookData() { Id = "123654789" };
 
             //act
             FacebookData result = JsonHelper.Parse(facebookData, originalData);
@@ -113,7 +113,6 @@ namespace FDM90UnitTests
             Assert.AreEqual(result.Name, "Facebook Page");
             Assert.AreEqual(result.FanCount, 123);
         }
-
 
         [TestMethod]
         public void Parse_GivenDynamicPostData_PassIfDataIsCorrect()
@@ -145,6 +144,150 @@ namespace FDM90UnitTests
             Assert.AreEqual(result.TotalReach.Period, "lifetime");
             Assert.AreEqual(result.TotalReach.Values.Count, 1);
             Assert.AreEqual(result.TotalReach.Values[0].Value, 54);
+        }
+
+        [TestMethod]
+        public void Parse_GivenDynamicPostData_PassIfDataIsUpdatesCorrect()
+        {
+            //arrange
+            var valueData = new JsonObject();
+            valueData.Add("value", 54);
+
+            var metricData = new JsonObject();
+            metricData.Add("name", "post_impressions_organic_unique");
+            metricData.Add("period", "lifetime");
+            metricData.Add("values", new JsonArray { valueData });
+
+            var metricsData = new JsonObject();
+            metricsData.Add("data", new JsonArray { metricData });
+            dynamic data = metricsData;
+
+            FacebookData currentData = new FacebookData();
+            currentData.Posts = new List<FacebookPostData>()
+            {
+                new FacebookPostData()
+                {
+                    Id = "123456789987564321",
+                    TotalReach = new FacebookInsightsData()
+                    {
+                        Name = "post_impressions_organic_unique",
+                        Period = "lifetime",
+                        Values = new List<FacebookInsightValueData>()
+                        {
+                            new FacebookInsightValueData()
+                            {
+                                Value = 24,
+                                EndTime = new DateTime(2016, 5, 5)
+                            },
+                            new FacebookInsightValueData()
+                            {
+                                Value = 24,
+                                EndTime = new DateTime(2016, 5, 6)
+                            }
+                        }
+                    }
+                }
+            };
+
+            //act
+            for (int i = 0; i < data.data[0].values.Count; i++)
+            {
+                currentData.Posts[0].TotalReach.Values.Add(JsonHelper.Parse(data.data[i], new FacebookInsightValueData()));
+            }
+
+            //assert
+            Assert.IsNotNull(currentData.Posts[0]);
+            Assert.AreEqual(currentData.Posts[0].TotalReach.Name, "post_impressions_organic_unique");
+            Assert.AreEqual(currentData.Posts[0].TotalReach.Period, "lifetime");
+            Assert.AreEqual(currentData.Posts[0].TotalReach.Values.Count, 3);
+            Assert.AreEqual(currentData.Posts[0].TotalReach.Values[0].Value, 24);
+        }
+
+        [TestMethod]
+        public void Parse_GivenDynamicPageLike_PassIfDataIsCorrect()
+        {
+            //arrange
+            var valueData = new JsonObject();
+            valueData.Add("value", 54);
+            valueData.Add("end_date", "2017-05-16T07:00:00+0000");
+
+            var metricData = new JsonObject();
+            metricData.Add("name", "page_fans");
+            metricData.Add("period", "lifetime");
+            metricData.Add("values", new JsonArray { valueData, valueData });
+
+            var metricsData = new JsonObject();
+            metricsData.Add("data", new JsonArray { metricData });
+            dynamic data = metricsData;
+
+            //act
+            FacebookData result = JsonHelper.Parse(data.data, new FacebookData());
+
+            //assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result.PageLikes.Name, "page_fans");
+            Assert.AreEqual(result.PageLikes.Period, "lifetime");
+            Assert.AreEqual(result.PageLikes.Values.Count, 2);
+            Assert.AreEqual(result.PageLikes.Values[0].Value, 54);
+            Assert.AreEqual(result.PageLikes.Values[1].Value, 54);
+            //Assert.AreEqual(result.PageLikes.Values[0].EndTime, DateTime.Parse("2017-05-16T07:00:00+0000"));
+            //Assert.AreEqual(result.PageLikes.Values[1].EndTime, DateTime.Parse("2017-05-16T07:00:00+0000"));
+        }
+
+        [TestMethod]
+        public void Parse_GivenDynamicPageLike_PassIfDataIsUpdated()
+        {
+            //arrange
+            var valueData = new JsonObject();
+            valueData.Add("value", 54);
+            valueData.Add("end_date", "2017-05-16T07:00:00+0000");
+
+            var metricData = new JsonObject();
+            metricData.Add("name", "page_fans");
+            metricData.Add("period", "lifetime");
+            metricData.Add("values", new JsonArray { valueData, valueData });
+
+            var metricsData = new JsonObject();
+            metricsData.Add("data", new JsonArray { metricData });
+            dynamic data = metricsData;
+
+            FacebookData currentData = new FacebookData();
+            currentData.PageLikes = new FacebookInsightsData()
+            {
+                Name = "page_fans",
+                Period = "lifetime",
+                Values = new List<FacebookInsightValueData>()
+                {
+                    new FacebookInsightValueData()
+                    {
+                        Value = 24,
+                        EndTime = new DateTime(2016, 5, 5)
+                    },
+                    new FacebookInsightValueData()
+                    {
+                        Value = 24,
+                        EndTime = new DateTime(2016, 5, 6)
+                    }
+                }
+            };
+
+            //act
+            for (int i = 0; i < data.data[0].values.Count; i++)
+            {
+                currentData.PageLikes.Values.Add(JsonHelper.Parse(data.data[0].values[i], new FacebookInsightValueData()));
+            }
+
+            //assert
+            //Assert.IsNotNull(result);
+            //Assert.AreEqual(result.Name, "page_fans");
+            //Assert.AreEqual(result.Period, "lifetime");
+            Assert.AreEqual(currentData.PageLikes.Values.Count, 4);
+            //Assert.AreEqual(result.Values[0].Value, 24);
+            //Assert.AreEqual(result.Values[1].Value, 24);
+            //Assert.AreEqual(result.Values[2].Value, 54);
+            //Assert.AreEqual(result.Values[3].Value, 54);
+            //Assert.AreEqual(result.PageLikes.Values[0].EndTime, DateTime.Parse("2017-05-16T07:00:00+0000"));
+            //Assert.AreEqual(result.PageLikes.Values[1].EndTime, DateTime.Parse("2017-05-16T07:00:00+0000"));
         }
     }
 }

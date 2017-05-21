@@ -48,6 +48,7 @@ namespace FDM90.Pages.Content
         {
             DateTime setDate = new DateTime();
             calendar.SelectedDate = DateTime.TryParse(((Button)sender).Text, out setDate) ? setDate : calendar.TodaysDate;
+            calendar.VisibleDate = calendar.SelectedDate;
 
             ((Button)sender).Text = "Setting...";
 
@@ -125,6 +126,7 @@ namespace FDM90.Pages.Content
         protected void setupGoalButton_Click(object sender, EventArgs e)
         {
             newGoalArea.Visible = true;
+            setupGoalButton.Visible = false;
         }
 
         protected void textBox_Changed(object sender, EventArgs e)
@@ -165,6 +167,9 @@ namespace FDM90.Pages.Content
             }
             _goalHandler.CreateGoal(UserSingleton.Instance.CurrentUser.UserId, 
                                 goalName.Text, startDateButton.Text, endDateButton.Text, targets.ToString());
+
+            newGoalArea.Visible = false;
+            setupGoalButton.Visible = true;
         }
     }
 }

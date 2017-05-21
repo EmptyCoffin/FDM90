@@ -37,10 +37,8 @@ namespace FDM90.Handlers
                 Targets = targets
             };
 
-            //newGoal.StartDate = calendar.GetWeekOfYear(DateTime.Parse(weekStart), dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-            //newGoal.WeekEnd = calendar.GetWeekOfYear(DateTime.Parse(weekEnd), dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-
             _goalRepo.Create(newGoal);
+            UpdateGoals(userId);
         }
 
         public void UpdateGoals(Guid userId)
