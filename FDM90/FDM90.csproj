@@ -218,6 +218,7 @@
     <Compile Include="Handlers\GoalHandler.cs" />
     <Compile Include="Handlers\IFacebookHandler.cs" />
     <Compile Include="Handlers\IGoalHandler.cs" />
+    <Compile Include="Handlers\IMediaHandler.cs" />
     <Compile Include="Handlers\ITwitterHandler.cs" />
     <Compile Include="Handlers\IUserHandler.cs" />
     <Compile Include="Handlers\TwitterHandler.cs" />

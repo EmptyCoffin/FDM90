@@ -20,6 +20,14 @@ namespace FDM90.Handlers
         private IUserHandler _userHandler;
         private IFacebookClientWrapper _facebookClientWrapper;
 
+        public string MediaName
+        {
+            get
+            {
+                return "Facebook";
+            }
+        }
+
         public FacebookHandler() : this(new FacebookRepository(), new UserHandler(), new FacebookClientWrapper())
         {
 
@@ -126,7 +134,7 @@ namespace FDM90.Handlers
             return currentData;
         }
 
-        public string GetGoalInfo(Guid userId, DateTime startDate, DateTime endDate)
+        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime startDate, DateTime endDate)
         {
             var userPermanentAcessToken = _facebookReadRepo.ReadSpecific(userId.ToString()).PermanentAccessToken;
 
@@ -321,7 +329,7 @@ namespace FDM90.Handlers
                 }
             }
 
-            return facebookTargets.ToString();
+            return facebookTargets.Values();
         }
 
         private DateTime GetEndDateOfPreviousWeek(DateTime startDate)

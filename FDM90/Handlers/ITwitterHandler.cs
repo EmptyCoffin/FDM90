@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FDM90.Handlers
 {
-    public interface ITwitterHandler
+    public interface ITwitterHandler : IMediaHandler
     {
         string GetRedirectUrl();
         void SaveUserDetails(string verifyString, string userId);

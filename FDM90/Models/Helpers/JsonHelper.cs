@@ -13,19 +13,6 @@ namespace FDM90.Models.Helpers
     {
         public static T Parse<T>(dynamic dynamicData, T facebookData)
         {
-            //if(facebookData.GetType().Namespace.Contains("Collection") && facebookData.GetType().Namespace.Contains("System"))
-            //{
-            //    IList listInstance = (IList)Activator.CreateInstance(facebookData.GetType());
-
-            //    foreach (var item in (IList)facebookData)
-            //    {
-            //        listInstance.Add(Parse(dynamicData, item));
-            //    }
-
-            //    return (T)listInstance;
-            //}
-            //else
-            //{
             foreach (PropertyInfo property in facebookData.GetType().GetProperties())
             {
                 JsonPropertyAttribute jsonValue = (JsonPropertyAttribute)property.GetCustomAttribute(typeof(JsonPropertyAttribute));
@@ -54,7 +41,6 @@ namespace FDM90.Models.Helpers
                         property.SetValue(facebookData, ParseList(dynamicData, property, jsonValue));
                     }
                 }
-                //}
             }
 
             return facebookData;

@@ -1,6 +1,7 @@
 ﻿using FDM90.Models;
 using FDM90.Repository;
 using FDM90.Singleton;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,14 @@ namespace FDM90.Handlers
             _twitterRepo = twitterRepo;
             _twitterReadRepo = (IReadSpecific<Models.TwitterCredentials>)twitterRepo;
             _userHandler = userHandler;
+        }
+
+        public string MediaName
+        {
+            get
+            {
+                return "Twitter";
+            }
         }
 
         public string GetRedirectUrl()
@@ -68,6 +77,27 @@ namespace FDM90.Handlers
             var tweets = Timeline.GetHomeTimeline(homeTimelineParameters);
 
             return "Test";
+        }
+
+        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime startDate, DateTime endDate)
+        {
+            JObject twitterTargets = new JObject();
+
+            // get user twitter
+            var twitterDetails = _twitterReadRepo.ReadSpecific(userId.ToString());
+
+            Auth.SetUserCredentials(ConfigSingleton.TwitterConsumerKey, ConfigSingleton.TwitterConsumerSecret, twitterDetails.AccessToken, twitterDetails.AccessTokenSecret);
+            var user = Tweetinvi.User.GetAuthenticatedUser();
+
+            // get exposure - content impressions https://ads-api.twitter.com/1/insights/accounts/:account_id/available_audiences
+            // TODO check response for smaller followers then create an object for greater values
+            var userReach1 = TwitterAccessor.GetQueryableJsonObjectFromGETQuery("https://ads-api.twitter.com/1/insights/accounts/" + user.Id + "/available_audiences");
+
+            // get influence - followers, followers of those retweeted/favorited
+
+            // get engagement - replies/mentions, direct messages, retweets, hashtags mentions
+
+            return twitterTargets.Values();
         }
     }
 }

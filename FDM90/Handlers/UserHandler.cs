@@ -70,26 +70,34 @@ namespace FDM90.Handlers
 
         public User UpdateUserMediaActivation(User user, string socialMedia)
         {
-            bool updated = false;
+            User currentUser = new User();
             try
             {
-                foreach (PropertyInfo property in user.GetType().GetProperties())
+                currentUser = _userSpecific.ReadSpecific(user.UserId.ToString());
+                bool updated = false;
+
+                foreach (PropertyInfo property in currentUser.GetType().GetProperties())
                 {
                     if (property.Name.Contains(socialMedia))
                     {
-                        property.SetValue(user, true);
+                        property.SetValue(currentUser, true);
                         updated = true;
                     }
                 }
 
                 if(updated)
-                    _userRepo.Update(user);
+                    _userRepo.Update(currentUser);
             }
             catch(Exception ex)
             {
 
             }
-            return user;
+            return currentUser;
+        }
+
+        public User GetUser(string userId)
+        {
+            return _userSpecific.ReadSpecific(userId);
         }
     }
 }
