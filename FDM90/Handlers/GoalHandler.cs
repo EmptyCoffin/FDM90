@@ -60,7 +60,7 @@ namespace FDM90.Handlers
             int currentWeekNumber = calendar.GetWeekOfYear(DateTime.Now, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
 
             JObject newProgress = new JObject();
-            foreach (Goals goal in existingGoals.Where(x => x.StartDate <= newGoal.StartDate))
+            foreach (Goals goal in existingGoals.Where(x => x.StartDate <= newGoal.StartDate && !string.IsNullOrEmpty(x.Progress)))
             {
                 // get weeks for new goal
                 JObject progress = JObject.Parse(goal.Progress);

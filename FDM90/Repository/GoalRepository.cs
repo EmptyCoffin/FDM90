@@ -73,7 +73,18 @@ namespace FDM90.Repository
 
         public void Update(Goals objectToUpdate)
         {
-            throw new NotImplementedException();
+            Goals currentDetails = ReadMultipleSpecific(objectToUpdate.UserId.ToString()).Where(x => x.GoalName == objectToUpdate.GoalName).First();
+            List<SqlParameter> parameters = new List<SqlParameter>();
+
+            string sql = SQLHelper.Update + _table + SQLHelper.Set +
+                SetUpdateValues(currentDetails, objectToUpdate, out parameters)
+                + SQLHelper.Where + "[UserId] = @UserID and [GoalName] = @GoalName" + SQLHelper.EndingSemiColon;
+
+            parameters.AddRange(new SqlParameter[]{
+                            new SqlParameter("@UserID", objectToUpdate.UserId),
+                            new SqlParameter("@GoalName", objectToUpdate.GoalName)
+                        });
+            SendVoidCommand(sql, parameters.ToArray());
         }
     }
 }
