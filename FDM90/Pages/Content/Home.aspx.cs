@@ -38,9 +38,6 @@ namespace FDM90.Pages.Content
                 currentGoalDropDown.DataSource = userGoals?.Count() > 0 ? userGoals : new string[] { "No Current Goals" };
                 currentGoalDropDown.DataBind();
                 SetUpTableControls();
-                startDateButton.Click += new EventHandler(StartCalendar);
-                endDateButton.Click += new EventHandler(StartCalendar);
-                setCalendarDate.Click += new EventHandler(SetDate);
             }
         }
 
@@ -114,6 +111,7 @@ namespace FDM90.Pages.Content
                     tableIds.Add(media + metric);
                     textBox.TextChanged += new EventHandler(textBox_Changed);
                     textBox.Text = "0";
+                    textBox.AutoPostBack = true;
                     mediaCell.Controls.Add(textBox);
 
                     tableRow.Cells.Add(mediaCell);

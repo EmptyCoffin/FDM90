@@ -20,14 +20,14 @@
                 Goal Name:
                 <asp:TextBox runat="server" ID="goalName"></asp:TextBox>
                 Goal Start Date:
-                <asp:Button runat="server" ID="startDateButton" Text="Not Set"></asp:Button>
+                <asp:Button runat="server" ID="startDateButton" OnClick="StartCalendar" Text="Not Set"></asp:Button>
                 Goal End Date:
-                <asp:Button runat="server" ID="endDateButton" Text="Not Set"></asp:Button>
+                <asp:Button runat="server" ID="endDateButton" OnClick="StartCalendar" Text="Not Set"></asp:Button>
                 <div runat="server" id="calendarArea" visible="false">
                     <br />
                     <asp:Calendar runat="server" ID="calendar"></asp:Calendar>
                     <br />
-                    <asp:Button runat="server" ID="setCalendarDate" Text="Set Date"></asp:Button>
+                    <asp:Button runat="server" ID="setCalendarDate" OnClick="SetDate" Text="Set Date"></asp:Button>
                     <asp:Label runat="server" ID="calendarErrorLabel" Visible="false"></asp:Label>
                 </div>
                 <br />
