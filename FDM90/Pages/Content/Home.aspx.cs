@@ -144,6 +144,25 @@ namespace FDM90.Pages.Content
                 var overallControl = (Label)newGoalGrid.FindControl("overall" + metric);
                 overallControl.Text = runningTotal.ToString();
             }
+
+            for (int i = 2; i < newGoalGrid.Controls.Count; i++)
+            {
+                for (int j = 1; j < newGoalGrid.Controls[i].Controls.Count; j++)
+                {
+                    if (newGoalGrid.Controls[i].Controls[j].Controls[0].ID == metricSender)
+                    {
+                        if (newGoalGrid.Controls[i].Controls.Count != j + 1)
+                        {
+                            newGoalGrid.Controls[i].Controls[j + 1].Controls[0].Focus();
+                        }
+                        else
+                        {
+                            if (newGoalGrid.Controls.Count != i + 1)
+                                newGoalGrid.Controls[i + 1].Controls[1].Controls[0].Focus();
+                        }
+                    }
+                }
+            }
         }
 
         protected void newGoalButton_Click(object sender, EventArgs e)
