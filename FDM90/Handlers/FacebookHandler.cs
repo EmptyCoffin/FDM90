@@ -19,6 +19,8 @@ namespace FDM90.Handlers
         private IRepository<FacebookCredentials> _facebookRepo;
         private IUserHandler _userHandler;
         private IFacebookClientWrapper _facebookClientWrapper;
+        static DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
+        Calendar calendar = dateInfo.Calendar;
 
         public string MediaName
         {
@@ -138,8 +140,6 @@ namespace FDM90.Handlers
         {
             var userPermanentAcessToken = _facebookReadRepo.ReadSpecific(userId.ToString()).PermanentAccessToken;
 
-            DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
-            Calendar calendar = dateInfo.Calendar;
             int currentWeekNumber = calendar.GetWeekOfYear(DateTime.Now, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
 
             // check start date isn't in this week

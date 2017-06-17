@@ -22,15 +22,16 @@ namespace FDM90.Repository
         public void Create(TwitterCredentials objectToCreate)
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
-                        "[UserId], [AccessToken], [AccessTokenSecret]"
+                        "[UserId], [AccessToken], [AccessTokenSecret], [ScreenName]"
                         + SQLHelper.CloseBracket + SQLHelper.Values + SQLHelper.OpenBracket
-                        + "@UserID, @AccessToken, @AccessTokenSecret"
+                        + "@UserID, @AccessToken, @AccessTokenSecret, @ScreenName"
                         + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", objectToCreate.UserId),
                             new SqlParameter("@AccessToken", objectToCreate.AccessToken),
-                            new SqlParameter("@AccessTokenSecret", objectToCreate.AccessTokenSecret)
+                            new SqlParameter("@AccessTokenSecret", objectToCreate.AccessTokenSecret),
+                            new SqlParameter("@ScreenName", objectToCreate.ScreenName)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -64,6 +65,7 @@ namespace FDM90.Repository
             creds.UserId = Guid.Parse(reader["UserId"].ToString());
             creds.AccessToken = reader["AccessToken"].ToString();
             creds.AccessTokenSecret = reader["AccessTokenSecret"]?.ToString();
+            creds.ScreenName = reader["ScreenName"]?.ToString();
             return creds;
         }
 

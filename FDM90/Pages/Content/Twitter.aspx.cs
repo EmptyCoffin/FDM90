@@ -1,5 +1,6 @@
 ﻿using FDM90.Handlers;
 using FDM90.Singleton;
+using LinqToTwitter;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +17,8 @@ namespace FDM90.Pages.Content
     public partial class Twitter : System.Web.UI.Page
     {
         ITwitterHandler _twitterHandler;
+        private AspNetAuthorizer _auth;
+
         private static readonly HttpClient client = new HttpClient();
 
         public Twitter():this(new TwitterHandler())
@@ -28,21 +31,34 @@ namespace FDM90.Pages.Content
             _twitterHandler = twitterHandler;
         }
 
-        protected void Page_Load(object sender, EventArgs e)
+        protected async void Page_Load(object sender, EventArgs e)
         {
-            if(!Page.IsPostBack)
+            _auth = new AspNetAuthorizer
+            {
+                CredentialStore = new SessionStateCredentialStore
+                {
+                    ConsumerKey = ConfigSingleton.TwitterConsumerKey,
+                    ConsumerSecret = ConfigSingleton.TwitterConsumerSecret
+                },
+                GoToTwitterAuthorization =
+                    twitterUrl => Response.Redirect(twitterUrl, false)
+            };
+
+            if (!Page.IsPostBack)
             {
                 if (!UserSingleton.Instance.CurrentUser.Twitter)
                 {
-                    if (!string.IsNullOrWhiteSpace(Request.QueryString["oauth_verifier"]))
+                    if (!string.IsNullOrWhiteSpace(Request.QueryString["oauth_token"]))
                     {
-                        _twitterHandler.SaveUserDetails(Request.QueryString["oauth_verifier"], UserSingleton.Instance.CurrentUser.UserId.ToString());
+                        await _auth.CompleteAuthorizeAsync(Request.Url);
+                        var credentials = _auth.CredentialStore;
+                        _twitterHandler.SaveUserDetails(credentials.OAuthToken, credentials.OAuthTokenSecret, credentials.ScreenName, UserSingleton.Instance.CurrentUser.UserId.ToString());
                         UserSingleton.Instance.CurrentUser.Twitter = true;
                         _twitterHandler.GetTweets(UserSingleton.Instance.CurrentUser.UserId.ToString());
                     }
                     else
                     {
-                        Response.Redirect(_twitterHandler.GetRedirectUrl());
+                        await _auth.BeginAuthorizeAsync(Request.Url);
                     }
                 }
                 else

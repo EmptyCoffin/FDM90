@@ -8,8 +8,7 @@ namespace FDM90.Handlers
 {
     public interface ITwitterHandler : IMediaHandler
     {
-        string GetRedirectUrl();
-        void SaveUserDetails(string verifyString, string userId);
+        void SaveUserDetails(string oauthToken, string oauthTokenSecret,string screenName, string userId);
         string GetTweets(string userId);
     }
 }
