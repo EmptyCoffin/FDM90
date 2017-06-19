@@ -140,12 +140,7 @@ namespace FDM90.Handlers
         {
             var userPermanentAcessToken = _facebookReadRepo.ReadSpecific(userId.ToString()).PermanentAccessToken;
 
-            int currentWeekNumber = calendar.GetWeekOfYear(DateTime.Now, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-
-            // check start date isn't in this week
-            int startDateWeekNumber = calendar.GetWeekOfYear(startDate, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-
-            startDate = currentWeekNumber == startDateWeekNumber ? GetEndDateOfPreviousWeek(startDate) : startDate;
+            startDate = startDate.AddDays(-7).Date.Equals(DateTime.Now.Date) ? startDate : startDate.AddDays(-7);
 
             // exposure - fan reach group by week
             JObject facebookTargets = new JObject();
@@ -332,9 +327,9 @@ namespace FDM90.Handlers
             return facebookTargets.Values();
         }
 
-        private DateTime GetEndDateOfPreviousWeek(DateTime startDate)
-        {
-            return startDate.AddDays(-((int)startDate.DayOfWeek == 0 ? 7 : (int)startDate.DayOfWeek)); 
-        }
+        //private DateTime GetEndDateOfPreviousWeek(DateTime startDate)
+        //{
+        //    return startDate.AddDays(-((int)startDate.DayOfWeek == 0 ? 7 : (int)startDate.DayOfWeek)); 
+        //}
     }
 }
