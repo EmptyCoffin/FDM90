@@ -201,13 +201,13 @@ namespace FDM90.Handlers
                                             .TryGetValue(existingWeek.Name, out existingMetric))
                                 {
                                     ((JObject)((JObject)existingProgress[newMedia.Path]).GetValue(newMedia.Properties().First().Name))
-                                                .GetValue(existingWeek.Name).Replace(int.Parse(existingValue.Values()[0].ToString())
-                                                        + int.Parse(newMedia[existingWeek.Name].ToString()));
+                                                .GetValue(existingWeek.Name).Replace(int.Parse(existingMetric.ToString())
+                                                        + int.Parse(newMedia[newMedia.Properties().First().Name][existingWeek.Name].ToString()));
                                 }
                                 else
                                 {
                                     ((JObject)((JObject)existingProgress[newMedia.Path]).GetValue(newMedia.Properties().First().Name))
-                                                .Add(existingWeek.Name, int.Parse(newMedia[existingWeek.Name].ToString()));
+                                                .Add(existingWeek.Name, int.Parse(newMedia[newMedia.Properties().First().Name][existingWeek.Name].ToString()));
                                 }
                             }
                         }

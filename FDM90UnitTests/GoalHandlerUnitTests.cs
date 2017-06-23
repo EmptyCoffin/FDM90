@@ -335,7 +335,7 @@ namespace FDM90UnitTests
         }
 
         [TestMethod]
-        public void DailyUpdate_Given_test()
+        public void DailyUpdate_GivenExistingProgressDoesntHaveWeekData_ShouldAddWeekData()
         {
             // arrange
             var progressData = new JObject();
@@ -368,5 +368,41 @@ namespace FDM90UnitTests
             _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goals>()), Times.Exactly(1));
             Assert.IsNotNull(passedGoal);
         }
+
+        [TestMethod]
+        public void DailyUpdate_GivenExistingProgressDoesHaveWeekData_ShouldAccumulateWeekData()
+        {
+            // arrange
+            var progressData = new JObject();
+            var facebookData = new JObject();
+            var twitterData = new JObject();
+            var metricData = new JObject();
+            metricData.Add("Exposure", 25);
+            metricData.Add("Influence", 24);
+            metricData.Add("Engagement", 23);
+
+            facebookData.Add("Week" + (currentWeekNumber - 1), metricData);
+            twitterData.Add("Week" + (currentWeekNumber - 1), metricData);
+            facebookData.Add("Week" + (currentWeekNumber), metricData);
+            twitterData.Add("Week" + (currentWeekNumber), metricData);
+
+            progressData.Add("Facebook", facebookData);
+            progressData.Add("Twitter", twitterData);
+
+            _facebookReturner.Add("Week" + (currentWeekNumber), metricData);
+            _twitterReturner.Add("Week" + (currentWeekNumber), metricData);
+
+            _returningUser.Facebook = true;
+            _returningUser.Twitter = true;
+            _returningUser.UserId = Guid.NewGuid();
+
+            _returningGoals.Add(new Goals() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date, Progress = progressData.ToString() });
+
+            // act
+            _goalHandler.DailyUpdate().Wait();
+            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goals>()), Times.Exactly(1));
+            Assert.IsNotNull(passedGoal);
+        }
+
     }
 }
