@@ -9,5 +9,7 @@ namespace FDM90.Handlers
     public interface IGoalHandler
     {
         void CreateGoal(Guid userId, string name, string weekStart, string weekEnd, string targets);
+
+        Task<bool> DailyUpdate();
     }
 }

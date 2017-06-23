@@ -10,6 +10,6 @@ namespace FDM90.Handlers
     public interface IMediaHandler
     {
         string MediaName { get; }
-        IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime startDate, DateTime endDate);
+        IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates);
     }
 }

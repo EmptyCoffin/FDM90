@@ -41,7 +41,7 @@ namespace FDM90.Handlers
             }
         }
 
-        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime startDate, DateTime endDate)
+        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates)
         {
             JObject twitterTargets = new JObject();
             DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
@@ -52,14 +52,14 @@ namespace FDM90.Handlers
 
             Task<List<Status>>[] tasks = new Task<List<Status>>[1];
 
-            tasks[0] = Task.Factory.StartNew(() => GetTwitterData(twitterDetails, startDate, endDate).Result);
+            tasks[0] = Task.Factory.StartNew(() => GetTwitterData(twitterDetails, dates).Result);
 
             return Task.Factory.ContinueWhenAll(tasks, data =>
             {
                 var tweets = data[0].Result;
                 int screenNameFollowerCount = tweets.Where(x => x.ScreenName == twitterDetails.ScreenName).First().User.FollowersCount;
                 // get exposure - followers and followers of those retweeted/favorited
-                foreach (var tweetDate in tweets.Where(w => w.CreatedAt.Date.AddDays(7) < DateTime.Now.Date && !w.Retweeted && !w.Favorited).GroupBy(x => x.CreatedAt.Date))
+                foreach (var tweetDate in tweets.Where(w => !w.Retweeted && !w.Favorited).GroupBy(x => x.CreatedAt.Date))
                 {
                     var numberOfMessages = tweetDate.Count();
                     var numberOfFollowers = screenNameFollowerCount;
@@ -94,7 +94,7 @@ namespace FDM90.Handlers
                 }
 
                 // get influence - followers of those retweeted/favorited
-                foreach (var tweetDate in tweets.Where(w => w.CreatedAt.Date.AddDays(7) < DateTime.Now.Date && !w.Retweeted && !w.Favorited && w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
+                foreach (var tweetDate in tweets.Where(w => !w.Retweeted && !w.Favorited && w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
                 {
                     var numberOfMessages = tweetDate.Count();
                     var numberOfFollowers = 0;
@@ -201,7 +201,7 @@ namespace FDM90.Handlers
             return followerCount;
         }
 
-        private async Task<List<Status>> GetTwitterData(TwitterCredentials twitterDetails, DateTime startDate, DateTime endDate)
+        private async Task<List<Status>> GetTwitterData(TwitterCredentials twitterDetails, DateTime[] dates)
         {
             var auth = new SingleUserAuthorizer()
             {
@@ -224,9 +224,7 @@ namespace FDM90.Handlers
                                 select tweet)
                             .ToListAsync();
 
-            startDate = startDate.AddDays(-7).Date.Equals(DateTime.Now.Date) ? startDate : startDate.AddDays(-7);
-
-            return tweets.Where(x => x.CreatedAt < endDate && x.CreatedAt > startDate).ToList();
+            return tweets.Where(x => dates.Contains(x.CreatedAt.Date)).ToList();
         }
 
         public string GetTweets(string userId)

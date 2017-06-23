@@ -136,11 +136,9 @@ namespace FDM90.Handlers
             return currentData;
         }
 
-        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime startDate, DateTime endDate)
+        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates)
         {
             var userPermanentAcessToken = _facebookReadRepo.ReadSpecific(userId.ToString()).PermanentAccessToken;
-
-            startDate = startDate.AddDays(-7).Date.Equals(DateTime.Now.Date) ? startDate : startDate.AddDays(-7);
 
             // exposure - fan reach group by week
             JObject facebookTargets = new JObject();
@@ -167,7 +165,7 @@ namespace FDM90.Handlers
                     var dateList = data.Posts.Select(s => s.CreatedTime).ToList();
                     dateList.Sort((a, b) => b.CompareTo(a));
 
-                    if (dateList.Last() < startDate)
+                    if (dateList.Last() < dates.First())
                         break;
                 }
 
@@ -193,7 +191,7 @@ namespace FDM90.Handlers
                 var dateList = data.PageLikes.Values.Select(s => s.EndTime).ToList();
                 dateList.Sort((a, b) => b.CompareTo(a));
 
-                if (dateList.Last() < startDate)
+                if (dateList.Last() < dates.First())
                     break;
             }
 
@@ -218,12 +216,12 @@ namespace FDM90.Handlers
                 var dateList = data.PageStories.Values.Select(s => s.EndTime).ToList();
                 dateList.Sort((a, b) => b.CompareTo(a));
 
-                if (dateList.Last() < startDate)
+                if (dateList.Last() < dates.First())
                     break;
             }
 
             // check within date
-            foreach (FacebookPostData post in data.Posts.Where(post => post.CreatedTime > startDate && post.CreatedTime < endDate))
+            foreach (FacebookPostData post in data.Posts.Where(post => dates.Contains(post.CreatedTime.Date)))
             {
                 dynamic postData =
                     _facebookClientWrapper.GetData(
@@ -278,7 +276,7 @@ namespace FDM90.Handlers
                 }
             }
 
-            foreach (FacebookInsightValueData insightValue in data.PageLikes.Values.Where(like => like.EndTime > startDate && like.EndTime < endDate))
+            foreach (FacebookInsightValueData insightValue in data.PageLikes.Values.Where(like => dates.Contains(like.EndTime.Date)))
             {
                 int weekNumber = calendar.GetWeekOfYear(insightValue.EndTime, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
                 JObject week = new JObject();
@@ -301,7 +299,7 @@ namespace FDM90.Handlers
                 }
             }
 
-            foreach (FacebookInsightValueData insightValue in data.PageStories.Values.Where(story => story.EndTime > startDate && story.EndTime < endDate))
+            foreach (FacebookInsightValueData insightValue in data.PageStories.Values.Where(story => dates.Contains(story.EndTime.Date)))
             {
                 int weekNumber = calendar.GetWeekOfYear(insightValue.EndTime, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
                 JObject week = new JObject();

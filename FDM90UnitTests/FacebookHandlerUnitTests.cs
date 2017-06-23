@@ -526,7 +526,7 @@ namespace FDM90UnitTests
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me/insights/page_stories/day", It.IsAny<string>())).Returns(storiesData);
 
             //act
-            var result = _facebookHandler.GetGoalInfo(Guid.NewGuid(), new DateTime(2016, 04, 30), new DateTime(2016, 08, 05));
+            var result = _facebookHandler.GetGoalInfo(Guid.NewGuid(), GetDates(new DateTime(2016, 04, 30), new DateTime(2016, 08, 05)));
 
             //assert
             Assert.IsNotNull(result);
@@ -670,7 +670,7 @@ namespace FDM90UnitTests
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me/insights/page_stories/day", It.IsAny<string>())).Returns(storiesData);
 
             //act
-            var result = _facebookHandler.GetGoalInfo(Guid.NewGuid(), new DateTime(2016, 04, 30), new DateTime(2016, 08, 05));
+            var result = _facebookHandler.GetGoalInfo(Guid.NewGuid(), GetDates(new DateTime(2016, 04, 30), new DateTime(2016, 08, 05)));
 
             //assert
             Assert.IsNotNull(result);
@@ -684,6 +684,18 @@ namespace FDM90UnitTests
                     Assert.AreEqual(properties.First, 3);
                 }
             }
+        }
+
+        private DateTime[] GetDates(DateTime startDate, DateTime endDate)
+        {
+            List<DateTime> dateList = new List<DateTime>();
+
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                if (date <= DateTime.Now.AddDays(-7))
+                    dateList.Add(date);
+            }
+            return dateList.ToArray();
         }
     }
 }
