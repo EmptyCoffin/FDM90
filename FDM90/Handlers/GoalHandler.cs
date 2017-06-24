@@ -18,6 +18,7 @@ namespace FDM90.Handlers
         private ITwitterHandler _twitterHandler;
         private IUserHandler _userHandler;
         private List<IMediaHandler> _mediaHandlers = new List<IMediaHandler>();
+        public Task updateGoalsTask;
 
         public GoalHandler() : this(new GoalRepository(), new FacebookHandler(), new TwitterHandler(), new UserHandler())
         {
@@ -45,7 +46,7 @@ namespace FDM90.Handlers
             };
 
             _goalRepo.Create(newGoal);
-            UpdateGoals(userId, newGoal);
+            updateGoalsTask = UpdateGoals(userId, newGoal);
         }
 
         public Task UpdateGoals(Guid userId, Goals newGoal)
@@ -83,9 +84,9 @@ namespace FDM90.Handlers
             List<Task> tasks = new List<Task>();
 
             // here when first week only less than current week, but not if we have info
-            if (firstWeekNumber < currentWeekNumber && newProgress.First?.Children().Count() != currentWeekNumber - firstWeekNumber)
+            if (firstWeekNumber < currentWeekNumber && newProgress.First?.Children().Values().Count() != currentWeekNumber - firstWeekNumber)
             {
-                DateTime[] dates = GetDates(newGoal.StartDate.AddDays(newProgress.First != null ? newProgress.First.Children().Count() * 7 : 0), newGoal.EndDate);
+                DateTime[] dates = GetDates(newGoal.StartDate.AddDays(newProgress.First != null ? newProgress.First.Children().Values().Count() * 7 : 0), newGoal.EndDate);
 
                 foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(x =>
                                              bool.Parse(user.GetType().GetProperties().Where(y => y.Name == x.MediaName).First().GetValue(user).ToString())))
@@ -126,7 +127,7 @@ namespace FDM90.Handlers
 
             for (var date = startDate; date <= endDate; date = date.AddDays(1))
             {
-                if(date < DateTime.Now.AddDays(-7))
+                if(date < DateTime.Now.AddDays(-7).Date)
                     dateList.Add(date);
             }
             return dateList.ToArray();
@@ -179,7 +180,7 @@ namespace FDM90.Handlers
             {
                 var newProgress = taskReturned[0].Result;
 
-                var goalsToUpdate = goals.Where(x => x.StartDate <= DateTime.Now.AddDays(-7) && x.EndDate >= DateTime.Now.AddDays(-7));
+                var goalsToUpdate = goals.Where(x => x.StartDate.AddDays(7) <= DateTime.Now.Date && x.EndDate.AddDays(7) >= DateTime.Now.Date);
 
                 foreach (var goal in goalsToUpdate)
                 {
@@ -194,20 +195,20 @@ namespace FDM90.Handlers
                         JToken existingValue;
                         if ((((JObject)existingProgress[newMedia.Path]).TryGetValue(newMedia.Properties().First().Name, out existingValue)))
                         {
-                            foreach (JProperty existingWeek in ((JObject)existingValue).Properties())
+                            foreach (JProperty newProperties in ((JObject)newMedia.Properties().First().Value).Properties())
                             {
                                 JToken existingMetric;
                                 if (((JObject)((JObject)existingProgress[newMedia.Path]).GetValue(newMedia.Properties().First().Name))
-                                            .TryGetValue(existingWeek.Name, out existingMetric))
+                                            .TryGetValue(newProperties.Name, out existingMetric))
                                 {
                                     ((JObject)((JObject)existingProgress[newMedia.Path]).GetValue(newMedia.Properties().First().Name))
-                                                .GetValue(existingWeek.Name).Replace(int.Parse(existingMetric.ToString())
-                                                        + int.Parse(newMedia[newMedia.Properties().First().Name][existingWeek.Name].ToString()));
+                                                .GetValue(newProperties.Name).Replace(int.Parse(existingMetric.ToString())
+                                                        + int.Parse(newMedia[newMedia.Properties().First().Name][newProperties.Name].ToString()));
                                 }
                                 else
                                 {
                                     ((JObject)((JObject)existingProgress[newMedia.Path]).GetValue(newMedia.Properties().First().Name))
-                                                .Add(existingWeek.Name, int.Parse(newMedia[newMedia.Properties().First().Name][existingWeek.Name].ToString()));
+                                                .Add(newProperties.Name, int.Parse(newMedia[newMedia.Properties().First().Name][newProperties.Name].ToString()));
                                 }
                             }
                         }
