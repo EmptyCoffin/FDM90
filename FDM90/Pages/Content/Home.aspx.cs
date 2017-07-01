@@ -19,6 +19,7 @@ namespace FDM90.Pages.Content
         private IGoalHandler _goalHandler;
         private List<string> tableIds = new List<string>();
         private List<Goals> _userGoals;
+        private static DataTable goalDataTable;
 
         public Home() : this(new GoalHandler())
         {
@@ -32,7 +33,7 @@ namespace FDM90.Pages.Content
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (UserSingleton.Instance.CurrentUser != null)
+            if (UserSingleton.Instance.CurrentUser != null && !Page.IsPostBack)
             {
                 facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
                 twitterSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Twitter;
@@ -40,27 +41,26 @@ namespace FDM90.Pages.Content
                 _userGoals = _goalHandler.GetUserGoals(UserSingleton.Instance.CurrentUser.UserId);
                 currentGoalDropDown.DataSource = _userGoals?.Count() > 0 ? _userGoals.Select(s => s.GoalName) : new string[] { "No Current Goals" };
                 currentGoalDropDown.DataBind();
+                metricDropDown.DataSource = metrics;
+                metricDropDown.DataBind();
 
-                UpdateGoalCharts();
+                UpdateGoalDataTable();
 
                 SetUpTableControls();
             }
         }
 
-        private void UpdateGoalCharts()
+        private void UpdateGoalDataTable()
         {
             if (_userGoals.Count() > 0)
             {
-                metricDropDown.DataSource = metrics;
-                metricDropDown.DataBind();
-
-                DataTable dt = new DataTable();
-                dt.Columns.Add("Source", typeof(string));
-                dt.Columns.Add("Week", typeof(string));
-                dt.Columns.Add("Metric", typeof(string));
-                dt.Columns.Add("Target", typeof(int));
-                dt.Columns.Add("Progress", typeof(int));
-                dt.Columns.Add("AccumulatedProgress", typeof(int));
+                goalDataTable = new DataTable();
+                goalDataTable.Columns.Add("Source", typeof(string));
+                goalDataTable.Columns.Add("Week", typeof(string));
+                goalDataTable.Columns.Add("Metric", typeof(string));
+                goalDataTable.Columns.Add("Target", typeof(int));
+                goalDataTable.Columns.Add("Progress", typeof(int));
+                goalDataTable.Columns.Add("AccumulatedProgress", typeof(int));
                 Goals selectedGoal = _userGoals.Where(x => x.GoalName == currentGoalDropDown.SelectedValue).First();
                 JObject progress = JObject.Parse(selectedGoal.Progress);
                 JObject target = JObject.Parse(selectedGoal.Targets);
@@ -71,64 +71,75 @@ namespace FDM90.Pages.Content
                     {
                         foreach (JProperty metric in week.Values())
                         {
-                            DataRow row = dt.NewRow();
+                            DataRow row = goalDataTable.NewRow();
                             row[0] = media.Name;
                             row[1] = week.Name.Substring(4);
                             row[2] = metric.Name;
                             row[3] = target[media.Name][metric.Name];
                             row[4] = metric.Value;
 
-                            if (dt.AsEnumerable().Where(w => w[0].ToString() == media.Name && w[2].ToString() == metric.Name).Count() == 0)
+                            if (goalDataTable.AsEnumerable().Where(w => w[0].ToString() == media.Name && w[2].ToString() == metric.Name).Count() == 0)
                             {
                                 row[5] = metric.Value;
                             }
                             else
                             {
-                                row[5] = int.Parse(metric.Value.ToString()) 
-                                            + int.Parse(dt.AsEnumerable().Where(w => w[0].ToString() == media.Name && w[2].ToString() == metric.Name).Last()[5].ToString());
+                                row[5] = int.Parse(metric.Value.ToString())
+                                            + int.Parse(goalDataTable.AsEnumerable().Where(w => w[0].ToString() == media.Name && w[2].ToString() == metric.Name).Last()[5].ToString());
                             }
 
-                            dt.Rows.Add(row);
+                            goalDataTable.Rows.Add(row);
                         }
                     }
                 }
-
-                foreach (var mediaRows in dt.AsEnumerable().Where(w => w[2].ToString() == metricDropDown.SelectedValue.ToString())
-                                                .OrderBy(o => o[1]).GroupBy(x => x[0]))
-                {
-                    Series progressSeries = new Series();
-                    Series limitSeries = new Series();
-                    ChartArea mediaChart = new ChartArea();
-
-                    mediaChart.Name = mediaRows.First()[0].ToString();
-                    mediaChart.AxisX.IsMarginVisible = false;
-                    mediaChart.AxisX.IsMarginVisible = false;
-                    mediaChart.AxisX.Title = dt.Columns[1].ToString();
-                    mediaChart.AxisY.Minimum = double.Parse(mediaRows.First()[5].ToString());
-                    mediaChart.AxisY.Maximum = double.Parse(mediaRows.Last()[5].ToString()) > double.Parse(mediaRows.Last()[3].ToString()) 
-                                                    ? double.Parse(mediaRows.Last()[5].ToString()) : double.Parse(mediaRows.Last()[3].ToString());
-                    progressSeries.Name = mediaRows.First()[0].ToString() + "Progress";
-                    progressSeries.ChartType = SeriesChartType.Line;
-                    progressSeries.Points.DataBind(mediaRows, dt.Columns[1].ToString(), dt.Columns[5].ToString(), null);
-
-                    limitSeries.Name = mediaRows.First()[0].ToString() + "Limit";
-                    limitSeries.ChartType = SeriesChartType.Line;
-                    limitSeries.Points.DataBind(mediaRows, dt.Columns[1].ToString(), dt.Columns[3].ToString(), null);
-
-                    goalChart.ChartAreas.Add(mediaChart);
-                    goalChart.Series.Add(progressSeries);
-                    goalChart.Series.Add(limitSeries);
-
-                    foreach(Series series in goalChart.Series.Where(s => s.Name.Contains(mediaRows.First()[0].ToString())))
-                        series.ChartArea = mediaChart.Name;
-
-                    goalChart.Titles.Add(mediaChart.Name);
-                    goalChart.Titles[goalChart.ChartAreas.Count() - 1].DockedToChartArea = mediaChart.Name;
-                    goalChart.Titles[goalChart.ChartAreas.Count() - 1].IsDockedInsideChartArea = false;
-                }
-
-                goalChart.DataBind();
+                UpdateGoals();
             }
+        }
+
+        private void UpdateGoals()
+        {
+            if(goalChart.Series.Any() || goalChart.ChartAreas.Any() || goalChart.Titles.Any())
+            {
+                goalChart.Series.Clear();
+                goalChart.ChartAreas.Clear();
+                goalChart.Titles.Clear();
+            }
+
+            foreach (var mediaRows in goalDataTable.AsEnumerable().Where(w => w[2].ToString() == metricDropDown.SelectedValue.ToString())
+                                            .OrderBy(o => o[1]).GroupBy(x => x[0]))
+            {
+                Series progressSeries = new Series();
+                Series limitSeries = new Series();
+                ChartArea mediaChart = new ChartArea();
+
+                mediaChart.Name = mediaRows.First()[0].ToString();
+                mediaChart.AxisX.IsMarginVisible = false;
+                mediaChart.AxisX.IsMarginVisible = false;
+                mediaChart.AxisX.Title = goalDataTable.Columns[1].ToString();
+                mediaChart.AxisY.Minimum = double.Parse(mediaRows.First()[5].ToString());
+                mediaChart.AxisY.Maximum = double.Parse(mediaRows.Last()[5].ToString()) > double.Parse(mediaRows.Last()[3].ToString())
+                                                ? double.Parse(mediaRows.Last()[5].ToString()) : double.Parse(mediaRows.Last()[3].ToString()) + 100;
+                progressSeries.Name = mediaRows.First()[0].ToString() + "Progress";
+                progressSeries.ChartType = SeriesChartType.Line;
+                progressSeries.Points.DataBind(mediaRows, goalDataTable.Columns[1].ToString(), goalDataTable.Columns[5].ToString(), null);
+
+                limitSeries.Name = mediaRows.First()[0].ToString() + "Limit";
+                limitSeries.ChartType = SeriesChartType.Line;
+                limitSeries.Points.DataBind(mediaRows, goalDataTable.Columns[1].ToString(), goalDataTable.Columns[3].ToString(), null);
+
+                goalChart.ChartAreas.Add(mediaChart);
+                goalChart.Series.Add(progressSeries);
+                goalChart.Series.Add(limitSeries);
+
+                foreach (Series series in goalChart.Series.Where(s => s.Name.Contains(mediaRows.First()[0].ToString())))
+                    series.ChartArea = mediaChart.Name;
+
+                goalChart.Titles.Add(mediaChart.Name);
+                goalChart.Titles[goalChart.ChartAreas.Count() - 1].DockedToChartArea = mediaChart.Name;
+                goalChart.Titles[goalChart.ChartAreas.Count() - 1].IsDockedInsideChartArea = false;
+            }
+
+            goalChart.DataBind();
         }
 
         protected void StartCalendar(object sender, EventArgs e)
@@ -277,6 +288,16 @@ namespace FDM90.Pages.Content
 
             newGoalArea.Visible = false;
             setupGoalButton.Visible = true;
+        }
+
+        protected void metricDropDown_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateGoals();
+        }
+
+        protected void currentGoalDropDown_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateGoalDataTable();
         }
     }
 }

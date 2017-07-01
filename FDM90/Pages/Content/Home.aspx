@@ -11,10 +11,10 @@
     <div id="userArea">
         <div id="goalArea" runat="server" visible="false">
             Goal Name:
-            <asp:DropDownList runat="server" ID="currentGoalDropDown"></asp:DropDownList>
+            <asp:DropDownList runat="server" ID="currentGoalDropDown" AutoPostBack="true" OnSelectedIndexChanged="currentGoalDropDown_SelectedIndexChanged"></asp:DropDownList>
 
             <br />
-            <asp:DropDownList runat="server" ID="metricDropDown"></asp:DropDownList>
+            <asp:DropDownList runat="server" ID="metricDropDown" AutoPostBack="true" OnSelectedIndexChanged="metricDropDown_SelectedIndexChanged"></asp:DropDownList>
             <br />
             <asp:Chart ID="goalChart" runat="server">
             </asp:Chart>
