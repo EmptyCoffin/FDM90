@@ -16,7 +16,7 @@
             <br />
             <asp:DropDownList runat="server" ID="metricDropDown" AutoPostBack="true" OnSelectedIndexChanged="metricDropDown_SelectedIndexChanged"></asp:DropDownList>
             <br />
-            <asp:Chart ID="goalChart" runat="server">
+            <asp:Chart ID="goalChart" runat="server" Height="702px" Width="937px">
             </asp:Chart>
             <br />
             <asp:Button ID="setupGoalButton" runat="server" Text="New Goal" OnClick="setupGoalButton_Click" />

@@ -92,6 +92,30 @@ namespace FDM90.Pages.Content
                         }
                     }
                 }
+
+                foreach(var groupRow in goalDataTable.AsEnumerable().GroupBy(g => new { Week = g[1], Metric = g[2] }))
+                {
+                    DataRow row = goalDataTable.NewRow();
+                    row[0] = "Overall";
+                    row[1] = groupRow.First()[1];
+                    row[2] = groupRow.First()[2];
+                    row[3] = groupRow.Sum(x => int.Parse(x[3].ToString()));
+                    row[4] = groupRow.Sum(x => int.Parse(x[4].ToString()));
+
+                    if (goalDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == groupRow.First()[1].ToString()).Count() == 0)
+                    {
+                        row[5] = groupRow.Sum(x => int.Parse(x[5].ToString()));
+                    }
+                    else
+                    {
+                        row[5] = groupRow.Sum(x => int.Parse(x[5].ToString()))
+                                    + int.Parse(goalDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == groupRow.First()[1].ToString()).Last()[5].ToString());
+                    }
+
+                    goalDataTable.Rows.Add(row);
+
+                }
+
                 UpdateGoals();
             }
         }
