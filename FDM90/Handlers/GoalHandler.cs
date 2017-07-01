@@ -234,5 +234,10 @@ namespace FDM90.Handlers
         {
             return _goalReadMultipleRepo.ReadMultipleSpecific(userId.ToString());
         }
+
+        List<Goals> IGoalHandler.GetUserGoals(Guid userId)
+        {
+            return _goalReadMultipleRepo.ReadMultipleSpecific(userId.ToString()).ToList();
+        }
     }
 }

@@ -1,5 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Pages/Site.Master" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="FDM90.Pages.Content.Home" %>
 
+<%@ Register Assembly="System.Web.DataVisualization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" Namespace="System.Web.UI.DataVisualization.Charting" TagPrefix="asp" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <h3>Home page
     </h3>
@@ -12,6 +14,10 @@
             <asp:DropDownList runat="server" ID="currentGoalDropDown"></asp:DropDownList>
 
             <br />
+            <asp:DropDownList runat="server" ID="metricDropDown"></asp:DropDownList>
+            <br />
+            <asp:Chart ID="goalChart" runat="server">
+            </asp:Chart>
             <br />
             <asp:Button ID="setupGoalButton" runat="server" Text="New Goal" OnClick="setupGoalButton_Click" />
             <br />
