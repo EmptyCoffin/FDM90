@@ -142,7 +142,8 @@ namespace FDM90.Pages.Content
                 mediaChart.AxisX.Title = goalDataTable.Columns[1].ToString();
                 mediaChart.AxisY.Minimum = double.Parse(mediaRows.First()[5].ToString());
                 mediaChart.AxisY.Maximum = double.Parse(mediaRows.Last()[5].ToString()) > double.Parse(mediaRows.Last()[3].ToString())
-                                                ? double.Parse(mediaRows.Last()[5].ToString()) : double.Parse(mediaRows.Last()[3].ToString()) + 100;
+                                                ? double.Parse(mediaRows.Last()[5].ToString()) + (double.Parse(mediaRows.Last()[5].ToString()) / 10) : 
+                                                double.Parse(mediaRows.Last()[3].ToString()) + (double.Parse(mediaRows.Last()[3].ToString()) / 10);
                 progressSeries.Name = mediaRows.First()[0].ToString() + "Progress";
                 progressSeries.ChartType = SeriesChartType.Line;
                 progressSeries.Points.DataBind(mediaRows, goalDataTable.Columns[1].ToString(), goalDataTable.Columns[5].ToString(), null);
