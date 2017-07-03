@@ -1,4 +1,5 @@
 ﻿using FDM90.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FDM90.Handlers
 {
-    public interface IFacebookHandler
+    public interface IFacebookHandler : IMediaHandler
     {
         FacebookCredentials GetLogInDetails(Guid userId);
         FacebookCredentials SaveLogInDetails(Guid userId, string pageName);

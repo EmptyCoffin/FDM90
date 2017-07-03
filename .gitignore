@@ -17,3 +17,6 @@
 /FDM90.sln.DotSettings.user
 /FDM90UnitTests/FDM90UnitTests.csproj.user
 /TestResults
+/FDM90Services/FDM90DailyService/obj/Debug
+/FDM90Services/FDM90DailyService/bin/Debug
+/FDM90Services/.vs/FDM90DailyService/v14

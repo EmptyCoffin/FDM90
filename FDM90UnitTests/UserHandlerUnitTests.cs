@@ -194,69 +194,69 @@ namespace FDM90UnitTests
         public void UpdateUserMediaActivation_GivenIncorrectSocialMedia_ReturnsTrueIfUserNotUpdated()
         {
             //arrange
-            User returningUser = new User() { UserId = Guid.NewGuid() };
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
+            _mockUserRepo.As<IReadSpecific<User>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+            User specificUser = new User() { UserId = returningUser.UserId };
 
             //act
-            var result = _userHandler.UpdateUserMediaActivation(returningUser, "TestSocialMedia");
-
-            //assert
-            Assert.AreEqual(returningUser.UserId, result.UserId);
-            Assert.AreEqual(returningUser.Facebook, result.Facebook);
-
-            _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.Verify(repository => repository.ReadAll(), Times.Never);
-            _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Never);
-        }
-
-        [TestMethod]
-        public void UpdateUserMediaActivation_GivenCorrectCred_ReturnsTrueIfUserUpdated()
-        {
-            //arrange
-            User returningUser = new User() { UserId = Guid.NewGuid(), Facebook = false };
-
-            //act
-            var result = _userHandler.UpdateUserMediaActivation(returningUser, "Facebook");
+            var result = _userHandler.UpdateUserMediaActivation(specificUser, "TestSocialMedia");
 
             //assert
             Assert.AreEqual(returningUser.UserId, result.UserId);
             Assert.AreEqual(returningUser.Password, result.Password);
             Assert.AreEqual(returningUser.UserName, result.UserName);
             Assert.AreEqual(returningUser.EmailAddress, result.EmailAddress);
-            Assert.IsTrue(result.Facebook);
+            Assert.AreEqual(returningUser.Twitter, result.Twitter);
+            Assert.AreEqual(returningUser.Facebook, result.Facebook);
 
             _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
             _mockUserRepo.Verify(repository => repository.ReadAll(), Times.Never);
-            _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Once);
+            _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Never);
             _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Never);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void UpdateUserMediaActivation_GivenCorrectCred_ReturnsTrueIfUserUpdated()
+        {
+            //arrange
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
+            _mockUserRepo.As<IReadSpecific<User>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+            User specificUser = new User() { UserId = returningUser.UserId };
+
+            //act
+            var result = _userHandler.UpdateUserMediaActivation(specificUser, "Facebook");
+
+            //assert
+            Assert.AreEqual(returningUser.UserId, result.UserId);
+            Assert.AreEqual(returningUser.Password, result.Password);
+            Assert.AreEqual(returningUser.UserName, result.UserName);
+            Assert.AreEqual(returningUser.EmailAddress, result.EmailAddress);
+            Assert.AreEqual(returningUser.Twitter, result.Twitter);
+            Assert.AreEqual(returningUser.Facebook, result.Facebook);
+            Assert.IsTrue(result.Facebook);
         }
 
         [TestMethod]
         public void UpdateUserMediaActivation_GivenCorrectCred_ReturnsTrueIfUpdateCalledCorrectly()
         {
             //arrange
-            User returningUser = new User() { UserId = Guid.NewGuid(), Facebook = false };
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
+            _mockUserRepo.As<IReadSpecific<User>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+            User specificUser = new User() { UserId = returningUser.UserId };
 
             //act
-            var result = _userHandler.UpdateUserMediaActivation(returningUser, "Facebook");
+            var result = _userHandler.UpdateUserMediaActivation(specificUser, "Facebook");
 
             //assert
-            Assert.IsNotNull(updatedUser);
-            Assert.IsInstanceOfType(updatedUser, typeof(User));
-            Assert.AreNotEqual(Guid.Empty, updatedUser.UserId);
-            Assert.AreEqual(result.UserId, updatedUser.UserId);
-            Assert.AreEqual(result.UserName, updatedUser.UserName);
-            Assert.AreEqual(result.EmailAddress, updatedUser.EmailAddress);
-            Assert.AreEqual(result.Password, updatedUser.Password);
-            Assert.AreEqual(result.Facebook, updatedUser.Facebook);
-
             _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
             _mockUserRepo.Verify(repository => repository.ReadAll(), Times.Never);
             _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Once);
             _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Never);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
         }
     }
 }

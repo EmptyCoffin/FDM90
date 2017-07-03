@@ -58,5 +58,12 @@ namespace FDM90.Models.Helpers
 
             return _fbClient.Get(url);
         }
+
+        public dynamic GetData(string url, string accessToken, object parameters)
+        {
+            _accessToken = accessToken;
+
+            return _fbClient.Get(url, parameters);
+        }
     }
 }
