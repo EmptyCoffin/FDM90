@@ -27,6 +27,18 @@ namespace FDM90.Models
         public FacebookInsightsData PageLikes { get; set; }
         [JsonProperty("page_stories")]
         public FacebookInsightsData PageStories { get; set; }
+
+        public FacebookData Update(FacebookData newData)
+        {
+            FanCount = newData.FanCount;
+            NewLikeCount = newData.NewLikeCount;
+            TalkingAboutCount = newData.TalkingAboutCount;
+            Posts.AddRange(newData.Posts);
+            PageLikes.Values.AddRange(newData.PageLikes.Values);
+            PageStories.Values.AddRange(newData.PageStories.Values);
+
+            return this;
+        }
     }
 
     public class FacebookPostData

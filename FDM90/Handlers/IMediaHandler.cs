@@ -11,5 +11,6 @@ namespace FDM90.Handlers
     {
         string MediaName { get; }
         IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates);
+        void GetMediaData(Guid userId, DateTime[] dates);
     }
 }

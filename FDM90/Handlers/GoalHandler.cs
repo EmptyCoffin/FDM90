@@ -138,16 +138,32 @@ namespace FDM90.Handlers
             List<Task<bool>> tasks = new List<Task<bool>>();
             foreach(var userGoals in _goalRepo.ReadAll().GroupBy(x => x.UserId))
             {
+                User user = _userHandler.GetUser(userGoals.First().UserId.ToString());
+
+                UpdateMedias(user).Wait();
+
                 // new task for each user
-                tasks.Add(Task.Factory.StartNew(() => GoalsUpdate(userGoals).Result));
+                tasks.Add(Task.Factory.StartNew(() => GoalsUpdate(user, userGoals).Result));
             }
 
             return Task.Factory.ContinueWhenAll(tasks.ToArray(), taskReturned => { return taskReturned[0].Result; });
         }
 
-        private Task<bool> GoalsUpdate(IGrouping<Guid, Goals> userGoals)
+        private Task UpdateMedias(User user)
         {
-            User user = _userHandler.GetUser(userGoals.First().UserId.ToString());
+            List<Task> tasks = new List<Task>();
+
+            foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(x =>
+                             bool.Parse(user.GetType().GetProperties().Where(y => y.Name == x.MediaName).First().GetValue(user).ToString())))
+            {
+                tasks.Add(Task.Factory.StartNew(() => mediaHandler.GetMediaData(user.UserId, new DateTime[] { DateTime.Now.AddDays(-8).Date })));
+            }
+
+            return Task.Factory.ContinueWhenAll(tasks.ToArray(), taskReturned => { return taskReturned[0]; });
+        }
+
+        private Task<bool> GoalsUpdate(User user, IGrouping<Guid, Goals> userGoals)
+        {
             List<Task<JObject>> tasks = new List<Task<JObject>>();
             var goals = userGoals;
             JObject newDayProgress = new JObject();

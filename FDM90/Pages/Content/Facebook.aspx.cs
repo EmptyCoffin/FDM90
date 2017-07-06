@@ -43,7 +43,7 @@ namespace FDM90.Pages.Content
                 if (!string.IsNullOrWhiteSpace(facebookCreds.PermanentAccessToken) && !facebookCreds.PermanentAccessToken.StartsWith("https://www."))
                 {
                     facebookData.Visible = true;
-                    _facebookData = _facebookHandler.GetInitialFacebookData(facebookCreds.PermanentAccessToken);
+                    //_facebookData = _facebookHandler.GetInitialFacebookData(facebookCreds.PermanentAccessToken);
                     likesButton.Text += _facebookData.FanCount;
                     peopleTalkingLabel.Text += _facebookData.TalkingAboutCount.ToString();
                     postsButton.Text += string.Format("({0})", _facebookData.Posts.Count);
@@ -78,7 +78,7 @@ namespace FDM90.Pages.Content
 
             if(posts.Visible && !facebookPosts)
             {
-                _facebookData = _facebookHandler.GetPostDetails(_facebookData);
+                //_facebookData = _facebookHandler.GetPostDetails(_facebookData);
                 postList.DataSource = _facebookData.Posts;
                 postList.DataBind();
                 facebookPosts = true;
