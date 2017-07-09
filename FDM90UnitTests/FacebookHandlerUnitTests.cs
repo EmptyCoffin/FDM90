@@ -292,7 +292,7 @@ namespace FDM90UnitTests
             _mockFacebookClientWrapper.Verify(wrapper => wrapper.GetData(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Never);
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Never);
+                .Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Create(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
