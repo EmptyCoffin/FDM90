@@ -4,8 +4,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head runat="server">
     <title>Social Media Analytics</title>
-    <script src="../Content/bootstrap.min.js"></script>
-    <script src="../Content/jquery-3.1.1.min.js"></script>
     <link href="../Content/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
     <link href="../Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="../Styles/LocalStyles.css" rel="stylesheet" type="text/css" />
