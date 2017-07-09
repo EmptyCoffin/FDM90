@@ -1,4 +1,5 @@
 ﻿using FDM90.Models;
+using FDM90.Models.Helpers;
 using FDM90.Repository;
 using Newtonsoft.Json.Linq;
 using System;
@@ -86,7 +87,7 @@ namespace FDM90.Handlers
             // here when first week only less than current week, but not if we have info
             if (firstWeekNumber < currentWeekNumber && newProgress.First?.Children().Values().Count() != currentWeekNumber - firstWeekNumber)
             {
-                DateTime[] dates = GetDates(newGoal.StartDate.AddDays(newProgress.First != null ? newProgress.First.Children().Values().Count() * 7 : 0), newGoal.EndDate);
+                DateTime[] dates = DateHelper.GetDates(newGoal.StartDate.AddDays(newProgress.First != null ? newProgress.First.Children().Values().Count() * 7 : 0), newGoal.EndDate, false);
 
                 foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(x =>
                                              bool.Parse(user.GetType().GetProperties().Where(y => y.Name == x.MediaName).First().GetValue(user).ToString())))
@@ -121,18 +122,6 @@ namespace FDM90.Handlers
 
         }
 
-        private DateTime[] GetDates(DateTime startDate, DateTime endDate)
-        {
-            List<DateTime> dateList = new List<DateTime>();
-
-            for (var date = startDate; date <= endDate; date = date.AddDays(1))
-            {
-                if(date < DateTime.Now.AddDays(-7).Date)
-                    dateList.Add(date);
-            }
-            return dateList.ToArray();
-        }
-
         public Task<bool> DailyUpdate()
         {
             List<Task<bool>> tasks = new List<Task<bool>>();
@@ -156,7 +145,7 @@ namespace FDM90.Handlers
             foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(x =>
                              bool.Parse(user.GetType().GetProperties().Where(y => y.Name == x.MediaName).First().GetValue(user).ToString())))
             {
-                tasks.Add(Task.Factory.StartNew(() => mediaHandler.GetMediaData(user.UserId, new DateTime[] { DateTime.Now.AddDays(-8).Date })));
+                tasks.Add(Task.Factory.StartNew(() => mediaHandler.GetMediaData(user.UserId, DateHelper.GetDates(DateTime.Now.AddDays(-8).Date, DateTime.Now.AddDays(-1).Date))));
             }
 
             return Task.Factory.ContinueWhenAll(tasks.ToArray(), taskReturned => { return taskReturned[0]; });

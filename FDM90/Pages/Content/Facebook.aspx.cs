@@ -15,7 +15,6 @@ namespace FDM90.Pages.Content
         IFacebookHandler _facebookHandler;
         FacebookCredentials facebookCreds;
         static FacebookData _facebookData;
-        bool facebookPosts = false;
 
         public Facebook():this(new FacebookHandler())
         {
@@ -34,19 +33,18 @@ namespace FDM90.Pages.Content
                 facebookCreds = _facebookHandler.GetLogInDetails(UserSingleton.Instance.CurrentUser.UserId);
                 inputPageName.Text = facebookCreds.PageName;
 
-                if (!string.IsNullOrWhiteSpace(Request.QueryString["code"]))
-                {
-                    facebookCreds.PermanentAccessToken = _facebookHandler.SetAccessToken(Request.QueryString["code"],
-                                                                facebookCreds.UserId, facebookCreds.PageName);
-                }
-
                 if (!string.IsNullOrWhiteSpace(facebookCreds.PermanentAccessToken) && !facebookCreds.PermanentAccessToken.StartsWith("https://www."))
                 {
                     facebookData.Visible = true;
-                    //_facebookData = _facebookHandler.GetInitialFacebookData(facebookCreds.PermanentAccessToken);
+                    _facebookData = _facebookHandler.GetFacebookData(facebookCreds.UserId);
                     likesButton.Text += _facebookData.FanCount;
                     peopleTalkingLabel.Text += _facebookData.TalkingAboutCount.ToString();
                     postsButton.Text += string.Format("({0})", _facebookData.Posts.Count);
+                }
+                else if (!string.IsNullOrWhiteSpace(Request.QueryString["code"]))
+                {
+                    facebookCreds.PermanentAccessToken = _facebookHandler.SetAccessToken(Request.QueryString["code"],
+                                                                facebookCreds.UserId, facebookCreds.PageName);
                 }
             }
         }
@@ -69,6 +67,9 @@ namespace FDM90.Pages.Content
             if(likesDetails.Visible)
             {
                 newLikeLabel.Text += _facebookData.NewLikeCount.ToString();
+                likeListView.DataSource = _facebookData.PageLikes.Values;
+                likeListView.DataBind();
+                likesDetails.Visible = true;
             }
         }
 
@@ -76,12 +77,10 @@ namespace FDM90.Pages.Content
         {
             posts.Visible = !posts.Visible;
 
-            if(posts.Visible && !facebookPosts)
+            if(posts.Visible)
             {
-                //_facebookData = _facebookHandler.GetPostDetails(_facebookData);
                 postList.DataSource = _facebookData.Posts;
                 postList.DataBind();
-                facebookPosts = true;
             }
         }
     }

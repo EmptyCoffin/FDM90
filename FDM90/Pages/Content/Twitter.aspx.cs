@@ -1,4 +1,5 @@
 ﻿using FDM90.Handlers;
+using FDM90.Models;
 using FDM90.Singleton;
 using LinqToTwitter;
 using System;
@@ -18,6 +19,7 @@ namespace FDM90.Pages.Content
     {
         ITwitterHandler _twitterHandler;
         private AspNetAuthorizer _auth;
+        private TwitterData _data;
 
         private static readonly HttpClient client = new HttpClient();
 
@@ -63,7 +65,13 @@ namespace FDM90.Pages.Content
                 }
                 else
                 {
-                    _twitterHandler.GetTweets(UserSingleton.Instance.CurrentUser.UserId.ToString());
+                    _data = _twitterHandler.GetTweets(UserSingleton.Instance.CurrentUser.UserId.ToString());
+                    numberOfFollowers.Text += _data.NumberOfFollowers.ToString();
+                    numberOfRetweets.Text += _data.NumberOfRetweets.ToString();
+                    numberOfFavorite.Text += _data.NumberOfFavorited.ToString();
+
+                    tweetList.DataSource = _data.Tweets;
+                    tweetList.DataBind();
                 }
             }
         }

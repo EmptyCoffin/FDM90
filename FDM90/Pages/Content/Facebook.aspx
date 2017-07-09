@@ -23,6 +23,25 @@
                 <asp:Button ID="likesButton" runat="server" class="btn btn-primary column-content" Text="Likes: " AutoPostBack="false" OnClick="likesButton_Click" />
                 <div runat="server" id="likesDetails" visible="false" class="column-content">
                     <asp:Label ID="newLikeLabel" runat="server">Number of new likes: </asp:Label>
+                    <asp:ListView ID="likeListView" runat="server">
+                        <LayoutTemplate>
+                            <table cellpadding="2" width="640px" border="1" id="tbl1" runat="server">
+                                <tr runat="server" id="itemPlaceholder" />
+                            </table>
+                        </LayoutTemplate>
+                        <ItemTemplate>
+                            <tr runat="server">
+                                <td colspan="2" style="text-align: center">
+                                    <asp:Label ID="CreatedTimeLabel" runat="server"
+                                        Text='<%#Eval("EndDate") %>' />
+                                    <br />
+                                    <asp:Label ID="MessageLabel" runat="server" Visible='<%#Eval("Message") != null %>'
+                                        Text='<%#Eval("Value") %>' />
+                                    <br />
+                                </td>
+                            </tr>
+                        </ItemTemplate>
+                    </asp:ListView>
                 </div>
             </div>
             <div class="col-md-4">
@@ -40,7 +59,7 @@
                     </LayoutTemplate>
                     <ItemTemplate>
                         <tr runat="server">
-                            <td colspan="2" style="text-align:center">
+                            <td colspan="2" style="text-align: center">
                                 <asp:Label ID="CreatedTimeLabel" runat="server"
                                     Text='<%#Eval("CreatedTime") %>' />
                                 <br />
@@ -52,19 +71,20 @@
                             </td>
                         </tr>
                         <tr runat="server">
-                            <td>
-                                Likes: <asp:Label ID="PostLikeLabel" runat="server"
+                            <td>Likes:
+                                <asp:Label ID="PostLikeLabel" runat="server"
                                     Text='<%#Eval("Likes.Count") %>' />
                                 <br />
-                                Number of Comments: <asp:Label ID="PostCommentLabel" runat="server"
+                                Number of Comments:
+                                <asp:Label ID="PostCommentLabel" runat="server"
                                     Text='<%#Eval("Comments.Count") %>' />
                             </td>
-                            <td>
-                                Total Fan Reach: <asp:Label ID="TotalFanReachLabel" runat="server"
+                            <td>Total Fan Reach:
+                                <asp:Label ID="TotalFanReachLabel" runat="server"
                                     Text='<%#Eval("TotalReach.Values[0].Value") %>' />
-                                <br />
+                                <%--                                <br />
                                 Negative Feedback: <asp:Label ID="NegativeFeedback" runat="server"
-                                    Text='<%#Eval("NegativeFeedback.Values[0].Value") %>' />
+                                    Text='<%#Eval("NegativeFeedback.Values[0].Value") %>' />--%>
                             </td>
 
                         </tr>

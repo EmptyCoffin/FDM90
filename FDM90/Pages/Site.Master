@@ -20,11 +20,11 @@
                 </div>
                 <div class="pull-right">
                     <ul class="nav nav-tabs">
-                        <li role="presentation">
+                        <li role="presentation" id="LogInwelcomeMessageTab" runat="server">
                             <a class="btn btn-lg" href="~/Pages/Account/Login.aspx" id="LogIn" runat="server">Log In</a>
                             <asp:Label runat="server" ID="welcomeMessage" Visible="false"></asp:Label>
                         </li>
-                        <li role="presentation">
+                        <li role="presentation" id="RegistrationLogoutTab" runat="server">
                             <a class="btn btn-lg" href="~/Pages/Account/Registration.aspx" id="SignUp" runat="server">Sign Up</a>
                             <a class="btn btn-lg" href="~/Pages/Account/Logout.aspx" visible="false" id="LogOut" runat="server">Log Out</a>
                         </li>
@@ -33,13 +33,13 @@
             </div>
             <div>
                 <ul class="nav nav-tabs">
-                    <li role="presentation" class="active">
+                    <li role="presentation" id="HomeTab" runat="server">
                         <a href="~/Pages/Content/Home.aspx" title="Home" runat="server">Home</a>
                     </li>
-                    <li role="presentation">
+                    <li role="presentation" id="FacebookTab" runat="server">
                         <a href="~/Pages/Content/Facebook.aspx" id="Facebook" visible="false" runat="server">Facebook</a>
                     </li>
-                    <li role="presentation">
+                    <li role="presentation" id="TwitterTab" runat="server">
                         <a href="~/Pages/Content/Twitter.aspx" id="Twitter" visible="false" runat="server">Twitter</a>
                     </li>
                 </ul>

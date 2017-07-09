@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -11,6 +13,34 @@ namespace FDM90.Models.Helpers
 {
     public static class JsonHelper
     {
+        public static JObject AddWeekValue(JObject currentObject, string propertyName, DateTime date, int value)
+        {
+            DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
+            Calendar calendar = dateInfo.Calendar;
+            int weekNumber = calendar.GetWeekOfYear(date, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
+
+            JObject week = new JObject();
+            // add to object / update object 
+            JToken weekExisting;
+
+            if (!currentObject.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
+            {
+                currentObject.Add("Week" + weekNumber, week);
+            }
+
+            JToken existingValue;
+            if (((JObject)currentObject.GetValue("Week" + weekNumber)).TryGetValue(propertyName, out existingValue))
+            {
+                ((JObject)currentObject.GetValue("Week" + weekNumber)).GetValue(propertyName).Replace(int.Parse(existingValue.ToString()) + value);
+            }
+            else
+            {
+                ((JObject)currentObject.GetValue("Week" + weekNumber)).Add(propertyName, value);
+            }
+
+            return currentObject;
+        }
+
         public static T Parse<T>(dynamic dynamicData, T facebookData)
         {
             foreach (PropertyInfo property in facebookData.GetType().GetProperties())

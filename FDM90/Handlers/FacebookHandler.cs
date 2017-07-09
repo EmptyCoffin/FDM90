@@ -20,8 +20,6 @@ namespace FDM90.Handlers
         private IRepository<FacebookCredentials> _facebookRepo;
         private IUserHandler _userHandler;
         private IFacebookClientWrapper _facebookClientWrapper;
-        static DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
-        Calendar calendar = dateInfo.Calendar;
 
         public string MediaName
         {
@@ -62,7 +60,7 @@ namespace FDM90.Handlers
             {
                 _facebookRepo.Create(credentials);
 
-                _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), "Facebook");
+                _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), MediaName);
 
                 credentials.PermanentAccessToken = _facebookClientWrapper.GetLoginUrl();
             }
@@ -86,7 +84,7 @@ namespace FDM90.Handlers
             });
 
             // trigger get info
-            Task.Factory.StartNew(() => GetMediaData(userId, GetDates(DateTime.Now.AddMonths(-6).Date, DateTime.Now.AddDays(-7))));
+            Task.Factory.StartNew(() => GetMediaData(userId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date)));
 
             return permanentTokenString;
         }
@@ -95,70 +93,15 @@ namespace FDM90.Handlers
         {
             var currentData = _facebookReadRepo.ReadSpecific(userId.ToString());
 
-            dynamic facebookData =
+            dynamic basicData =
                 _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
                 {
                     FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount, FacebookHelper.TalkingAboutCount,
-                    FacebookHelper.Posts
                 }), currentData.PermanentAccessToken);
 
-            FacebookData data = JsonHelper.Parse(facebookData, new FacebookData());
+            FacebookData data = JsonHelper.Parse(basicData, new FacebookData());
 
-            while((facebookData.posts.paging != null && facebookData.posts.paging.next != null) 
-                                && data.Posts.OrderBy(x => x.CreatedTime).First().CreatedTime > dates.OrderBy(x => x.Date).First())
-            {
-                facebookData.posts = _facebookClientWrapper.GetData(facebookData.posts.paging.next, currentData.PermanentAccessToken);
-                for (int i = 0; i < facebookData.posts.data.Count; i++)
-                {
-                    data.Posts.Add(JsonHelper.Parse(facebookData.posts.data[i], new FacebookPostData()));
-                }
-            }
-
-            data.Posts.RemoveAll(remove => !dates.Contains(remove.CreatedTime.Date));
-
-            data = GetPostDetails(data);
-
-            dynamic facebookLikeData =
-                    _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Insight, "", new string[]
-                        {
-                            FacebookHelper.PageLikes
-                        }), currentData.PermanentAccessToken);
-
-            data.PageLikes = ((FacebookData)JsonHelper.Parse(facebookLikeData.data, new FacebookData())).PageLikes;
-
-            while ((facebookLikeData.paging != null && facebookLikeData.paging?.previous != null) 
-                                && data.PageLikes.Values.OrderBy(x => x.EndTime).First().EndTime > dates.OrderBy(x => x.Date).First())
-            {
-                facebookLikeData = _facebookClientWrapper.GetData(facebookLikeData.paging.previous, currentData.PermanentAccessToken);
-                for (int i = 0; i < facebookLikeData.data.Count; i++)
-                {
-                    data.PageLikes.Values.Add(JsonHelper.Parse(facebookLikeData.data[0].values[i], new FacebookInsightValueData()));
-                }
-            }
-
-            data.PageLikes.Values.RemoveAll(remove => !dates.Contains(remove.EndTime.Date));
-
-            dynamic storiesData =
-                    _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Insight, "", new string[]
-                        {
-                            FacebookHelper.PageStories
-                        }), currentData.PermanentAccessToken);
-
-            data.PageStories = ((FacebookData)JsonHelper.Parse(storiesData.data, new FacebookData())).PageStories;
-
-            while ((facebookLikeData.paging != null && facebookLikeData.paging?.previous != null) 
-                                    && data.PageStories.Values.OrderBy(x => x.EndTime).First().EndTime > dates.OrderBy(x => x.Date).First())
-            {
-                storiesData =
-                _facebookClientWrapper.GetData(storiesData.paging.previous, currentData.PermanentAccessToken);
-
-                for (int i = 0; i < storiesData.data[0].values.Count; i++)
-                {
-                    data.PageStories.Values.Add(JsonHelper.Parse(storiesData.data[0].values[i], new FacebookInsightValueData()));
-                }
-            }
-
-            data.PageStories.Values.RemoveAll(remove => !dates.Contains(remove.EndTime.Date));
+            data = GetMetricData(dates, currentData.PermanentAccessToken, data);
 
             if (!string.IsNullOrWhiteSpace(currentData.FacebookData))
             {
@@ -172,7 +115,80 @@ namespace FDM90.Handlers
             }
         }
 
-        private FacebookData GetPostDetails(FacebookData currentData)
+        private FacebookData GetMetricData(DateTime[] dates, string accessToken, FacebookData data)
+        {
+            dynamic postData =
+                _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
+                {
+                    FacebookHelper.Posts
+                }), accessToken);
+
+            data.Posts = new List<FacebookPostData>();
+
+            foreach (var post in postData.posts.data)
+            {
+                data.Posts.Add(JsonHelper.Parse(post, new FacebookPostData()));
+            }
+
+            while ((postData.posts.paging != null && postData.posts.paging.next != null)
+                                && data.Posts.OrderBy(x => x.CreatedTime).First().CreatedTime > dates.OrderBy(x => x.Date).First())
+            {
+                postData.posts = _facebookClientWrapper.GetData(postData.posts.paging.next, accessToken);
+                for (int i = 0; i < postData.posts.data.Count; i++)
+                {
+                    data.Posts.Add(JsonHelper.Parse(postData.posts.data[i], new FacebookPostData()));
+                }
+            }
+
+            data.Posts.RemoveAll(remove => !dates.Contains(remove.CreatedTime.Date));
+
+            data = GetPostDetails(data, accessToken);
+
+            dynamic facebookLikeData =
+                    _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Insight, "", new string[]
+                        {
+                            FacebookHelper.PageLikes
+                        }), accessToken);
+
+            data.PageLikes = ((FacebookData)JsonHelper.Parse(facebookLikeData.data, new FacebookData())).PageLikes;
+
+            while ((facebookLikeData.paging != null && facebookLikeData.paging?.previous != null)
+                                && data.PageLikes.Values.OrderBy(x => x.EndTime).First().EndTime > dates.OrderBy(x => x.Date).First())
+            {
+                facebookLikeData = _facebookClientWrapper.GetData(facebookLikeData.paging.previous, accessToken);
+                for (int i = 0; i < facebookLikeData.data.Count; i++)
+                {
+                    data.PageLikes.Values.Add(JsonHelper.Parse(facebookLikeData.data[0].values[i], new FacebookInsightValueData()));
+                }
+            }
+
+            data.PageLikes.Values.RemoveAll(remove => !dates.Contains(remove.EndTime.Date));
+
+            dynamic storiesData =
+                    _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Insight, "", new string[]
+                        {
+                            FacebookHelper.PageStories
+                        }), accessToken);
+
+            data.PageStories = ((FacebookData)JsonHelper.Parse(storiesData.data, new FacebookData())).PageStories;
+
+            while ((facebookLikeData.paging != null && facebookLikeData.paging?.previous != null)
+                                    && data.PageStories.Values.OrderBy(x => x.EndTime).First().EndTime > dates.OrderBy(x => x.Date).First())
+            {
+                storiesData =
+                _facebookClientWrapper.GetData(storiesData.paging.previous, accessToken);
+
+                for (int i = 0; i < storiesData.data[0].values.Count; i++)
+                {
+                    data.PageStories.Values.Add(JsonHelper.Parse(storiesData.data[0].values[i], new FacebookInsightValueData()));
+                }
+            }
+
+            data.PageStories.Values.RemoveAll(remove => !dates.Contains(remove.EndTime.Date));
+            return data;
+        }
+
+        private FacebookData GetPostDetails(FacebookData currentData, string accessToken)
         {
             List<FacebookPostData> updatedPosts = new List<FacebookPostData>();
 
@@ -182,7 +198,7 @@ namespace FDM90.Handlers
                     _facebookClientWrapper.GetData(
                         FacebookHelper.UrlBuilder(FacebookParameters.Insight, post.Id, new string[]
                             {FacebookHelper.PostReach, FacebookHelper.PostEngagedUsers}),
-                        currentData.AccessToken);
+                        accessToken);
 
                 updatedPosts.Add(JsonHelper.Parse(postData.data, post));
             }
@@ -203,107 +219,31 @@ namespace FDM90.Handlers
             // check within date
             foreach (FacebookPostData post in data.Posts.Where(post => dates.Contains(post.CreatedTime.Date)))
             {
-                int weekNumber = calendar.GetWeekOfYear(post.CreatedTime, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-                JObject week = new JObject();
-                // add to object / update object 
-                JToken weekExisting;
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Exposure", post.CreatedTime.Date, post.TotalReach.Values[0].Value);
 
-                if (!facebookTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
-                {
-                    facebookTargets.Add("Week" + weekNumber, week);
-                }
-
-                JToken existingValue;
-                if (((JObject)facebookTargets.GetValue("Week" + weekNumber)).TryGetValue("Exposure", out existingValue))
-                {
-                    ((JObject)facebookTargets.GetValue("Week" + weekNumber)).GetValue("Exposure").Replace(int.Parse(existingValue.ToString()) + post.TotalReach.Values[0].Value);
-                }
-                else
-                {
-                    ((JObject)facebookTargets.GetValue("Week" + weekNumber)).Add("Exposure", post.TotalReach.Values[0].Value);
-                }
-
-                // engagement
-                if (!facebookTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
-                {
-                    facebookTargets.Add("Week" + weekNumber, week);
-                }
-
-                JToken existingEngagementValue;
-                if (((JObject)facebookTargets.GetValue("Week" + weekNumber)).TryGetValue("Engagement", out existingEngagementValue))
-                {
-                    ((JObject)facebookTargets.GetValue("Week" + weekNumber)).GetValue("Engagement").Replace(int.Parse(existingEngagementValue.ToString()) + post.EngagedUsers.Values[0].Value);
-                }
-                else
-                {
-                    ((JObject)facebookTargets.GetValue("Week" + weekNumber)).Add("Engagement", post.EngagedUsers.Values[0].Value);
-                }
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Engagement", post.CreatedTime.Date, post.EngagedUsers.Values[0].Value);
             }
 
             foreach (FacebookInsightValueData insightValue in data.PageLikes.Values.Where(like => dates.Contains(like.EndTime.Date)))
             {
-                int weekNumber = calendar.GetWeekOfYear(insightValue.EndTime, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-                JObject week = new JObject();
-                // add to object / update object
-                JToken weekExisting;
-
-                if (!facebookTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
-                {
-                    facebookTargets.Add("Week" + weekNumber, week);
-                }
-
-                JToken existingValue;
-                if (((JObject)facebookTargets.GetValue("Week" + weekNumber)).TryGetValue("Influence", out existingValue))
-                {
-                    ((JObject)facebookTargets.GetValue("Week" + weekNumber)).GetValue("Influence").Replace(int.Parse(existingValue.ToString()) + insightValue.Value);
-                }
-                else
-                {
-                    ((JObject)facebookTargets.GetValue("Week" + weekNumber)).Add("Influence", insightValue.Value);
-                }
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Influence", insightValue.EndTime, insightValue.Value);
             }
 
             foreach (FacebookInsightValueData insightValue in data.PageStories.Values.Where(story => dates.Contains(story.EndTime.Date)))
             {
-                int weekNumber = calendar.GetWeekOfYear(insightValue.EndTime, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-                JObject week = new JObject();
-                // add to object / update object
-                JToken weekExisting;
-
-                if (!facebookTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
-                {
-                    facebookTargets.Add("Week" + weekNumber, week);
-                }
-
-                JToken existingValue;
-                if (((JObject)facebookTargets.GetValue("Week" + weekNumber)).TryGetValue("Influence", out existingValue))
-                {
-                    ((JObject)facebookTargets.GetValue("Week" + weekNumber)).GetValue("Influence").Replace(int.Parse(existingValue.ToString()) + insightValue.Value);
-                }
-                else
-                {
-                    ((JObject)facebookTargets.GetValue("Week" + weekNumber)).Add("Influence", insightValue.Value);
-                }
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Influence", insightValue.EndTime, insightValue.Value);
             }
 
             return facebookTargets.Values();
         }
 
-        private DateTime[] GetDates(DateTime startDate, DateTime endDate)
+        public FacebookData GetFacebookData(Guid userId)
         {
-            List<DateTime> dateList = new List<DateTime>();
+            FacebookCredentials creds = _facebookReadRepo.ReadSpecific(userId.ToString());
 
-            for (var date = startDate; date <= endDate; date = date.AddDays(1))
-            {
-                if (date < DateTime.Now.AddDays(-7).Date)
-                    dateList.Add(date);
-            }
-            return dateList.ToArray();
+            FacebookData todaysData = GetMetricData(new DateTime[] { DateTime.Now.Date }, creds.PermanentAccessToken, new FacebookData());
+
+            return string.IsNullOrWhiteSpace(creds.FacebookData) ? todaysData : JsonConvert.DeserializeObject<FacebookData>(creds.FacebookData).Update(todaysData);
         }
-
-        //private DateTime GetEndDateOfPreviousWeek(DateTime startDate)
-        //{
-        //    return startDate.AddDays(-((int)startDate.DayOfWeek == 0 ? 7 : (int)startDate.DayOfWeek)); 
-        //}
     }
 }

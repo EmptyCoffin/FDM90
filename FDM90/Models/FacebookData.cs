@@ -30,12 +30,45 @@ namespace FDM90.Models
 
         public FacebookData Update(FacebookData newData)
         {
-            FanCount = newData.FanCount;
+            FanCount = newData.FanCount == 0 ? FanCount : newData.FanCount;
             NewLikeCount = newData.NewLikeCount;
             TalkingAboutCount = newData.TalkingAboutCount;
-            Posts.AddRange(newData.Posts);
-            PageLikes.Values.AddRange(newData.PageLikes.Values);
-            PageStories.Values.AddRange(newData.PageStories.Values);
+
+            foreach(FacebookPostData post in newData.Posts)
+            {
+                if (Posts.First(current => current.Id == post.Id) != null)
+                {
+                    Posts[Posts.FindIndex(x => x.Id == post.Id)] = post;
+                }
+                else
+                {
+                    Posts.Add(post);
+                }
+            }
+
+            foreach (FacebookInsightValueData like in newData.PageLikes.Values)
+            {
+                if (PageLikes.Values.First(current => current.EndTime == like.EndTime) != null)
+                {
+                    PageLikes.Values[PageLikes.Values.FindIndex(x => x.EndTime == like.EndTime)] = like;
+                }
+                else
+                {
+                    PageLikes.Values.Add(like);
+                }
+            }
+
+            foreach (FacebookInsightValueData like in newData.PageStories.Values)
+            {
+                if (PageStories.Values.First(current => current.EndTime == like.EndTime) != null)
+                {
+                    PageStories.Values[PageStories.Values.FindIndex(x => x.EndTime == like.EndTime)] = like;
+                }
+                else
+                {
+                    PageStories.Values.Add(like);
+                }
+            }
 
             return this;
         }
