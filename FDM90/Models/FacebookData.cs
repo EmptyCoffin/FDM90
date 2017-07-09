@@ -80,6 +80,8 @@ namespace FDM90.Models
         public string Id { get; set; }
         [JsonProperty("message")]
         public string Message { get; set; }
+        [JsonProperty("story")]
+        public string Story { get; set; }
         [JsonProperty("created_time")]
         public DateTime CreatedTime { get; set; }
         [JsonProperty("post_impressions_organic_unique")]

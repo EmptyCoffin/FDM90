@@ -33,9 +33,9 @@
                             <tr runat="server">
                                 <td colspan="2" style="text-align: center">
                                     <asp:Label ID="CreatedTimeLabel" runat="server"
-                                        Text='<%#Eval("EndDate") %>' />
+                                        Text='<%#Eval("EndTime") %>' />
                                     <br />
-                                    <asp:Label ID="MessageLabel" runat="server" Visible='<%#Eval("Message") != null %>'
+                                    <asp:Label ID="MessageLabel" runat="server"
                                         Text='<%#Eval("Value") %>' />
                                     <br />
                                 </td>
@@ -65,6 +65,9 @@
                                 <br />
                                 <asp:Label ID="MessageLabel" runat="server" Visible='<%#Eval("Message") != null %>'
                                     Text='<%#Eval("Message") %>' />
+                                <br />
+                                <asp:Label ID="Label1" runat="server" Visible='<%#Eval("Story") != null %>'
+                                    Text='<%#Eval("Story") %>' />
                                 <br />
                                 <asp:Image runat="server" ID="PostImage" Visible='<%#Eval("PictureUrl") != null %>'
                                     ImageUrl='<%#Eval("PictureUrl") %>' />

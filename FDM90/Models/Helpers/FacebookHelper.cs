@@ -22,7 +22,7 @@ namespace FDM90.Models.Helpers
         public static string FanCount = "fan_count";
         public static string TalkingAboutCount = "talking_about_count";
         public static string PageFansCity = "page_fans_city";
-        public static string Posts = "posts{id,message,created_time,picture,likes,comments}";
+        public static string Posts = "posts{id,message,story,created_time,picture,likes,comments}";
         public static string PostReach = "post_impressions_organic_unique";
         public static string PostNegativity = "post_negative_feedback";
         public static string PageLikes = "page_fans";
