@@ -15,15 +15,15 @@ namespace FDM90UnitTests
     [TestClass]
     public class GoalHandlerUnitTests
     {
-        private Mock<IRepository<Goals>> _mockGoalRepo;
+        private Mock<IRepository<Goal>> _mockGoalRepo;
         private Mock<IFacebookHandler> _mockFacebookHandler;
         private Mock<ITwitterHandler> _mockTwitterHandler;
         private Mock<IUserHandler> _mockUserHandler;
 
         private GoalHandler _goalHandler;
-        private static Goals updatedGoal;
-        private static Goals createdGoal;
-        private List<Goals> _returningGoals;
+        private static Goal updatedGoal;
+        private static Goal createdGoal;
+        private List<Goal> _returningGoals;
         private User _returningUser;
         private JObject _facebookReturner;
         private JObject _twitterReturner;
@@ -37,14 +37,14 @@ namespace FDM90UnitTests
         [TestInitialize]
         public void StartUp()
         {
-            _returningGoals = new List<Goals>();
+            _returningGoals = new List<Goal>();
             _returningUser = new User();
             _facebookReturner = new JObject();
             _twitterReturner = new JObject();
-            _mockGoalRepo = new Mock<IRepository<Goals>>();
-            _mockGoalRepo.Setup(x => x.Create(It.IsAny<Goals>())).Callback<Goals>(goal => createdGoal = goal).Verifiable();
-            _mockGoalRepo.Setup(x => x.Update(It.IsAny<Goals>())).Callback<Goals>(goal => updatedGoal = goal).Verifiable();
-            _mockGoalRepo.As<IReadMultipleSpecific<Goals>>().Setup(s => s.ReadMultipleSpecific(It.IsAny<string>())).Returns(_returningGoals).Verifiable();
+            _mockGoalRepo = new Mock<IRepository<Goal>>();
+            _mockGoalRepo.Setup(x => x.Create(It.IsAny<Goal>())).Callback<Goal>(goal => createdGoal = goal).Verifiable();
+            _mockGoalRepo.Setup(x => x.Update(It.IsAny<Goal>())).Callback<Goal>(goal => updatedGoal = goal).Verifiable();
+            _mockGoalRepo.As<IReadMultipleSpecific<Goal>>().Setup(s => s.ReadMultipleSpecific(It.IsAny<string>())).Returns(_returningGoals).Verifiable();
             _mockGoalRepo.Setup(s => s.ReadAll()).Returns(_returningGoals).Verifiable();
 
             _mockFacebookHandler = new Mock<IFacebookHandler>();
@@ -103,7 +103,7 @@ namespace FDM90UnitTests
             _twitterReturner.Add("Week" + (currentWeekNumber - 1), metricData);
 
             // act
-            _goalHandler.CreateGoal(Guid.NewGuid(), "TestName", 
+            _goalHandler.CreateGoal(Guid.NewGuid(), 0, "TestName", 
                 DateTime.Now.AddDays(-7).Date.ToShortDateString(), DateTime.Now.AddMonths(7).Date.ToShortDateString(), progressData.ToString());
             _goalHandler.updateGoalsTask.Wait();
 
@@ -113,8 +113,8 @@ namespace FDM90UnitTests
             Assert.IsNotNull(createdGoal.StartDate);
             Assert.IsNotNull(createdGoal.EndDate);
             Assert.IsNotNull(createdGoal.Targets);
-            _mockGoalRepo.Verify(x => x.Create(It.IsAny<Goals>()), Times.Once());
-            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goals>()), Times.Once());
+            _mockGoalRepo.Verify(x => x.Create(It.IsAny<Goal>()), Times.Once());
+            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goal>()), Times.Once());
             Assert.AreEqual(createdGoal.UserId, updatedGoal.UserId);
             Assert.AreEqual(createdGoal.GoalName, updatedGoal.GoalName);
             Assert.AreEqual(createdGoal.StartDate, updatedGoal.StartDate);
@@ -144,14 +144,14 @@ namespace FDM90UnitTests
             progressData.Add("Facebook", facebookData);
             progressData.Add("Twitter", twitterData);
 
-            _returningGoals.Add(new Goals() { StartDate = DateTime.Now.AddDays(-7).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = progressData.ToString() });
-            _returningGoals.Add(new Goals() { StartDate = DateTime.Now.AddDays(4).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = string.Empty });
+            _returningGoals.Add(new Goal() { StartDate = DateTime.Now.AddDays(-7).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { StartDate = DateTime.Now.AddDays(4).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = string.Empty });
 
             _returningUser.Facebook = true;
             _returningUser.Twitter = true;
 
             // act
-            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goals() { StartDate = DateTime.Now.Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
+            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goal() { StartDate = DateTime.Now.Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
 
             // assert
             Assert.IsNotNull(updatedGoal);
@@ -178,7 +178,7 @@ namespace FDM90UnitTests
             _returningUser.Twitter = true;
 
             // act
-            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goals() { StartDate = DateTime.Now.Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
+            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goal() { StartDate = DateTime.Now.Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
 
             // assert
             Assert.IsNotNull(updatedGoal);
@@ -217,13 +217,13 @@ namespace FDM90UnitTests
             progressData.Add("Facebook", facebookData);
             progressData.Add("Twitter", twitterData);
 
-            _returningGoals.Add(new Goals() { StartDate = DateTime.Now.AddDays(-14).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { StartDate = DateTime.Now.AddDays(-14).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = progressData.ToString() });
 
             _returningUser.Facebook = true;
             _returningUser.Twitter = true;
 
             // act
-            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goals() { StartDate = DateTime.Now.AddDays(-14).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
+            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goal() { StartDate = DateTime.Now.AddDays(-14).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
 
             // assert
             Assert.IsNotNull(updatedGoal);
@@ -260,7 +260,7 @@ namespace FDM90UnitTests
             _returningUser.Twitter = true;
 
             // act
-            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goals() { StartDate = DateTime.Now.AddDays(-14).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
+            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goal() { StartDate = DateTime.Now.AddDays(-14).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
 
             // assert
             Assert.IsNotNull(updatedGoal);
@@ -302,7 +302,7 @@ namespace FDM90UnitTests
             progressData.Add("Facebook", facebookData);
             progressData.Add("Twitter", twitterData);
 
-            _returningGoals.Add(new Goals() { StartDate = DateTime.Now.AddDays(-21).Date, EndDate = DateTime.Now.AddDays(-14).Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { StartDate = DateTime.Now.AddDays(-21).Date, EndDate = DateTime.Now.AddDays(-14).Date, Progress = progressData.ToString() });
 
             _facebookReturner.Add("Week" + +(currentWeekNumber - 1), metricData);
             _twitterReturner.Add("Week" + (currentWeekNumber - 1), metricData);
@@ -311,7 +311,7 @@ namespace FDM90UnitTests
             _returningUser.Twitter = true;
 
             // act
-            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goals() { StartDate = DateTime.Now.AddDays(-15).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
+            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goal() { StartDate = DateTime.Now.AddDays(-15).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
 
             // assert
             Assert.IsNotNull(updatedGoal);
@@ -341,7 +341,7 @@ namespace FDM90UnitTests
             _returningUser.Twitter = true;
 
             // act
-            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goals() { StartDate = DateTime.Now.AddDays(7).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
+            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goal() { StartDate = DateTime.Now.AddDays(7).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
             
             // assert
             Assert.IsNotNull(updatedGoal);
@@ -377,7 +377,7 @@ namespace FDM90UnitTests
 
             progressData.Add("Facebook", facebookData);
 
-            _returningGoals.Add(new Goals() { StartDate = DateTime.Now.AddDays(-28).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { StartDate = DateTime.Now.AddDays(-28).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = progressData.ToString() });
 
             _facebookReturner.Add("Week" + (currentWeekNumber - 2), metricData);
             _facebookReturner.Add("Week" + +(currentWeekNumber - 1), metricData);
@@ -386,7 +386,7 @@ namespace FDM90UnitTests
             _returningUser.Twitter = false;
 
             // act
-            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goals() { StartDate = DateTime.Now.AddDays(-28).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
+            _goalHandler.UpdateGoals(Guid.NewGuid(), new Goal() { StartDate = DateTime.Now.AddDays(-28).Date, EndDate = DateTime.Now.AddMonths(3).Date }).Wait();
 
             // assert
             Assert.IsNotNull(updatedGoal);
@@ -433,12 +433,12 @@ namespace FDM90UnitTests
             _returningUser.Twitter = true;
             _returningUser.UserId = Guid.NewGuid();
 
-            _returningGoals.Add(new Goals() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date.Date, Progress = progressData.ToString() });
-            _returningGoals.Add(new Goals() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddDays(-5).Date, EndDate = DateTime.Now.Date.AddDays(-8).Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date.Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddDays(-5).Date, EndDate = DateTime.Now.Date.AddDays(-8).Date, Progress = progressData.ToString() });
 
             // act
             _goalHandler.DailyUpdate().Wait();
-            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goals>()), Times.Exactly(1));
+            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goal>()), Times.Exactly(1));
             Assert.IsNotNull(updatedGoal);
             Assert.IsTrue(updatedGoal.Progress.Contains("Facebook"));
             Assert.IsTrue(updatedGoal.Progress.Contains("Twitter"));
@@ -479,11 +479,11 @@ namespace FDM90UnitTests
             _returningUser.Twitter = true;
             _returningUser.UserId = Guid.NewGuid();
 
-            _returningGoals.Add(new Goals() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date.Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date.Date, Progress = progressData.ToString() });
 
             // act
             _goalHandler.DailyUpdate().Wait();
-            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goals>()), Times.Exactly(1));
+            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goal>()), Times.Exactly(1));
             Assert.IsNotNull(updatedGoal);
             Assert.IsTrue(updatedGoal.Progress.Contains("Facebook"));
             Assert.IsTrue(updatedGoal.Progress.Contains("Twitter"));
@@ -528,11 +528,11 @@ namespace FDM90UnitTests
             _returningUser.Twitter = true;
             _returningUser.UserId = Guid.NewGuid();
 
-            _returningGoals.Add(new Goals() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date, Progress = progressData.ToString() });
 
             // act
             _goalHandler.DailyUpdate().Wait();
-            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goals>()), Times.Exactly(1));
+            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goal>()), Times.Exactly(1));
             Assert.IsNotNull(updatedGoal);
             Assert.IsTrue(updatedGoal.Progress.Contains("Facebook"));
             Assert.IsTrue(updatedGoal.Progress.Contains("Twitter"));
@@ -581,11 +581,11 @@ namespace FDM90UnitTests
             _returningUser.Twitter = true;
             _returningUser.UserId = Guid.NewGuid();
 
-            _returningGoals.Add(new Goals() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date, Progress = progressData.ToString() });
+            _returningGoals.Add(new Goal() { UserId = _returningUser.UserId, StartDate = DateTime.Now.AddMonths(-1).Date, EndDate = DateTime.Now.Date, Progress = progressData.ToString() });
 
             // act
             _goalHandler.DailyUpdate().Wait();
-            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goals>()), Times.Exactly(1));
+            _mockGoalRepo.Verify(x => x.Update(It.IsAny<Goal>()), Times.Exactly(1));
             Assert.IsNotNull(updatedGoal);
             Assert.IsTrue(updatedGoal.Progress.Contains("Facebook"));
             Assert.IsTrue(updatedGoal.Progress.Contains("Twitter"));

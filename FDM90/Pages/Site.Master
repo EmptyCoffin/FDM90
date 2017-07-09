@@ -36,6 +36,9 @@
                     <li role="presentation" id="HomeTab" runat="server">
                         <a href="~/Pages/Content/Home.aspx" title="Home" runat="server">Home</a>
                     </li>
+                    <li role="presentation" id="GoalsTab" runat="server">
+                        <a href="~/Pages/Content/Goals.aspx" id="Goals" visible="false" runat="server">Goals</a>
+                    </li>
                     <li role="presentation" id="FacebookTab" runat="server">
                         <a href="~/Pages/Content/Facebook.aspx" id="Facebook" visible="false" runat="server">Facebook</a>
                     </li>

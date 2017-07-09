@@ -76,6 +76,24 @@ namespace FDM90.Pages {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl HomeTab;
         
         /// <summary>
+        /// GoalsTab control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl GoalsTab;
+        
+        /// <summary>
+        /// Goals control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor Goals;
+        
+        /// <summary>
         /// FacebookTab control.
         /// </summary>
         /// <remarks>

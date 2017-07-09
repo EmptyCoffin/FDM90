@@ -22,33 +22,6 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl goalArea;
         
         /// <summary>
-        /// currentGoalDropDown control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList currentGoalDropDown;
-        
-        /// <summary>
-        /// metricDropDown control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList metricDropDown;
-        
-        /// <summary>
-        /// goalChart control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.DataVisualization.Charting.Chart goalChart;
-        
-        /// <summary>
         /// setupGoalButton control.
         /// </summary>
         /// <remarks>

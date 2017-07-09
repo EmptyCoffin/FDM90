@@ -99,5 +99,10 @@ namespace FDM90.Handlers
         {
             return _userSpecific.ReadSpecific(userId);
         }
+
+        public void UpdateUser(User user)
+        {
+            _userRepo.Update(user);
+        }
     }
 }

@@ -9,7 +9,7 @@ using System.Data.SqlClient;
 
 namespace FDM90.Repository
 {
-    public class GoalRepository : RepositoryBase<Goals>, IRepository<Goals>, IReadMultipleSpecific<Goals>
+    public class GoalRepository : RepositoryBase<Goal>, IRepository<Goal>, IReadMultipleSpecific<Goal>
     {
         protected override string _table
         {
@@ -19,7 +19,7 @@ namespace FDM90.Repository
             }
         }
 
-        public void Create(Goals objectToCreate)
+        public void Create(Goal objectToCreate)
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
                         "[UserId], [GoalName], [WeekStart], [WeekEnd], [Targets], [Progress]" + SQLHelper.CloseBracket + SQLHelper.Values
@@ -37,17 +37,17 @@ namespace FDM90.Repository
             SendVoidCommand(sql, parameters);
         }
 
-        public void Delete(Goals objectId)
+        public void Delete(Goal objectId)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Goals> ReadAll()
+        public IEnumerable<Goal> ReadAll()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Goals> ReadMultipleSpecific(string objectId)
+        public IEnumerable<Goal> ReadMultipleSpecific(string objectId)
         {
             string sql = SQLHelper.SelectAll + _table + SQLHelper.Where +
                             "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
@@ -59,9 +59,9 @@ namespace FDM90.Repository
             return SendReaderCommand(sql, parameters);
         }
 
-        public override Goals SetProperties(IDataReader reader)
+        public override Goal SetProperties(IDataReader reader)
         {
-            Goals goal = new Goals();
+            Goal goal = new Goal();
             goal.UserId = Guid.Parse(reader["UserId"].ToString());
             goal.GoalName = reader["GoalName"].ToString();
             goal.StartDate = DateTime.Parse(reader["WeekStart"].ToString());
@@ -71,9 +71,9 @@ namespace FDM90.Repository
             return goal;
         }
 
-        public void Update(Goals objectToUpdate)
+        public void Update(Goal objectToUpdate)
         {
-            Goals currentDetails = ReadMultipleSpecific(objectToUpdate.UserId.ToString()).Where(x => x.GoalName == objectToUpdate.GoalName).First();
+            Goal currentDetails = ReadMultipleSpecific(objectToUpdate.UserId.ToString()).Where(x => x.GoalName == objectToUpdate.GoalName).First();
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
