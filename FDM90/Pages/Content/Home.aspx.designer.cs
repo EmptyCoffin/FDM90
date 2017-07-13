@@ -130,6 +130,15 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.Label overallInfluence;
         
         /// <summary>
+        /// overallEngagement control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label overallEngagement;
+        
+        /// <summary>
         /// newGoalButton control.
         /// </summary>
         /// <remarks>

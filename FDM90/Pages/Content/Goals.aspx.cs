@@ -20,24 +20,39 @@ namespace FDM90.Pages.Content
         private string[] metrics = { "Exposure", "Influence", "Engagement" };
         private static DataTable goalDataTable;
 
+        public Goals():this(new GoalHandler())
+        {
+
+        }
+
+        public Goals(IGoalHandler goalHandler)
+        {
+            _goalHandler = goalHandler;
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-             _userGoals = _goalHandler.GetUserGoals(UserSingleton.Instance.CurrentUser.UserId);
-            currentGoalDropDown.DataSource = _userGoals.Select(s => s.GoalName);
-            currentGoalDropDown.DataBind();
+            if (!Page.IsPostBack)
+            {
+                _userGoals = _goalHandler.GetUserGoals(UserSingleton.Instance.CurrentUser.UserId);
+                currentGoalDropDown.DataSource = _userGoals.Select(s => s.GoalName);
+                currentGoalDropDown.DataBind();
 
-            if(!string.IsNullOrEmpty(Request.QueryString["GoalName"]))
-                currentGoalDropDown.SelectedIndex = _userGoals.FindIndex(goal => goal.GoalName == Request.QueryString["GoalName"]);
+                if (!string.IsNullOrEmpty(Request.QueryString["GoalName"]))
+                    currentGoalDropDown.SelectedIndex = _userGoals.FindIndex(goal => goal.GoalName == Request.QueryString["GoalName"]);
 
-            metricDropDown.DataSource = metrics;
-            metricDropDown.DataBind();
+                metricDropDown.DataSource = metrics;
+                metricDropDown.DataBind();
 
-            UpdateGoalDataTable();
+                UpdateGoalDataTable();
+            }
         }
 
         private void UpdateGoalDataTable()
         {
-            if (_userGoals.Count() > 0)
+            Goal selectedGoal = _userGoals.Where(x => x.GoalName == currentGoalDropDown.SelectedValue).First();
+
+            if (_userGoals.Count() > 0 && !string.IsNullOrWhiteSpace(selectedGoal.Progress))
             {
                 goalDataTable = new DataTable();
                 goalDataTable.Columns.Add("Source", typeof(string));
@@ -46,7 +61,6 @@ namespace FDM90.Pages.Content
                 goalDataTable.Columns.Add("Target", typeof(int));
                 goalDataTable.Columns.Add("Progress", typeof(int));
                 goalDataTable.Columns.Add("AccumulatedProgress", typeof(int));
-                Goal selectedGoal = _userGoals.Where(x => x.GoalName == currentGoalDropDown.SelectedValue).First();
                 JObject progress = JObject.Parse(selectedGoal.Progress);
                 JObject target = JObject.Parse(selectedGoal.Targets);
 
@@ -84,7 +98,16 @@ namespace FDM90.Pages.Content
                     row[0] = "Overall";
                     row[1] = groupRow.First()[1];
                     row[2] = groupRow.First()[2];
-                    row[3] = groupRow.Sum(x => int.Parse(x[3].ToString()));
+
+                    int accumulatedTarget = 0;
+
+                    foreach(JProperty value in target.Children())
+                    {
+                        accumulatedTarget += int.Parse(value.Value[groupRow.First()[2]].ToString());
+                    }
+
+                    row[3] = accumulatedTarget;
+
                     row[4] = groupRow.Sum(x => int.Parse(x[4].ToString()));
 
                     if (goalDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == groupRow.First()[1].ToString()).Count() == 0)
@@ -137,7 +160,15 @@ namespace FDM90.Pages.Content
                 limitSeries.ChartType = SeriesChartType.Line;
                 limitSeries.Points.DataBind(mediaRows, goalDataTable.Columns[1].ToString(), goalDataTable.Columns[3].ToString(), null);
 
-                goalChart.ChartAreas.Add(mediaChart);
+                if(mediaChart.Name == "Overall")
+                {
+                    goalChart.ChartAreas.Insert(0, mediaChart);
+                }
+                else
+                {
+                    goalChart.ChartAreas.Add(mediaChart);
+                }
+
                 goalChart.Series.Add(progressSeries);
                 goalChart.Series.Add(limitSeries);
 

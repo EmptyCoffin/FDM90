@@ -39,6 +39,9 @@
                         <asp:TableHeaderCell>
                         Influence
                         </asp:TableHeaderCell>
+                        <asp:TableHeaderCell>
+                        Engagement
+                        </asp:TableHeaderCell>
                     </asp:TableHeaderRow>
                     <asp:TableRow>
                         <asp:TableCell>
@@ -49,6 +52,9 @@
                         </asp:TableCell>
                         <asp:TableCell>
                             <asp:Label runat="server" ID="overallInfluence" Text="0"></asp:Label>
+                        </asp:TableCell>
+                        <asp:TableCell>
+                            <asp:Label runat="server" ID="overallEngagement" Text="0"></asp:Label>
                         </asp:TableCell>
                     </asp:TableRow>
                 </asp:Table>

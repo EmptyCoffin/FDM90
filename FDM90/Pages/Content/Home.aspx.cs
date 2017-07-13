@@ -31,11 +31,15 @@ namespace FDM90.Pages.Content
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (UserSingleton.Instance.CurrentUser != null && !Page.IsPostBack)
+            if (UserSingleton.Instance.CurrentUser != null)
             {
-                facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
-                twitterSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Twitter;
-                goalArea.Visible = true;
+                if (!Page.IsPostBack)
+                {
+                    facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
+                    twitterSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Twitter;
+                    goalArea.Visible = true;
+                }
+                SetUpTableControls();
             }
         }
 
@@ -181,7 +185,7 @@ namespace FDM90.Pages.Content
                 targets.Add(media, mediaTarget);
             }
 
-            _goalHandler.CreateGoal(UserSingleton.Instance.CurrentUser.UserId, UserSingleton.Instance.CurrentUser.Goals,
+            _goalHandler.CreateGoal(UserSingleton.Instance.CurrentUser,
                                 goalName.Text, startDateButton.Text, endDateButton.Text, targets.ToString());
 
             UserSingleton.Instance.CurrentUser.Goals++;

@@ -36,10 +36,10 @@ namespace FDM90.Handlers
             _mediaHandlers.AddRange(new IMediaHandler[] { _facebookHandler, twitterHandler });
         }
 
-        public void CreateGoal(Guid userId, int goals, string name, string startDate, string endDate, string targets)
+        public void CreateGoal(User user, string name, string startDate, string endDate, string targets)
         {
             Goal newGoal = new Goal() {
-                UserId = userId,
+                UserId = user.UserId,
                 GoalName = name,
                 StartDate = DateTime.Parse(startDate),
                 EndDate = DateTime.Parse(endDate),
@@ -47,8 +47,9 @@ namespace FDM90.Handlers
             };
 
             _goalRepo.Create(newGoal);
-            _userHandler.UpdateUser(new User() { UserId = userId, Goals = goals + 1 });
-            updateGoalsTask = UpdateGoals(userId, newGoal);
+            user.Goals++;
+            _userHandler.UpdateUser(user);
+            updateGoalsTask = UpdateGoals(user.UserId, newGoal);
         }
 
         public Task UpdateGoals(Guid userId, Goal newGoal)

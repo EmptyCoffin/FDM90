@@ -103,7 +103,7 @@ namespace FDM90UnitTests
             _twitterReturner.Add("Week" + (currentWeekNumber - 1), metricData);
 
             // act
-            _goalHandler.CreateGoal(Guid.NewGuid(), 0, "TestName", 
+            _goalHandler.CreateGoal(new User() { UserId = Guid.NewGuid(), Goals = 0 }, "TestName", 
                 DateTime.Now.AddDays(-7).Date.ToShortDateString(), DateTime.Now.AddMonths(7).Date.ToShortDateString(), progressData.ToString());
             _goalHandler.updateGoalsTask.Wait();
 

@@ -72,7 +72,7 @@ namespace FDM90.Handlers
             return credentials;
         }
 
-        public string SetAccessToken(string shortTermToken, Guid userId, string pageName)
+        public User SetAccessToken(string shortTermToken, Guid userId, string pageName)
         {
             var permanentTokenString = _facebookClientWrapper.GetPermanentAccessToken(shortTermToken, pageName);
 
@@ -86,7 +86,7 @@ namespace FDM90.Handlers
             // trigger get info
             Task.Factory.StartNew(() => GetMediaData(userId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date)));
 
-            return permanentTokenString;
+            return _userHandler.GetUser(userId.ToString());
         }
 
         public void GetMediaData(Guid userId, DateTime[] dates)

@@ -53,7 +53,7 @@ namespace FDM90.Handlers
             var data = JsonConvert.DeserializeObject<TwitterData>(twitterDetails.TwitterData);
             int screenNameFollowerCount = data.NumberOfFollowers;
             // get exposure - followers and followers of those retweeted/favorited
-            foreach (var tweetDate in data.Tweets.Where(w => !w.Retweeted && !w.Favorited).GroupBy(x => x.CreatedAt.Date))
+            foreach (var tweetDate in data.Tweets.Where(w => w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
             {
                 var numberOfMessages = tweetDate.Count();
                 var numberOfFollowers = screenNameFollowerCount;
@@ -70,7 +70,7 @@ namespace FDM90.Handlers
             }
 
             // get influence - followers of those retweeted/favorited
-            foreach (var tweetDate in data.Tweets.Where(w => !w.Retweeted && !w.Favorited && w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
+            foreach (var tweetDate in data.Tweets.Where(w => w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
             {
                 var numberOfMessages = tweetDate.Count();
                 var numberOfFollowers = 0;
@@ -124,16 +124,17 @@ namespace FDM90.Handlers
             return retweeterUsers;
         }
 
-        private List<Status> GetTwitterData(TwitterCredentials twitterDetails, DateTime[] dates)
+        private TwitterData GetTwitterData(TwitterCredentials twitterDetails, DateTime[] dates)
         {
             // for loop ? 
+            TwitterData data = null;
             var tweets = _twitterClientWrapper.GetTweets(twitterDetails).Result;
 
             tweets.RemoveAll(remove => !dates.Contains(remove.CreatedAt.Date));
 
             if (tweets.Count > 0)
             {
-                TwitterData data = new TwitterData(tweets, tweets.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount);
+                data = new TwitterData(tweets, tweets.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount);
 
                 foreach (Tweet tweet in data.Tweets.Where(y => y.RetweetCount > 0 || y.FavoriteCount > 0))
                 {
@@ -141,29 +142,15 @@ namespace FDM90.Handlers
                 }
             }
 
-            return tweets;
+            return data;
         }
 
         public TwitterData GetTweets(string userId)
         {
             TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
-            TwitterData returningData = null;
-            List<Status> todaysData = GetTwitterData(creds, new DateTime[] { DateTime.Now.Date });
+            TwitterData todaysData = GetTwitterData(creds, new DateTime[] { DateTime.Now.Date });
 
-            if (!string.IsNullOrWhiteSpace(creds.TwitterData))
-            {
-                returningData = JsonConvert.DeserializeObject<TwitterData>(creds.TwitterData);
-                returningData.Update(todaysData);
-            }
-            else
-            {
-                if (todaysData.Count > 0)
-                {
-                    returningData = new TwitterData(todaysData, todaysData.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount);
-                }
-            }
-
-            return returningData;
+            return !string.IsNullOrWhiteSpace(creds.TwitterData) ? JsonConvert.DeserializeObject<TwitterData>(creds.TwitterData).Update(todaysData) : todaysData;
         }
 
         public void SaveUserDetails(string accessToken, string accessTokenSecret, string screenName, string userId)
@@ -187,7 +174,7 @@ namespace FDM90.Handlers
         {
             TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
 
-            Task<List<Status>>[] tasks = new Task<List<Status>>[1];
+            Task<TwitterData>[] tasks = new Task<TwitterData>[1];
 
             tasks[0] = Task.Factory.StartNew(() => GetTwitterData(creds, dates));
 
@@ -201,7 +188,7 @@ namespace FDM90.Handlers
                 }
                 else
                 {
-                    creds.TwitterData = JsonConvert.SerializeObject(new TwitterData(data[0].Result, data[0].Result.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount));
+                    creds.TwitterData = JsonConvert.SerializeObject(data[0].Result);
                 }
 
                 _twitterRepo.Update(creds);

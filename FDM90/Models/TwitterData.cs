@@ -31,11 +31,11 @@ namespace FDM90.Models
 
         public List<Tweet> Tweets { get; set; }
 
-        public TwitterData Update(List<Status> newTweets)
+        public TwitterData Update(TwitterData newTweets)
         {
-            foreach (Tweet newTweet in ConvertedTweets(newTweets))
+            foreach (Tweet newTweet in newTweets.Tweets)
             {
-                if (Tweets.First(current => current.StatusID == newTweet.StatusID) != null)
+                if (Tweets.Count(current => current.StatusID == newTweet.StatusID) > 0)
                 {
                     Tweets[Tweets.FindIndex(x => x.StatusID == newTweet.StatusID)] = newTweet;
                 }
@@ -45,9 +45,8 @@ namespace FDM90.Models
                 }
             }
 
-            if (newTweets.Count > 0)
+            if (newTweets.Tweets.Count > 0)
             {
-                NumberOfFollowers = newTweets.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount;
                 numberOfRetweets = Tweets.Sum(x => x.RetweetCount);
                 numberOfFavorited = Tweets.Sum(x => x.FavoriteCount);
             }
@@ -69,8 +68,9 @@ namespace FDM90.Models
                     RetweetCount = tweet.RetweetCount,
                     StatusID = tweet.StatusID,
                     Text = tweet.Text,
-                    Retweeted = tweet.Retweeted,
-                    Favorited = tweet.Favorited,
+                    Retweeted = tweet.RetweetCount > 0,
+                    Favorited = tweet.FavoriteCount > 0,
+                    RetweetedUsers = new List<TwitterUser>()
                 });
             }
 
@@ -88,7 +88,7 @@ namespace FDM90.Models
         public string Text { get; set; }
         public bool Retweeted { get; set; }
         public bool Favorited { get; set; }
-        public List<TwitterUser> RetweetedUsers {get;set;}
+        public IEnumerable<TwitterUser> RetweetedUsers {get;set;}
     }
 
     public class TwitterUser

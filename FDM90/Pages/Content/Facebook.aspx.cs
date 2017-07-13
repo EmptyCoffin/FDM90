@@ -43,7 +43,7 @@ namespace FDM90.Pages.Content
                 }
                 else if (!string.IsNullOrWhiteSpace(Request.QueryString["code"]))
                 {
-                    facebookCreds.PermanentAccessToken = _facebookHandler.SetAccessToken(Request.QueryString["code"],
+                    UserSingleton.Instance.CurrentUser = _facebookHandler.SetAccessToken(Request.QueryString["code"],
                                                                 facebookCreds.UserId, facebookCreds.PageName);
                 }
             }

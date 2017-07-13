@@ -12,7 +12,7 @@ namespace FDM90.Handlers
     {
         FacebookCredentials GetLogInDetails(Guid userId);
         FacebookCredentials SaveLogInDetails(Guid userId, string pageName);
-        string SetAccessToken(string shortTermToken, Guid userId, string pageName);
+        User SetAccessToken(string shortTermToken, Guid userId, string pageName);
         FacebookData GetFacebookData(Guid userId);
     }
 }
