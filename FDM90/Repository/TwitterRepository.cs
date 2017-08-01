@@ -66,12 +66,22 @@ namespace FDM90.Repository
             creds.AccessToken = reader["AccessToken"].ToString();
             creds.AccessTokenSecret = reader["AccessTokenSecret"]?.ToString();
             creds.ScreenName = reader["ScreenName"]?.ToString();
+            creds.TwitterData = reader["TwitterData"]?.ToString();
             return creds;
         }
 
         public void Update(TwitterCredentials objectToUpdate)
         {
-            throw new NotImplementedException();
+            TwitterCredentials currentDetails = ReadSpecific(objectToUpdate.UserId.ToString());
+            List<SqlParameter> parameters = new List<SqlParameter>();
+
+            string sql = SQLHelper.Update + _table + SQLHelper.Set +
+                 SetUpdateValues(currentDetails, objectToUpdate, out parameters)
+            + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
+
+            parameters.Add(new SqlParameter("@UserID", objectToUpdate.UserId));
+
+            SendVoidCommand(sql, parameters.ToArray());
         }
     }
 }

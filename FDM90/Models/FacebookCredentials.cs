@@ -18,5 +18,7 @@ namespace FDM90.Models
         public string PageName { get; set; }
         public string PermanentAccessToken { get; set; }
 
+        public string FacebookData { get; set; }
+
     }
 }

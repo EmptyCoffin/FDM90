@@ -9,6 +9,8 @@ using LinqToTwitter;
 using FDM90.Singleton;
 using System.Globalization;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using FDM90.Models.Helpers;
 
 namespace FDM90.Handlers
 {
@@ -17,19 +19,19 @@ namespace FDM90.Handlers
         private IReadSpecific<TwitterCredentials> _twitterReadRepo;
         private IRepository<TwitterCredentials> _twitterRepo;
         private IUserHandler _userHandler;
-        static DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
-        Calendar calendar = dateInfo.Calendar;
+        private ITwitterClientWrapper _twitterClientWrapper;
 
-        public TwitterHandler() : this(new TwitterRepository(), new UserHandler())
+        public TwitterHandler() : this(new TwitterRepository(), new UserHandler(), new TwitterClientWrapper())
         {
 
         }
 
-        public TwitterHandler(IRepository<Models.TwitterCredentials> twitterRepo, IUserHandler userHandler)
+        public TwitterHandler(IRepository<Models.TwitterCredentials> twitterRepo, IUserHandler userHandler, ITwitterClientWrapper twitterClientWrapper)
         {
             _twitterRepo = twitterRepo;
             _twitterReadRepo = (IReadSpecific<Models.TwitterCredentials>)twitterRepo;
             _userHandler = userHandler;
+            _twitterClientWrapper = twitterClientWrapper;
         }
 
 
@@ -44,204 +46,153 @@ namespace FDM90.Handlers
         public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates)
         {
             JObject twitterTargets = new JObject();
-            DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
-            Calendar calendar = dateInfo.Calendar;
 
             // get user twitter
             var twitterDetails = _twitterReadRepo.ReadSpecific(userId.ToString());
 
-            Task<List<Status>>[] tasks = new Task<List<Status>>[1];
-
-            tasks[0] = Task.Factory.StartNew(() => GetTwitterData(twitterDetails, dates).Result);
-
-            return Task.Factory.ContinueWhenAll(tasks, data =>
+            var data = JsonConvert.DeserializeObject<TwitterData>(twitterDetails.TwitterData);
+            int screenNameFollowerCount = data.NumberOfFollowers;
+            // get exposure - followers and followers of those retweeted/favorited
+            foreach (var tweetDate in data.Tweets.Where(w => w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
             {
-                var tweets = data[0].Result;
-                int screenNameFollowerCount = tweets.Where(x => x.ScreenName == twitterDetails.ScreenName).First().User.FollowersCount;
-                // get exposure - followers and followers of those retweeted/favorited
-                foreach (var tweetDate in tweets.Where(w => !w.Retweeted && !w.Favorited).GroupBy(x => x.CreatedAt.Date))
+                var numberOfMessages = tweetDate.Count();
+                var numberOfFollowers = screenNameFollowerCount;
+
+                foreach (Tweet tweet in tweetDate.Where(y => y.RetweetCount > 0))
                 {
-                    var numberOfMessages = tweetDate.Count();
-                    var numberOfFollowers = screenNameFollowerCount;
-
-                    foreach (Status tweet in tweetDate.Where(y => y.RetweetCount > 0))
-                    {
-                        // get retweeters followers
-                        numberOfFollowers = numberOfFollowers + GetRetweeterFollowers(tweet.StatusID, twitterDetails).Result;
-                    }
-
-                    int weekNumber = calendar.GetWeekOfYear(tweetDate.First().CreatedAt, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-                    JObject week = new JObject();
-                    // add to object / update object 
-                    JToken weekExisting;
-
-                    double estimatedExposure = (((double)numberOfFollowers * numberOfMessages) * (numberOfMessages / (double)numberOfFollowers));
-
-                    if (!twitterTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
-                    {
-                        twitterTargets.Add("Week" + weekNumber, week);
-                    }
-
-                    JToken existingValue;
-                    if (((JObject)twitterTargets.GetValue("Week" + weekNumber)).TryGetValue("Exposure", out existingValue))
-                    {
-                        ((JObject)twitterTargets.GetValue("Week" + weekNumber)).GetValue("Exposure").Replace(int.Parse(existingValue.ToString()) + (int)estimatedExposure);
-                    }
-                    else
-                    {
-                        ((JObject)twitterTargets.GetValue("Week" + weekNumber)).Add("Exposure", (int)estimatedExposure);
-                    }
+                    // get retweeters followers
+                    numberOfFollowers = numberOfFollowers + tweet.RetweetedUsers.Sum(x => x.NumberOfFollowers);
                 }
 
-                // get influence - followers of those retweeted/favorited
-                foreach (var tweetDate in tweets.Where(w => !w.Retweeted && !w.Favorited && w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
+                double estimatedExposure = (((double)numberOfFollowers * numberOfMessages) * (numberOfMessages / (double)numberOfFollowers));
+
+                twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Exposure", tweetDate.First().CreatedAt, (int)estimatedExposure);
+            }
+
+            // get influence - followers of those retweeted/favorited
+            foreach (var tweetDate in data.Tweets.Where(w => w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
+            {
+                var numberOfMessages = tweetDate.Count();
+                var numberOfFollowers = 0;
+
+                foreach (Tweet tweet in tweetDate.Where(y => y.RetweetCount > 0 || y.FavoriteCount > 0))
                 {
-                    var numberOfMessages = tweetDate.Count();
-                    var numberOfFollowers = 0;
-
-                    foreach (Status tweet in tweetDate.Where(y => y.RetweetCount > 0 || y.FavoriteCount > 0))
-                    {
-                        // get retweeters followers
-                        numberOfFollowers = numberOfFollowers + GetRetweeterFollowers(tweet.StatusID, twitterDetails).Result;
-                    }
-
-                    int weekNumber = calendar.GetWeekOfYear(tweetDate.First().CreatedAt, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-                    JObject week = new JObject();
-                    // add to object / update object 
-                    JToken weekExisting;
-
-                    double estimatedInfluence = (((double)numberOfFollowers * numberOfMessages) * (numberOfMessages / (double)numberOfFollowers));
-
-                    if (!twitterTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
-                    {
-                        twitterTargets.Add("Week" + weekNumber, week);
-                    }
-
-                    JToken existingValue;
-                    if (((JObject)twitterTargets.GetValue("Week" + weekNumber)).TryGetValue("Influence", out existingValue))
-                    {
-                        ((JObject)twitterTargets.GetValue("Week" + weekNumber)).GetValue("Influence").Replace(int.Parse(existingValue.ToString()) + (int)estimatedInfluence);
-                    }
-                    else
-                    {
-                        ((JObject)twitterTargets.GetValue("Week" + weekNumber)).Add("Influence", (int)estimatedInfluence);
-                    }
+                    // get retweeters followers
+                    numberOfFollowers = numberOfFollowers + tweet.RetweetedUsers.Sum(x => x.NumberOfFollowers);
                 }
 
-                // get engagement - replies/mentions, direct messages, retweets, hashtags mentions, favorited
-                foreach (var datedTweets in tweets.Where(x => x.RetweetCount > 0 || x.FavoriteCount > 0).GroupBy(x => x.CreatedAt.Date))
+                double estimatedInfluence = (((double)numberOfFollowers * numberOfMessages) * (numberOfMessages / (double)numberOfFollowers));
+
+                twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Influence", tweetDate.First().CreatedAt, (int)estimatedInfluence);
+            }
+
+            // get engagement - replies/mentions, direct messages, retweets, hashtags mentions, favorited
+            foreach (var datedTweets in data.Tweets.Where(x => x.RetweetCount > 0 || x.FavoriteCount > 0).GroupBy(x => x.CreatedAt.Date))
+            {
+                var numberOfEngagements = 0;
+
+                foreach (Tweet tweet in datedTweets)
                 {
-                    int weekNumber = calendar.GetWeekOfYear(datedTweets.First().CreatedAt, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-
-                    var numberOfEngagements = 0;
-
-                    foreach (Status tweet in datedTweets)
-                    {
-                        // get retweeters followers
-                        numberOfEngagements = numberOfEngagements + tweet.FavoriteCount ?? 0 + tweet.RetweetCount;
-                    }
-
-                    JObject week = new JObject();
-                    // add to object / update object 
-                    JToken weekExisting;
-
-                    if (!twitterTargets.TryGetValue("Week" + weekNumber.ToString(), out weekExisting))
-                    {
-                        twitterTargets.Add("Week" + weekNumber, week);
-                    }
-
-                    JToken existingValue;
-                    if (((JObject)twitterTargets.GetValue("Week" + weekNumber)).TryGetValue("Engagement", out existingValue))
-                    {
-                        ((JObject)twitterTargets.GetValue("Week" + weekNumber)).GetValue("Engagement").Replace(int.Parse(existingValue.ToString()) + numberOfEngagements);
-                    }
-                    else
-                    {
-                        ((JObject)twitterTargets.GetValue("Week" + weekNumber)).Add("Engagement", numberOfEngagements);
-                    }
+                    // get retweeters followers
+                    numberOfEngagements = numberOfEngagements + tweet.FavoriteCount + tweet.RetweetCount;
                 }
-                return twitterTargets.Values();
-            }).Result;
+
+                twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Engagement", datedTweets.First().CreatedAt, (int)numberOfEngagements);
+            }
+            return twitterTargets.Values();
         }
 
-        private async Task<int> GetRetweeterFollowers(ulong statusId, TwitterCredentials twitterDetails)
+        private List<TwitterUser> GetRetweeterFollowers(ulong statusId, TwitterCredentials creds)
         {
-            var auth = new SingleUserAuthorizer()
-            {
-                CredentialStore = new SingleUserInMemoryCredentialStore()
-                {
-                    ConsumerKey = ConfigSingleton.TwitterConsumerKey,
-                    ConsumerSecret = ConfigSingleton.TwitterConsumerSecret,
-                    OAuthToken = twitterDetails.AccessToken,
-                    OAuthTokenSecret = twitterDetails.AccessTokenSecret
-                }
-            };
-
-            await auth.AuthorizeAsync();
-
-            TwitterContext context = new TwitterContext(auth);
             // retweeter ids
-            var retweeters = await (from tweet in context.Status
-                                    where tweet.Type == StatusType.Retweets
-                                        && tweet.ID == statusId
-                                       && tweet.Count == 200
-                                    select tweet)
-                .ToListAsync();
+            var retweeters = _twitterClientWrapper.GetRetweeterFollowers(creds, statusId).Result;
 
-            int followerCount = 0;
+            List<TwitterUser> retweeterUsers = new List<TwitterUser>();
 
             foreach (var status in retweeters)
             {
                 if (status.User != null)
                 {
-                    followerCount += status.User.FollowersCount;
+                    retweeterUsers.Add(new TwitterUser()
+                    {
+                        ScreenName = status.User.ScreenName,
+                        NumberOfFollowers = status.User.FollowersCount
+                    });
                 }
             }
 
-            return followerCount;
+            return retweeterUsers;
         }
 
-        private async Task<List<Status>> GetTwitterData(TwitterCredentials twitterDetails, DateTime[] dates)
+        private TwitterData GetTwitterData(TwitterCredentials twitterDetails, DateTime[] dates)
         {
-            var auth = new SingleUserAuthorizer()
+            // for loop ? 
+            TwitterData data = null;
+            var tweets = _twitterClientWrapper.GetTweets(twitterDetails).Result;
+
+            tweets.RemoveAll(remove => !dates.Contains(remove.CreatedAt.Date));
+
+            if (tweets.Count > 0)
             {
-                CredentialStore = new SingleUserInMemoryCredentialStore()
+                data = new TwitterData(tweets, tweets.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount);
+
+                foreach (Tweet tweet in data.Tweets.Where(y => y.RetweetCount > 0 || y.FavoriteCount > 0))
                 {
-                    ConsumerKey = ConfigSingleton.TwitterConsumerKey,
-                    ConsumerSecret = ConfigSingleton.TwitterConsumerSecret,
-                    OAuthToken = twitterDetails.AccessToken,
-                    OAuthTokenSecret = twitterDetails.AccessTokenSecret
+                    tweet.RetweetedUsers = GetRetweeterFollowers(tweet.StatusID, twitterDetails);
                 }
-            };
+            }
 
-            await auth.AuthorizeAsync();
-
-            TwitterContext context = new TwitterContext(auth);
-            var tweets = await (from tweet in context.Status
-                                where tweet.Type == StatusType.User
-                                   && tweet.ScreenName == twitterDetails.ScreenName
-                                   && tweet.Count == 200
-                                select tweet)
-                            .ToListAsync();
-
-            return tweets.Where(x => dates.Contains(x.CreatedAt.Date)).ToList();
+            return data;
         }
 
-        public string GetTweets(string userId)
+        public TwitterData GetTweets(string userId)
         {
-            return string.Empty;
+            TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
+            TwitterData todaysData = GetTwitterData(creds, new DateTime[] { DateTime.Now.Date });
+
+            return !string.IsNullOrWhiteSpace(creds.TwitterData) ? JsonConvert.DeserializeObject<TwitterData>(creds.TwitterData).Update(todaysData) : todaysData;
         }
 
         public void SaveUserDetails(string accessToken, string accessTokenSecret, string screenName, string userId)
         {
-            _twitterRepo.Create(new TwitterCredentials() {
+            TwitterCredentials creds = new TwitterCredentials()
+            {
                 UserId = Guid.Parse(userId),
                 AccessToken = accessToken,
                 AccessTokenSecret = accessTokenSecret,
                 ScreenName = screenName
-            });
+            };
 
-            _userHandler.UpdateUserMediaActivation(new Models.User(Guid.Parse(userId)), "Twitter");
+            _twitterRepo.Create(creds);
+
+            _userHandler.UpdateUserMediaActivation(new Models.User(Guid.Parse(userId)), MediaName);
+
+            GetMediaData(creds.UserId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date));
+        }
+
+        public void GetMediaData(Guid userId, DateTime[] dates)
+        {
+            TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
+
+            Task<TwitterData>[] tasks = new Task<TwitterData>[1];
+
+            tasks[0] = Task.Factory.StartNew(() => GetTwitterData(creds, dates));
+
+            Task.Factory.ContinueWhenAll(tasks, data => {
+
+                if (!string.IsNullOrWhiteSpace(creds.TwitterData))
+                {
+                    TwitterData existingData = JsonConvert.DeserializeObject<TwitterData>(creds.TwitterData);
+                    existingData.Update(data[0].Result);
+                    creds.TwitterData = JsonConvert.SerializeObject(existingData);
+                }
+                else
+                {
+                    creds.TwitterData = JsonConvert.SerializeObject(data[0].Result);
+                }
+
+                _twitterRepo.Update(creds);
+                });
         }
     }
 }

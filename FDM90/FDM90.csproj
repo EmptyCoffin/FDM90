@@ -207,6 +207,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Pages\Content\Goals.aspx" />
     <Content Include="Pages\Content\Home.aspx" />
     <Content Include="Pages\Content\Twitter.aspx" />
     <Content Include="Scripts\bootstrap.js" />
@@ -246,16 +247,20 @@
     <Compile Include="Handlers\UserHandler.cs" />
     <Compile Include="Models\FacebookCredentials.cs" />
     <Compile Include="Models\FacebookData.cs" />
-    <Compile Include="Models\Goals.cs" />
+    <Compile Include="Models\Goal.cs" />
+    <Compile Include="Models\Helpers\DateHelper.cs" />
     <Compile Include="Models\Helpers\EncryptionHelper.cs" />
     <Compile Include="Models\Helpers\FacebookClientWrapper.cs" />
     <Compile Include="Models\Helpers\FacebookHelper.cs" />
     <Compile Include="Models\Helpers\IFacebookClientWrapper.cs" />
+    <Compile Include="Models\Helpers\ITwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\JsonHelper.cs" />
     <Compile Include="Models\Helpers\SQLHelper.cs" />
+    <Compile Include="Models\Helpers\TwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\TwitterHelper.cs" />
     <Compile Include="Models\MediaCredentials.cs" />
     <Compile Include="Models\TwitterCredentials.cs" />
+    <Compile Include="Models\TwitterData.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Pages\Account\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
@@ -277,6 +282,13 @@
     </Compile>
     <Compile Include="Pages\Content\Facebook.aspx.designer.cs">
       <DependentUpon>Facebook.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Content\Goals.aspx.cs">
+      <DependentUpon>Goals.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Content\Goals.aspx.designer.cs">
+      <DependentUpon>Goals.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Content\Home.aspx.cs">
       <DependentUpon>Home.aspx</DependentUpon>

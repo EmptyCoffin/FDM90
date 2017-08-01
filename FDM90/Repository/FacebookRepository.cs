@@ -73,6 +73,7 @@ namespace FDM90.Repository
             creds.UserId = Guid.Parse(reader["UserId"].ToString());
             creds.PageName = reader["PageName"].ToString();
             creds.PermanentAccessToken = reader["PermanentAccessToken"]?.ToString();
+            creds.FacebookData = reader["FacebookData"]?.ToString();
             return creds;
         }
 

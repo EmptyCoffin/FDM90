@@ -85,6 +85,15 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.Label newLikeLabel;
         
         /// <summary>
+        /// likeListView control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ListView likeListView;
+        
+        /// <summary>
         /// peopleTalkingLabel control.
         /// </summary>
         /// <remarks>

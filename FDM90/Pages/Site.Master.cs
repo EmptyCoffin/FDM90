@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 
 namespace FDM90.Pages
@@ -12,10 +13,27 @@ namespace FDM90.Pages
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            List<HtmlGenericControl> tabs = new List<HtmlGenericControl>()
+            {
+                (HtmlGenericControl)Page.Master.FindControl("HomeTab"),
+                (HtmlGenericControl)Page.Master.FindControl("FacebookTab"),
+                (HtmlGenericControl)Page.Master.FindControl("TwitterTab"),
+                (HtmlGenericControl)Page.Master.FindControl("LogInwelcomeMessageTab"),
+                (HtmlGenericControl)Page.Master.FindControl("RegistrationLogoutTab"),
+                (HtmlGenericControl)Page.Master.FindControl("GoalsTab")
+            };
+            
+            var pageName = Page.AppRelativeVirtualPath.Substring(Page.AppRelativeVirtualPath.LastIndexOf('/') + 1, 
+                            Page.AppRelativeVirtualPath.LastIndexOf('.') - (Page.AppRelativeVirtualPath.LastIndexOf('/') + 1));
+
+            tabs.First(x => x.ID.ToLower().Contains(pageName.ToLower())).Attributes.Add("class", "active");
+            tabs.First(x => !x.ID.ToLower().Contains(pageName.ToLower())).Attributes.Remove("class");
+
             if (UserSingleton.Instance.CurrentUser != null)
             {
                 Page.Master.FindControl("Facebook").Visible = UserSingleton.Instance.CurrentUser.Facebook;
                 Page.Master.FindControl("Twitter").Visible = UserSingleton.Instance.CurrentUser.Twitter;
+                Page.Master.FindControl("Goals").Visible = UserSingleton.Instance.CurrentUser.Goals > 0;
 
                 Label welcomeLabel = (Label)Page.Master.FindControl("welcomeMessage");
                 welcomeLabel.Visible = true;

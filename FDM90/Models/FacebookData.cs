@@ -27,6 +27,51 @@ namespace FDM90.Models
         public FacebookInsightsData PageLikes { get; set; }
         [JsonProperty("page_stories")]
         public FacebookInsightsData PageStories { get; set; }
+
+        public FacebookData Update(FacebookData newData)
+        {
+            FanCount = newData.FanCount == 0 ? FanCount : newData.FanCount;
+            NewLikeCount = newData.NewLikeCount;
+            TalkingAboutCount = newData.TalkingAboutCount;
+
+            foreach(FacebookPostData post in newData.Posts)
+            {
+                if (Posts.First(current => current.Id == post.Id) != null)
+                {
+                    Posts[Posts.FindIndex(x => x.Id == post.Id)] = post;
+                }
+                else
+                {
+                    Posts.Add(post);
+                }
+            }
+
+            foreach (FacebookInsightValueData like in newData.PageLikes.Values)
+            {
+                if (PageLikes.Values.First(current => current.EndTime == like.EndTime) != null)
+                {
+                    PageLikes.Values[PageLikes.Values.FindIndex(x => x.EndTime == like.EndTime)] = like;
+                }
+                else
+                {
+                    PageLikes.Values.Add(like);
+                }
+            }
+
+            foreach (FacebookInsightValueData like in newData.PageStories.Values)
+            {
+                if (PageStories.Values.First(current => current.EndTime == like.EndTime) != null)
+                {
+                    PageStories.Values[PageStories.Values.FindIndex(x => x.EndTime == like.EndTime)] = like;
+                }
+                else
+                {
+                    PageStories.Values.Add(like);
+                }
+            }
+
+            return this;
+        }
     }
 
     public class FacebookPostData
@@ -35,6 +80,8 @@ namespace FDM90.Models
         public string Id { get; set; }
         [JsonProperty("message")]
         public string Message { get; set; }
+        [JsonProperty("story")]
+        public string Story { get; set; }
         [JsonProperty("created_time")]
         public DateTime CreatedTime { get; set; }
         [JsonProperty("post_impressions_organic_unique")]

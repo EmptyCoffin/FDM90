@@ -10,17 +10,7 @@
     </p>
     <div id="userArea">
         <div id="goalArea" runat="server" visible="false">
-            Goal Name:
-            <asp:DropDownList runat="server" ID="currentGoalDropDown" AutoPostBack="true" OnSelectedIndexChanged="currentGoalDropDown_SelectedIndexChanged"></asp:DropDownList>
-
-            <br />
-            <asp:DropDownList runat="server" ID="metricDropDown" AutoPostBack="true" OnSelectedIndexChanged="metricDropDown_SelectedIndexChanged"></asp:DropDownList>
-            <br />
-            <asp:Chart ID="goalChart" runat="server" Height="702px" Width="937px">
-            </asp:Chart>
-            <br />
             <asp:Button ID="setupGoalButton" runat="server" Text="New Goal" OnClick="setupGoalButton_Click" />
-            <br />
             <br />
             <div id="newGoalArea" runat="server" visible="false">
                 Goal Name:
@@ -49,6 +39,9 @@
                         <asp:TableHeaderCell>
                         Influence
                         </asp:TableHeaderCell>
+                        <asp:TableHeaderCell>
+                        Engagement
+                        </asp:TableHeaderCell>
                     </asp:TableHeaderRow>
                     <asp:TableRow>
                         <asp:TableCell>
@@ -59,6 +52,9 @@
                         </asp:TableCell>
                         <asp:TableCell>
                             <asp:Label runat="server" ID="overallInfluence" Text="0"></asp:Label>
+                        </asp:TableCell>
+                        <asp:TableCell>
+                            <asp:Label runat="server" ID="overallEngagement" Text="0"></asp:Label>
                         </asp:TableCell>
                     </asp:TableRow>
                 </asp:Table>

@@ -10,42 +10,33 @@
 namespace FDM90.Pages.Content {
     
     
-    public partial class Twitter {
+    public partial class Goals {
         
         /// <summary>
-        /// tweetList control.
+        /// currentGoalDropDown control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView tweetList;
+        protected global::System.Web.UI.WebControls.DropDownList currentGoalDropDown;
         
         /// <summary>
-        /// numberOfFollowers control.
+        /// metricDropDown control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label numberOfFollowers;
+        protected global::System.Web.UI.WebControls.DropDownList metricDropDown;
         
         /// <summary>
-        /// numberOfRetweets control.
+        /// goalChart control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label numberOfRetweets;
-        
-        /// <summary>
-        /// numberOfFavorite control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label numberOfFavorite;
+        protected global::System.Web.UI.DataVisualization.Charting.Chart goalChart;
     }
 }

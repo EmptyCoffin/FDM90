@@ -5,7 +5,7 @@ using System.Web;
 
 namespace FDM90.Models
 {
-    public class Goals
+    public class Goal
     {
         public Guid UserId { get; set; }
         public string GoalName { get; set; }
