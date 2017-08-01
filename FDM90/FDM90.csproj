@@ -207,7 +207,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
-    <Content Include="Pages\Content\Goals.aspx" />
+    <Content Include="Pages\Content\Campaigns.aspx" />
     <Content Include="Pages\Content\Home.aspx" />
     <Content Include="Pages\Content\Twitter.aspx" />
     <Content Include="Scripts\bootstrap.js" />
@@ -237,9 +237,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Handlers\FacebookHandler.cs" />
-    <Compile Include="Handlers\GoalHandler.cs" />
+    <Compile Include="Handlers\CampaignHandler.cs" />
     <Compile Include="Handlers\IFacebookHandler.cs" />
-    <Compile Include="Handlers\IGoalHandler.cs" />
+    <Compile Include="Handlers\ICampaignHandler.cs" />
     <Compile Include="Handlers\IMediaHandler.cs" />
     <Compile Include="Handlers\ITwitterHandler.cs" />
     <Compile Include="Handlers\IUserHandler.cs" />
@@ -247,7 +247,7 @@
     <Compile Include="Handlers\UserHandler.cs" />
     <Compile Include="Models\FacebookCredentials.cs" />
     <Compile Include="Models\FacebookData.cs" />
-    <Compile Include="Models\Goal.cs" />
+    <Compile Include="Models\Campaign.cs" />
     <Compile Include="Models\Helpers\DateHelper.cs" />
     <Compile Include="Models\Helpers\EncryptionHelper.cs" />
     <Compile Include="Models\Helpers\FacebookClientWrapper.cs" />
@@ -283,12 +283,12 @@
     <Compile Include="Pages\Content\Facebook.aspx.designer.cs">
       <DependentUpon>Facebook.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Pages\Content\Goals.aspx.cs">
-      <DependentUpon>Goals.aspx</DependentUpon>
+    <Compile Include="Pages\Content\Campaigns.aspx.cs">
+      <DependentUpon>Campaigns.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Pages\Content\Goals.aspx.designer.cs">
-      <DependentUpon>Goals.aspx</DependentUpon>
+    <Compile Include="Pages\Content\Campaigns.aspx.designer.cs">
+      <DependentUpon>Campaigns.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Content\Home.aspx.cs">
       <DependentUpon>Home.aspx</DependentUpon>
@@ -313,7 +313,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\FacebookRepository.cs" />
-    <Compile Include="Repository\GoalRepository.cs" />
+    <Compile Include="Repository\CampaignRepository.cs" />
     <Compile Include="Repository\IReadMultipleSpecific.cs" />
     <Compile Include="Repository\IReadSpecific.cs" />
     <Compile Include="Repository\IRepository.cs" />

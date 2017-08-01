@@ -11,63 +11,63 @@ using System.Web;
 
 namespace FDM90.Handlers
 {
-    public class GoalHandler : IGoalHandler
+    public class CampaignHandler : ICampaignHandler
     {
-        private IRepository<Goal> _goalRepo;
-        private IReadMultipleSpecific<Goal> _goalReadMultipleRepo;
+        private IRepository<Campaign> _campaignRepo;
+        private IReadMultipleSpecific<Campaign> _campaignReadMultipleRepo;
         private IFacebookHandler _facebookHandler;
         private ITwitterHandler _twitterHandler;
         private IUserHandler _userHandler;
         private List<IMediaHandler> _mediaHandlers = new List<IMediaHandler>();
-        public Task updateGoalsTask;
+        public Task updateCampaignsTask;
 
-        public GoalHandler() : this(new GoalRepository(), new FacebookHandler(), new TwitterHandler(), new UserHandler())
+        public CampaignHandler() : this(new CampaignRepository(), new FacebookHandler(), new TwitterHandler(), new UserHandler())
         {
 
         }
 
-        public GoalHandler(IRepository<Goal> goalRepo, IFacebookHandler facebookHandler, ITwitterHandler twitterHandler, IUserHandler userHandler)
+        public CampaignHandler(IRepository<Campaign> campaignRepo, IFacebookHandler facebookHandler, ITwitterHandler twitterHandler, IUserHandler userHandler)
         {
-            _goalRepo = goalRepo;
-            _goalReadMultipleRepo = (IReadMultipleSpecific<Goal>)goalRepo;
+            _campaignRepo = campaignRepo;
+            _campaignReadMultipleRepo = (IReadMultipleSpecific<Campaign>)campaignRepo;
             _facebookHandler = facebookHandler;
             _twitterHandler = twitterHandler;
             _userHandler = userHandler;
             _mediaHandlers.AddRange(new IMediaHandler[] { _facebookHandler, twitterHandler });
         }
 
-        public void CreateGoal(User user, string name, string startDate, string endDate, string targets)
+        public void CreateCampaign(User user, string name, string startDate, string endDate, string targets)
         {
-            Goal newGoal = new Goal() {
+            Campaign newCampaign = new Campaign() {
                 UserId = user.UserId,
-                GoalName = name,
+                CampaignName = name,
                 StartDate = DateTime.Parse(startDate),
                 EndDate = DateTime.Parse(endDate),
                 Targets = targets
             };
 
-            _goalRepo.Create(newGoal);
-            user.Goals++;
+            _campaignRepo.Create(newCampaign);
+            user.Campaigns++;
             _userHandler.UpdateUser(user);
-            updateGoalsTask = UpdateGoals(user.UserId, newGoal);
+            updateCampaignsTask = UpdateCampaigns(user.UserId, newCampaign);
         }
 
-        public Task UpdateGoals(Guid userId, Goal newGoal)
+        public Task UpdateCampaigns(Guid userId, Campaign newCampaign)
         {
             DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
             Calendar calendar = dateInfo.Calendar;
 
-            var existingGoals = GetUserGoals(userId);
+            var existingCampaigns = GetUserCampaigns(userId);
             var user = _userHandler.GetUser(userId.ToString());
-            int firstWeekNumber = calendar.GetWeekOfYear(newGoal.StartDate, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
-            int lastWeekNumber = calendar.GetWeekOfYear(newGoal.EndDate, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
+            int firstWeekNumber = calendar.GetWeekOfYear(newCampaign.StartDate, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
+            int lastWeekNumber = calendar.GetWeekOfYear(newCampaign.EndDate, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
             int currentWeekNumber = calendar.GetWeekOfYear(DateTime.Now, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
 
             JObject newProgress = new JObject();
-            foreach (Goal goal in existingGoals.Where(x => x.StartDate <= newGoal.StartDate && !string.IsNullOrEmpty(x.Progress)))
+            foreach (Campaign campaign in existingCampaigns.Where(x => x.StartDate <= newCampaign.StartDate && !string.IsNullOrEmpty(x.Progress)))
             {
-                // get weeks for new goal
-                JObject progress = JObject.Parse(goal.Progress);
+                // get weeks for new campaign
+                JObject progress = JObject.Parse(campaign.Progress);
                 
                 foreach(JProperty media in progress.Properties())
                 {
@@ -89,7 +89,7 @@ namespace FDM90.Handlers
             // here when first week only less than current week, but not if we have info
             if (firstWeekNumber < currentWeekNumber && newProgress.First?.Children().Values().Count() != currentWeekNumber - firstWeekNumber)
             {
-                DateTime[] dates = DateHelper.GetDates(newGoal.StartDate.AddDays(newProgress.First != null ? newProgress.First.Children().Values().Count() * 7 : 0), newGoal.EndDate, false);
+                DateTime[] dates = DateHelper.GetDates(newCampaign.StartDate.AddDays(newProgress.First != null ? newProgress.First.Children().Values().Count() * 7 : 0), newCampaign.EndDate, false);
 
                 foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(x =>
                                              bool.Parse(user.GetType().GetProperties().Where(y => y.Name == x.MediaName).First().GetValue(user).ToString())))
@@ -103,7 +103,7 @@ namespace FDM90.Handlers
 
                         if (dates.Count() > 0)
                         {
-                            foreach (JObject newWeek in mediaHandler.GetGoalInfo(userId, dates))
+                            foreach (JObject newWeek in mediaHandler.GetCampaignInfo(userId, dates))
                             {
                                 ((JObject)newProgress[mediaHandler.MediaName]).Add(newWeek.Path, newWeek);
                             }
@@ -118,8 +118,8 @@ namespace FDM90.Handlers
 
             return Task.Factory.ContinueWhenAll(tasks.ToArray(), taskReturned =>
             {
-                newGoal.Progress = newProgress.ToString();
-                _goalRepo.Update(newGoal);
+                newCampaign.Progress = newProgress.ToString();
+                _campaignRepo.Update(newCampaign);
             });
 
         }
@@ -127,14 +127,14 @@ namespace FDM90.Handlers
         public Task<bool> DailyUpdate()
         {
             List<Task<bool>> tasks = new List<Task<bool>>();
-            foreach(var userGoals in _goalRepo.ReadAll().GroupBy(x => x.UserId))
+            foreach(var userCampaigns in _campaignRepo.ReadAll().GroupBy(x => x.UserId))
             {
-                User user = _userHandler.GetUser(userGoals.First().UserId.ToString());
+                User user = _userHandler.GetUser(userCampaigns.First().UserId.ToString());
 
                 UpdateMedias(user).Wait();
 
                 // new task for each user
-                tasks.Add(Task.Factory.StartNew(() => GoalsUpdate(user, userGoals).Result));
+                tasks.Add(Task.Factory.StartNew(() => CampaignsUpdate(user, userCampaigns).Result));
             }
 
             return Task.Factory.ContinueWhenAll(tasks.ToArray(), taskReturned => { return taskReturned[0].Result; });
@@ -153,14 +153,14 @@ namespace FDM90.Handlers
             return Task.Factory.ContinueWhenAll(tasks.ToArray(), taskReturned => { return taskReturned[0]; });
         }
 
-        private Task<bool> GoalsUpdate(User user, IGrouping<Guid, Goal> userGoals)
+        private Task<bool> CampaignsUpdate(User user, IGrouping<Guid, Campaign> userCampaigns)
         {
             List<Task<JObject>> tasks = new List<Task<JObject>>();
-            var goals = userGoals;
+            var campaigns = userCampaigns;
             JObject newDayProgress = new JObject();
 
-            // check if any goals have date valid
-            if (goals.Any(x => x.EndDate <= DateTime.Now.Date.AddDays(7)))
+            // check if any campaigns have date valid
+            if (campaigns.Any(x => x.EndDate <= DateTime.Now.Date.AddDays(7)))
             {
                 // call media get info
                 foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(x =>
@@ -173,7 +173,7 @@ namespace FDM90.Handlers
                             newDayProgress.Add(mediaHandler.MediaName, new JObject());
                         }
 
-                        foreach (JObject newDay in mediaHandler.GetGoalInfo(user.UserId, new DateTime[] { DateTime.Now.AddDays(-7) }))
+                        foreach (JObject newDay in mediaHandler.GetCampaignInfo(user.UserId, new DateTime[] { DateTime.Now.AddDays(-7) }))
                         {
                             ((JObject)newDayProgress[mediaHandler.MediaName]).Add(newDay.Path, newDay);
                         }
@@ -187,13 +187,13 @@ namespace FDM90.Handlers
             {
                 var newProgress = taskReturned[0].Result;
 
-                var goalsToUpdate = goals.Where(x => x.StartDate.AddDays(7) <= DateTime.Now.Date && x.EndDate.AddDays(7) >= DateTime.Now.Date);
+                var campaignsToUpdate = campaigns.Where(x => x.StartDate.AddDays(7) <= DateTime.Now.Date && x.EndDate.AddDays(7) >= DateTime.Now.Date);
 
-                foreach (var goal in goalsToUpdate)
+                foreach (var campaign in campaignsToUpdate)
                 {
                     foreach (JObject newMedia in newProgress.Values())
                     {
-                        JObject existingProgress = JObject.Parse(goal.Progress);
+                        JObject existingProgress = JObject.Parse(campaign.Progress);
                         if (existingProgress[newMedia.Path] == null)
                         {
                             existingProgress.Add(newMedia.Path, new JObject());
@@ -224,27 +224,27 @@ namespace FDM90.Handlers
                             ((JObject)existingProgress[newMedia.Path]).Add(newMedia.Properties().First().Name, newMedia.Properties().First().Value);
                         }
 
-                        goal.Progress = existingProgress.ToString();
+                        campaign.Progress = existingProgress.ToString();
                     }
                 }
 
 
-                // update all valid goals progress
-                foreach (var goal in goalsToUpdate)
-                    _goalRepo.Update(goal);
+                // update all valid campaigns progress
+                foreach (var campaign in campaignsToUpdate)
+                    _campaignRepo.Update(campaign);
 
-                return goalsToUpdate.Count() > 0;
+                return campaignsToUpdate.Count() > 0;
             });
         }
 
-        public IEnumerable<Goal> GetUserGoals(Guid userId)
+        public IEnumerable<Campaign> GetUserCampaigns(Guid userId)
         {
-            return _goalReadMultipleRepo.ReadMultipleSpecific(userId.ToString());
+            return _campaignReadMultipleRepo.ReadMultipleSpecific(userId.ToString());
         }
 
-        List<Goal> IGoalHandler.GetUserGoals(Guid userId)
+        List<Campaign> ICampaignHandler.GetUserCampaigns(Guid userId)
         {
-            return _goalReadMultipleRepo.ReadMultipleSpecific(userId.ToString()).ToList();
+            return _campaignReadMultipleRepo.ReadMultipleSpecific(userId.ToString()).ToList();
         }
     }
 }

@@ -43,7 +43,7 @@ namespace FDM90.Handlers
             }
         }
 
-        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates)
+        public IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates)
         {
             JObject twitterTargets = new JObject();
 

@@ -16,17 +16,17 @@ namespace FDM90.Pages.Content
     public partial class Home : System.Web.UI.Page
     {
         private string[] metrics = { "Exposure", "Influence", "Engagement" };
-        private IGoalHandler _goalHandler;
+        private ICampaignHandler _campaignHandler;
         private List<string> tableIds = new List<string>();
 
-        public Home() : this(new GoalHandler())
+        public Home() : this(new CampaignHandler())
         {
 
         }
 
-        public Home(IGoalHandler goalHandler)
+        public Home(ICampaignHandler campaignHandler)
         {
-            _goalHandler = goalHandler;
+            _campaignHandler = campaignHandler;
         }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -37,7 +37,7 @@ namespace FDM90.Pages.Content
                 {
                     facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
                     twitterSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Twitter;
-                    goalArea.Visible = true;
+                    campaignArea.Visible = true;
                 }
                 SetUpTableControls();
             }
@@ -119,14 +119,14 @@ namespace FDM90.Pages.Content
                     tableRow.Cells.Add(mediaCell);
                 }
 
-                newGoalGrid.Rows.Add(tableRow);
+                newCampaignGrid.Rows.Add(tableRow);
             }
         }
 
-        protected void setupGoalButton_Click(object sender, EventArgs e)
+        protected void setupCampaignButton_Click(object sender, EventArgs e)
         {
-            newGoalArea.Visible = true;
-            setupGoalButton.Visible = false;
+            newCampaignArea.Visible = true;
+            setupCampaignButton.Visible = false;
         }
 
         protected void textBox_Changed(object sender, EventArgs e)
@@ -140,34 +140,34 @@ namespace FDM90.Pages.Content
                      x.PropertyType == typeof(bool) && bool.Parse(x.GetValue(UserSingleton.Instance.CurrentUser).ToString()))
                         .Select(s => s.Name))
                 {
-                    runningTotal += int.Parse(((TextBox)newGoalGrid.FindControl(media + metric)).Text);
+                    runningTotal += int.Parse(((TextBox)newCampaignGrid.FindControl(media + metric)).Text);
                 }
 
-                var overallControl = (Label)newGoalGrid.FindControl("overall" + metric);
+                var overallControl = (Label)newCampaignGrid.FindControl("overall" + metric);
                 overallControl.Text = runningTotal.ToString();
             }
 
-            for (int i = 2; i < newGoalGrid.Controls.Count; i++)
+            for (int i = 2; i < newCampaignGrid.Controls.Count; i++)
             {
-                for (int j = 1; j < newGoalGrid.Controls[i].Controls.Count; j++)
+                for (int j = 1; j < newCampaignGrid.Controls[i].Controls.Count; j++)
                 {
-                    if (newGoalGrid.Controls[i].Controls[j].Controls[0].ID == metricSender)
+                    if (newCampaignGrid.Controls[i].Controls[j].Controls[0].ID == metricSender)
                     {
-                        if (newGoalGrid.Controls[i].Controls.Count != j + 1)
+                        if (newCampaignGrid.Controls[i].Controls.Count != j + 1)
                         {
-                            newGoalGrid.Controls[i].Controls[j + 1].Controls[0].Focus();
+                            newCampaignGrid.Controls[i].Controls[j + 1].Controls[0].Focus();
                         }
                         else
                         {
-                            if (newGoalGrid.Controls.Count != i + 1)
-                                newGoalGrid.Controls[i + 1].Controls[1].Controls[0].Focus();
+                            if (newCampaignGrid.Controls.Count != i + 1)
+                                newCampaignGrid.Controls[i + 1].Controls[1].Controls[0].Focus();
                         }
                     }
                 }
             }
         }
 
-        protected void newGoalButton_Click(object sender, EventArgs e)
+        protected void newCampaignButton_Click(object sender, EventArgs e)
         {
             JObject targets = new JObject();
 
@@ -179,21 +179,21 @@ namespace FDM90.Pages.Content
 
                 foreach (string metric in metrics)
                 {
-                    mediaTarget.Add(metric, ((TextBox)newGoalGrid.FindControl(media + metric)).Text);
+                    mediaTarget.Add(metric, ((TextBox)newCampaignGrid.FindControl(media + metric)).Text);
                 }
 
                 targets.Add(media, mediaTarget);
             }
 
-            _goalHandler.CreateGoal(UserSingleton.Instance.CurrentUser,
-                                goalName.Text, startDateButton.Text, endDateButton.Text, targets.ToString());
+            _campaignHandler.CreateCampaign(UserSingleton.Instance.CurrentUser,
+                                campaignName.Text, startDateButton.Text, endDateButton.Text, targets.ToString());
 
-            UserSingleton.Instance.CurrentUser.Goals++;
+            UserSingleton.Instance.CurrentUser.Campaigns++;
 
-            newGoalArea.Visible = false;
-            setupGoalButton.Visible = true;
+            newCampaignArea.Visible = false;
+            setupCampaignButton.Visible = true;
 
-            Response.Redirect("Goals.aspx?GoalName=" + goalName.Text);
+            Response.Redirect("Campaigns.aspx?CampaignName=" + campaignName.Text);
         }
     }
 }

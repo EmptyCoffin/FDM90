@@ -9,15 +9,15 @@
         About this site!
     </p>
     <div id="userArea">
-        <div id="goalArea" runat="server" visible="false">
-            <asp:Button ID="setupGoalButton" runat="server" Text="New Goal" OnClick="setupGoalButton_Click" />
+        <div id="campaignArea" runat="server" visible="false">
+            <asp:Button ID="setupCampaignButton" runat="server" Text="New Campaign" OnClick="setupCampaignButton_Click" />
             <br />
-            <div id="newGoalArea" runat="server" visible="false">
-                Goal Name:
-                <asp:TextBox runat="server" ID="goalName"></asp:TextBox>
-                Goal Start Date:
+            <div id="newCampaignArea" runat="server" visible="false">
+                Campaign Name:
+                <asp:TextBox runat="server" ID="campaignName"></asp:TextBox>
+                Campaign Start Date:
                 <asp:Button runat="server" ID="startDateButton" OnClick="StartCalendar" Text="Not Set"></asp:Button>
-                Goal End Date:
+                Campaign End Date:
                 <asp:Button runat="server" ID="endDateButton" OnClick="StartCalendar" Text="Not Set"></asp:Button>
                 <div runat="server" id="calendarArea" visible="false">
                     <br />
@@ -28,7 +28,7 @@
                 </div>
                 <br />
                 <br />
-                <asp:Table runat="server" ID="newGoalGrid">
+                <asp:Table runat="server" ID="newCampaignGrid">
                     <asp:TableHeaderRow>
                         <asp:TableHeaderCell>
                         Channel
@@ -60,7 +60,7 @@
                 </asp:Table>
                 <br />
                 <br />
-                <asp:Button ID="newGoalButton" runat="server" Text="Set Goal" OnClick="newGoalButton_Click" />
+                <asp:Button ID="newCampaignButton" runat="server" Text="Set Campaign" OnClick="newCampaignButton_Click" />
             </div>
         </div>
         <br />

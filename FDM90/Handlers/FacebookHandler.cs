@@ -208,7 +208,7 @@ namespace FDM90.Handlers
             return currentData;
         }
 
-        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates)
+        public IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates)
         {
             FacebookCredentials facebookCreds = _facebookReadRepo.ReadSpecific(userId.ToString());
 

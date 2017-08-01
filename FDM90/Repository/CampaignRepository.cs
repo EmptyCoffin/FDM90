@@ -8,25 +8,25 @@ using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {
-    public class GoalRepository : RepositoryBase<Goal>, IRepository<Goal>, IReadMultipleSpecific<Goal>
+    public class CampaignRepository : RepositoryBase<Campaign>, IRepository<Campaign>, IReadMultipleSpecific<Campaign>
     {
         protected override string _table
         {
             get
             {
-                return "[FDM90].[dbo].[Goals]";
+                return "[FDM90].[dbo].[Campaigns]";
             }
         }
 
-        public void Create(Goal objectToCreate)
+        public void Create(Campaign objectToCreate)
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
-                        "[UserId], [GoalName], [WeekStart], [WeekEnd], [Targets], [Progress]" + SQLHelper.CloseBracket + SQLHelper.Values
-                        + SQLHelper.OpenBracket + "@UserID, @GoalName, @StartDate, @EndDate, @Targets, @Progress" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
+                        "[UserId], [CampaignName], [WeekStart], [WeekEnd], [Targets], [Progress]" + SQLHelper.CloseBracket + SQLHelper.Values
+                        + SQLHelper.OpenBracket + "@UserID, @CampaignName, @StartDate, @EndDate, @Targets, @Progress" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", objectToCreate.UserId),
-                            new SqlParameter("@GoalName", objectToCreate.GoalName),
+                            new SqlParameter("@CampaignName", objectToCreate.CampaignName),
                             new SqlParameter("@StartDate", objectToCreate.StartDate),
                             new SqlParameter("@EndDate", objectToCreate.EndDate),
                             new SqlParameter("@Targets", objectToCreate.Targets),
@@ -36,17 +36,17 @@ namespace FDM90.Repository
             SendVoidCommand(sql, parameters);
         }
 
-        public void Delete(Goal objectId)
+        public void Delete(Campaign objectId)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Goal> ReadAll()
+        public IEnumerable<Campaign> ReadAll()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Goal> ReadMultipleSpecific(string objectId)
+        public IEnumerable<Campaign> ReadMultipleSpecific(string objectId)
         {
             string sql = SQLHelper.SelectAll + _table + SQLHelper.Where +
                             "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
@@ -58,30 +58,30 @@ namespace FDM90.Repository
             return SendReaderCommand(sql, parameters);
         }
 
-        public override Goal SetProperties(IDataReader reader)
+        public override Campaign SetProperties(IDataReader reader)
         {
-            Goal goal = new Goal();
-            goal.UserId = Guid.Parse(reader["UserId"].ToString());
-            goal.GoalName = reader["GoalName"].ToString();
-            goal.StartDate = DateTime.Parse(reader["WeekStart"].ToString());
-            goal.EndDate = DateTime.Parse(reader["WeekEnd"].ToString());
-            goal.Targets = reader["Targets"].ToString();
-            goal.Progress = reader["Progress"].ToString();
-            return goal;
+            Campaign campaign = new Campaign();
+            campaign.UserId = Guid.Parse(reader["UserId"].ToString());
+            campaign.CampaignName = reader["CampaignName"].ToString();
+            campaign.StartDate = DateTime.Parse(reader["WeekStart"].ToString());
+            campaign.EndDate = DateTime.Parse(reader["WeekEnd"].ToString());
+            campaign.Targets = reader["Targets"].ToString();
+            campaign.Progress = reader["Progress"].ToString();
+            return campaign;
         }
 
-        public void Update(Goal objectToUpdate)
+        public void Update(Campaign objectToUpdate)
         {
-            Goal currentDetails = ReadMultipleSpecific(objectToUpdate.UserId.ToString()).Where(x => x.GoalName == objectToUpdate.GoalName).First();
+            Campaign currentDetails = ReadMultipleSpecific(objectToUpdate.UserId.ToString()).Where(x => x.CampaignName == objectToUpdate.CampaignName).First();
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
                 SetUpdateValues(currentDetails, objectToUpdate, out parameters)
-                + SQLHelper.Where + "[UserId] = @UserID and [GoalName] = @GoalName" + SQLHelper.EndingSemiColon;
+                + SQLHelper.Where + "[UserId] = @UserID and [CampaignName] = @CampaignName" + SQLHelper.EndingSemiColon;
 
             parameters.AddRange(new SqlParameter[]{
                             new SqlParameter("@UserID", objectToUpdate.UserId),
-                            new SqlParameter("@GoalName", objectToUpdate.GoalName)
+                            new SqlParameter("@CampaignName", objectToUpdate.CampaignName)
                         });
             SendVoidCommand(sql, parameters.ToArray());
         }

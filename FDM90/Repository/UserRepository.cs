@@ -46,8 +46,8 @@ namespace FDM90.Repository
         public void Create(User newUser)
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
-                        "[UserId], [UserName], [EmailAddress], [Password], [Facebook], [Twitter], [Goals]" + SQLHelper.CloseBracket + SQLHelper.Values
-                        + SQLHelper.OpenBracket + "@UserID, @UserName, @Email, @Password, @Facebook, @Twitter, @Goals" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
+                        "[UserId], [UserName], [EmailAddress], [Password], [Facebook], [Twitter], [Campaigns]" + SQLHelper.CloseBracket + SQLHelper.Values
+                        + SQLHelper.OpenBracket + "@UserID, @UserName, @Email, @Password, @Facebook, @Twitter, @Campaigns" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", newUser.UserId),
@@ -56,7 +56,7 @@ namespace FDM90.Repository
                             new SqlParameter("@Password", newUser.Password),
                             new SqlParameter("@Facebook", false),
                             new SqlParameter("@Twitter", false),
-                            new SqlParameter("@Goals", (object)0)
+                            new SqlParameter("@Campaigns", (object)0)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -150,7 +150,7 @@ namespace FDM90.Repository
             user.Password = reader["Password"].ToString();
             user.Facebook = reader["Facebook"] != null ? bool.Parse(reader["Facebook"].ToString()) : false;
             user.Twitter = reader["Twitter"] != null ? bool.Parse(reader["Twitter"].ToString()) : false;
-            user.Goals = int.Parse(reader["Goals"].ToString());
+            user.Campaigns = int.Parse(reader["Campaigns"].ToString());
             return user;
         }
 
