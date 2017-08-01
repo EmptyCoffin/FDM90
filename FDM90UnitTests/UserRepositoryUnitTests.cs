@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
-using FDM90.Model;
 using FDM90.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FDM90.Repository;
@@ -163,6 +162,8 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(specificUser.EmailAddress);
             _mockIDataReader.Setup(reader => reader["Password"]).Returns(specificUser.Password);
             _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(specificUser.Facebook);
+            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
+            _mockIDataReader.Setup(reader => reader["Goals"]).Returns(() => _returningUsers[count].Goals);
 
             //act
             var result = _userRepo.ReadSpecific(_specificGuid.ToString());
@@ -192,7 +193,8 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(specificUser.EmailAddress);
             _mockIDataReader.Setup(reader => reader["Password"]).Returns(specificUser.Password);
             _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(specificUser.Facebook);
-
+            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
+            _mockIDataReader.Setup(reader => reader["Goals"]).Returns(() => _returningUsers[count].Goals);
 
             //act
             var result = _userRepo.ReadSpecific(_specificGuid.ToString());
@@ -216,6 +218,8 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(specificUser.EmailAddress);
             _mockIDataReader.Setup(reader => reader["Password"]).Returns(specificUser.Password);
             _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(specificUser.Facebook);
+            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
+            _mockIDataReader.Setup(reader => reader["Goals"]).Returns(() => _returningUsers[count].Goals);
 
             //act
             var result = _userRepo.ReadSpecific("Test User 2");
@@ -245,7 +249,8 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(specificUser.EmailAddress);
             _mockIDataReader.Setup(reader => reader["Password"]).Returns(specificUser.Password);
             _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(specificUser.Facebook);
-
+            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
+            _mockIDataReader.Setup(reader => reader["Goals"]).Returns(() => _returningUsers[count].Goals);
 
             //act
             var result = _userRepo.ReadSpecific("Test User 2");
@@ -269,6 +274,8 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(() => _returningUsers[count].EmailAddress);
             _mockIDataReader.Setup(reader => reader["Password"]).Returns(() => _returningUsers[count].Password);
             _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(() => _returningUsers[count].Facebook);
+            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
+            _mockIDataReader.Setup(reader => reader["Goals"]).Returns(() => _returningUsers[count].Goals);
 
             //act
             var result = _userRepo.ReadAll();
@@ -296,6 +303,8 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(() => _returningUsers[count].EmailAddress);
             _mockIDataReader.Setup(reader => reader["Password"]).Returns(() => _returningUsers[count].Password);
             _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(() => _returningUsers[count].Facebook);
+            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
+            _mockIDataReader.Setup(reader => reader["Goals"]).Returns(() => _returningUsers[count].Goals);
 
             //act
             var result = _userRepo.ReadAll().ToList();
@@ -325,6 +334,8 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(specificUser.EmailAddress);
             _mockIDataReader.Setup(reader => reader["Password"]).Returns(specificUser.Password);
             _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(specificUser.Facebook);
+            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
+            _mockIDataReader.Setup(reader => reader["Goals"]).Returns(() => _returningUsers[count].Goals);
 
             specificUser.UserName = "Updated UserName";
 

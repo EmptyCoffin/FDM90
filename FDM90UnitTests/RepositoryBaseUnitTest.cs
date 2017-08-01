@@ -5,10 +5,10 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
-using FDM90.Model;
 using FDM90.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using FDM90.Models.Helpers;
 
 namespace FDM90UnitTests
 {

@@ -1,5 +1,4 @@
 ﻿using FDM90.Models;
-using FDM90.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -8,6 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Web.Configuration;
+using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {

@@ -43,6 +43,7 @@ namespace FDM90UnitTests
                 .Verifiable();
 
             _mockUserHandler = new Mock<IUserHandler>();
+            _mockUserHandler.Setup(handler => handler.GetUser(It.IsAny<string>())).Returns((string id) => new User(Guid.Parse(id)));
             _mockUserHandler.Setup(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()))
                 .Callback<User, string>((user, media) =>
                 {

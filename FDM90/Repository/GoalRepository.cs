@@ -2,10 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Data;
-using FDM90.Model;
 using System.Data.SqlClient;
+using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {

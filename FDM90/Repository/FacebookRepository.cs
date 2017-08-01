@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Web;
 using System.Data.SqlClient;
-using FDM90.Model;
+using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {

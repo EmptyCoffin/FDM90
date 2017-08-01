@@ -1,5 +1,4 @@
 ﻿using FDM90.Models;
-using FDM90.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -7,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {
@@ -56,7 +56,7 @@ namespace FDM90.Repository
                             new SqlParameter("@Password", newUser.Password),
                             new SqlParameter("@Facebook", false),
                             new SqlParameter("@Twitter", false),
-                            new SqlParameter("@Goals", 0)
+                            new SqlParameter("@Goals", (object)0)
                         };
 
             SendVoidCommand(sql, parameters);
