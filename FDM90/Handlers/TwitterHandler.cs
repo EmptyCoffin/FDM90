@@ -153,7 +153,7 @@ namespace FDM90.Handlers
             return !string.IsNullOrWhiteSpace(creds.TwitterData) ? JsonConvert.DeserializeObject<TwitterData>(creds.TwitterData).Update(todaysData) : todaysData;
         }
 
-        public void SaveUserDetails(string accessToken, string accessTokenSecret, string screenName, string userId)
+        public Task SaveUserDetails(string accessToken, string accessTokenSecret, string screenName, string userId)
         {
             TwitterCredentials creds = new TwitterCredentials()
             {
@@ -167,7 +167,7 @@ namespace FDM90.Handlers
 
             _userHandler.UpdateUserMediaActivation(new Models.User(Guid.Parse(userId)), MediaName);
 
-            GetMediaData(creds.UserId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date));
+            return Task.Factory.StartNew(() => GetMediaData(creds.UserId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date)));
         }
 
         public void GetMediaData(Guid userId, DateTime[] dates)

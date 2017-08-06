@@ -585,6 +585,8 @@ namespace FDM90UnitTests
 
             // act
             _campaignHandler.DailyUpdate().Wait();
+
+            // assert
             _mockCampaignRepo.Verify(x => x.Update(It.IsAny<Campaign>()), Times.Exactly(1));
             Assert.IsNotNull(updatedCampaign);
             Assert.IsTrue(updatedCampaign.Progress.Contains("Facebook"));

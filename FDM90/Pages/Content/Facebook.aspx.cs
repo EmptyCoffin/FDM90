@@ -4,6 +4,7 @@ using FDM90.Singleton;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -15,8 +16,12 @@ namespace FDM90.Pages.Content
         IFacebookHandler _facebookHandler;
         FacebookCredentials facebookCreds;
         static FacebookData _facebookData;
+        private string _likeDefault = "Likes: ";
+        private string _postDefault = "Your Posts: ";
+        private string _talkingDefault = "People Talking: ";
+        private string _newLikesDefault = "Number of new likes: ";
 
-        public Facebook():this(new FacebookHandler())
+        public Facebook() : this(new FacebookHandler())
         {
 
         }
@@ -35,17 +40,29 @@ namespace FDM90.Pages.Content
 
                 if (!string.IsNullOrWhiteSpace(facebookCreds.PermanentAccessToken) && !facebookCreds.PermanentAccessToken.StartsWith("https://www."))
                 {
-                    facebookData.Visible = true;
-                    _facebookData = _facebookHandler.GetFacebookData(facebookCreds.UserId);
-                    likesButton.Text += _facebookData.FanCount;
-                    peopleTalkingLabel.Text += _facebookData.TalkingAboutCount.ToString();
-                    postsButton.Text += string.Format("({0})", _facebookData.Posts.Count);
+                    GetFacebookData(true);
                 }
                 else if (!string.IsNullOrWhiteSpace(Request.QueryString["code"]))
                 {
-                    UserSingleton.Instance.CurrentUser = _facebookHandler.SetAccessToken(Request.QueryString["code"],
+                    Task refreshTask = _facebookHandler.SetAccessToken(Request.QueryString["code"],
                                                                 facebookCreds.UserId, facebookCreds.PageName);
+
+                    refreshTask.ContinueWith((response) => GetFacebookData(false));
+
+                    UserSingleton.Instance.CurrentUser.Facebook = true;
+                    GetFacebookData(true);
                 }
+            }
+        }
+
+        private void GetFacebookData(bool updateUi)
+        {
+            facebookData.Visible = true;
+            _facebookData = _facebookHandler.GetFacebookData(facebookCreds.UserId);
+
+            if (updateUi)
+            {
+                facebookUpdateTimer_Tick(new object(), new EventArgs());
             }
         }
 
@@ -64,9 +81,9 @@ namespace FDM90.Pages.Content
         {
             likesDetails.Visible = !likesDetails.Visible;
 
-            if(likesDetails.Visible)
+            if (likesDetails.Visible)
             {
-                newLikeLabel.Text += _facebookData.NewLikeCount.ToString();
+                newLikeLabel.Text = _newLikesDefault + _facebookData.NewLikeCount.ToString();
                 likeListView.DataSource = _facebookData.PageLikes.Values;
                 likeListView.DataBind();
                 likesDetails.Visible = true;
@@ -77,11 +94,18 @@ namespace FDM90.Pages.Content
         {
             posts.Visible = !posts.Visible;
 
-            if(posts.Visible)
+            if (posts.Visible)
             {
                 postList.DataSource = _facebookData.Posts;
                 postList.DataBind();
             }
+        }
+
+        protected void facebookUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            likesButton.Text = _likeDefault + _facebookData.FanCount;
+            peopleTalkingLabel.Text = _talkingDefault + _facebookData.TalkingAboutCount.ToString();
+            postsButton.Text = _postDefault + string.Format("({0})", _facebookData.Posts.Count);
         }
     }
 }
