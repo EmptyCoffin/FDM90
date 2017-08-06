@@ -210,6 +210,8 @@
     <Content Include="Pages\Content\Campaigns.aspx" />
     <Content Include="Pages\Content\Home.aspx" />
     <Content Include="Pages\Content\Twitter.aspx" />
+    <Content Include="Pages\Images\FacebookIcon.png" />
+    <Content Include="Pages\Images\TwitterIcon.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
