@@ -20,7 +20,10 @@ namespace FDM90.Pages.Content
     {
         ITwitterHandler _twitterHandler;
         private AspNetAuthorizer _auth;
-        private TwitterData _data;
+        private static TwitterData _data;
+        private string _numberOfFollowersDefault = "Number of Followers: ";
+        private string _numberOfRetweetsDefault = "Number of Retweets: ";
+        private string _numberOfFavoriteDefault = "Number of Favorited: ";
 
         private static readonly HttpClient client = new HttpClient();
 
@@ -86,9 +89,9 @@ namespace FDM90.Pages.Content
 
         protected void twitterUpdateTimer_Tick(object sender, EventArgs e)
         {
-            numberOfFollowers.Text += _data.NumberOfFollowers.ToString();
-            numberOfRetweets.Text += _data.NumberOfRetweets.ToString();
-            numberOfFavorite.Text += _data.NumberOfFavorited.ToString();
+            numberOfFollowers.Text = _numberOfFollowersDefault + _data.NumberOfFollowers.ToString();
+            numberOfRetweets.Text = _numberOfRetweetsDefault + _data.NumberOfRetweets.ToString();
+            numberOfFavorite.Text = _numberOfFavoriteDefault + _data.NumberOfFavorited.ToString();
 
             tweetList.DataSource = _data.Tweets;
             tweetList.DataBind();

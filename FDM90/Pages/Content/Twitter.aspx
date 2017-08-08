@@ -4,7 +4,7 @@
     <asp:ScriptManager runat="server" />
     <asp:UpdatePanel ID="twitterPanel" runat="server" UpdateMode="Always">
         <ContentTemplate>
-            <asp:Timer ID="twitterUpdateTimer" runat="server" Interval="10000" OnTick="twitterUpdateTimer_Tick" v />
+            <asp:Timer ID="twitterUpdateTimer" runat="server" Interval="10000" OnTick="twitterUpdateTimer_Tick" />
 
             <div class="row">
                 <div class="col-md-7">
