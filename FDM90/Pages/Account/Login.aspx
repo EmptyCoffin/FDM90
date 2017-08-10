@@ -11,5 +11,6 @@
     <asp:TextBox ID="passwordTextBox" CssClass="form-control" runat="server" placeholder="Password" TextMode="Password" ></asp:TextBox>
 <%--    <div class="help-block text-right"><a href="Registration.aspx">Forget the password ?</a></div>--%>
     <asp:Button ID="LoginButton" runat="server" class="btn btn-primary" Text="Sign in" OnClick="LoginButton_Click" />
+    <asp:Label ID="errorLabel" runat="server"></asp:Label>
 </form>
 </asp:Content>

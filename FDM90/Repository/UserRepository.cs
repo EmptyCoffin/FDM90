@@ -81,7 +81,7 @@ namespace FDM90.Repository
                             new SqlParameter("@SpecificUser", userName),
                         };
 
-            return SendReaderCommand(sql, parameters).First();
+            return SendReaderCommand(sql, parameters).FirstOrDefault();
         }
 
         /// <summary>
