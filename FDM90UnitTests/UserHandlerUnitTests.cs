@@ -110,7 +110,7 @@ namespace FDM90UnitTests
         {
             //arrange
             _mockUserRepo.As<IReadSpecific<User>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => new User());
+                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => null);
             User specificUser = new User("TestUserName", "TestPassword");
 
             //act
@@ -141,10 +141,10 @@ namespace FDM90UnitTests
             //assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(User));
-            Assert.AreNotEqual(Guid.Empty, result.UserId);
+            Assert.AreEqual(Guid.Empty, result.UserId);
             Assert.AreEqual("Password is incorrect", result.UserName);
             Assert.IsNull(result.EmailAddress);
-            Assert.AreEqual("TestPassword", result.Password);
+            Assert.AreNotEqual("TestPassword", result.Password);
             Assert.IsFalse(result.Facebook);
         }
 
