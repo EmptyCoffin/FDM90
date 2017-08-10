@@ -36,7 +36,7 @@ namespace FDM90.Models
 
             foreach(FacebookPostData post in newData.Posts)
             {
-                if (Posts.First(current => current.Id == post.Id) != null)
+                if (Posts.FirstOrDefault(current => current.Id == post.Id) != null)
                 {
                     Posts[Posts.FindIndex(x => x.Id == post.Id)] = post;
                 }
@@ -48,7 +48,7 @@ namespace FDM90.Models
 
             foreach (FacebookInsightValueData like in newData.PageLikes.Values)
             {
-                if (PageLikes.Values.First(current => current.EndTime == like.EndTime) != null)
+                if (PageLikes.Values.FirstOrDefault(current => current.EndTime == like.EndTime) != null)
                 {
                     PageLikes.Values[PageLikes.Values.FindIndex(x => x.EndTime == like.EndTime)] = like;
                 }
@@ -60,7 +60,7 @@ namespace FDM90.Models
 
             foreach (FacebookInsightValueData like in newData.PageStories.Values)
             {
-                if (PageStories.Values.First(current => current.EndTime == like.EndTime) != null)
+                if (PageStories.Values.FirstOrDefault(current => current.EndTime == like.EndTime) != null)
                 {
                     PageStories.Values[PageStories.Values.FindIndex(x => x.EndTime == like.EndTime)] = like;
                 }
