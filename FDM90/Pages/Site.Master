@@ -20,7 +20,7 @@
                     <ul class="nav nav-tabs">
                         <li role="presentation" id="LogInwelcomeMessageTab" runat="server">
                             <a class="btn btn-lg" href="~/Pages/Account/Login.aspx" id="LogIn" runat="server">Log In</a>
-                            <asp:Label runat="server" ID="welcomeMessage" Visible="false"></asp:Label>
+                            <asp:Label runat="server" ID="welcomeMessage" class="btn btn-lg" Visible="false"></asp:Label>
                         </li>
                         <li role="presentation" id="RegistrationLogoutTab" runat="server">
                             <a class="btn btn-lg" href="~/Pages/Account/Registration.aspx" id="SignUp" runat="server">Sign Up</a>
@@ -32,16 +32,16 @@
             <div>
                 <ul class="nav nav-tabs">
                     <li role="presentation" id="HomeTab" runat="server">
-                        <a href="~/Pages/Content/Home.aspx" title="Home" runat="server">Home</a>
+                        <a class="btn btn-lg" href="~/Pages/Content/Home.aspx" title="Home" runat="server">Home</a>
                     </li>
                     <li role="presentation" id="CampaignsTab" runat="server">
-                        <a href="~/Pages/Content/Campaigns.aspx" id="Campaigns" visible="false" runat="server">Campaigns</a>
+                        <a class="btn btn-lg" href="~/Pages/Content/Campaigns.aspx" id="Campaigns" visible="false" runat="server">Campaigns</a>
                     </li>
                     <li role="presentation" id="FacebookTab" runat="server">
-                        <a href="~/Pages/Content/Facebook.aspx" id="Facebook" visible="false" runat="server">Facebook</a>
+                        <a class="btn btn-lg" href="~/Pages/Content/Facebook.aspx" id="Facebook" visible="false" runat="server">Facebook</a>
                     </li>
                     <li role="presentation" id="TwitterTab" runat="server">
-                        <a href="~/Pages/Content/Twitter.aspx" id="Twitter" visible="false" runat="server">Twitter</a>
+                        <a class="btn btn-lg" href="~/Pages/Content/Twitter.aspx" id="Twitter" visible="false" runat="server">Twitter</a>
                     </li>
                 </ul>
             </div>
