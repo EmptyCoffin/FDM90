@@ -43,14 +43,14 @@ namespace FDM90.Handlers
             }
         }
 
-        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates)
+        public IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates)
         {
             JObject twitterTargets = new JObject();
 
             // get user twitter
             var twitterDetails = _twitterReadRepo.ReadSpecific(userId.ToString());
 
-            var data = JsonConvert.DeserializeObject<TwitterData>(twitterDetails.TwitterData);
+            var data = TwitterData.Parse(twitterDetails.TwitterData, new TwitterData());
             int screenNameFollowerCount = data.NumberOfFollowers;
             // get exposure - followers and followers of those retweeted/favorited
             foreach (var tweetDate in data.Tweets.Where(w => w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
@@ -115,7 +115,6 @@ namespace FDM90.Handlers
                 {
                     retweeterUsers.Add(new TwitterUser()
                     {
-                        ScreenName = status.User.ScreenName,
                         NumberOfFollowers = status.User.FollowersCount
                     });
                 }
@@ -126,23 +125,27 @@ namespace FDM90.Handlers
 
         private TwitterData GetTwitterData(TwitterCredentials twitterDetails, DateTime[] dates)
         {
-            // for loop ? 
             TwitterData data = null;
             var tweets = _twitterClientWrapper.GetTweets(twitterDetails).Result;
 
-            tweets.RemoveAll(remove => !dates.Contains(remove.CreatedAt.Date));
-
-            if (tweets.Count > 0)
+            if (tweets.Count(tweet => dates.Contains(tweet.CreatedAt.Date)) > 0)
             {
+                tweets.RemoveAll(remove => !dates.Contains(remove.CreatedAt.Date));
+
                 data = new TwitterData(tweets, tweets.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount);
 
-                foreach (Tweet tweet in data.Tweets.Where(y => y.RetweetCount > 0 || y.FavoriteCount > 0))
+                foreach (Tweet tweet in data.Tweets)
                 {
-                    tweet.RetweetedUsers = GetRetweeterFollowers(tweet.StatusID, twitterDetails);
+                    if (tweet.RetweetCount > 0)
+                    {
+                        tweet.RetweetedUsers = GetRetweeterFollowers(tweet.StatusID, twitterDetails);
+                    }
                 }
             }
 
-            return data;
+            return data == null ? new TwitterData(new List<Status>(),
+                tweets.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount)
+                : data;
         }
 
         public TwitterData GetTweets(string userId)
@@ -150,10 +153,10 @@ namespace FDM90.Handlers
             TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
             TwitterData todaysData = GetTwitterData(creds, new DateTime[] { DateTime.Now.Date });
 
-            return !string.IsNullOrWhiteSpace(creds.TwitterData) ? JsonConvert.DeserializeObject<TwitterData>(creds.TwitterData).Update(todaysData) : todaysData;
+            return !string.IsNullOrWhiteSpace(creds.TwitterData) ? TwitterData.Parse(creds.TwitterData, new TwitterData()).Update(todaysData) : todaysData;
         }
 
-        public void SaveUserDetails(string accessToken, string accessTokenSecret, string screenName, string userId)
+        public Task SaveUserDetails(string accessToken, string accessTokenSecret, string screenName, string userId)
         {
             TwitterCredentials creds = new TwitterCredentials()
             {
@@ -167,32 +170,27 @@ namespace FDM90.Handlers
 
             _userHandler.UpdateUserMediaActivation(new Models.User(Guid.Parse(userId)), MediaName);
 
-            GetMediaData(creds.UserId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date));
+            return Task.Factory.StartNew(() => GetMediaData(creds.UserId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date)));
         }
 
         public void GetMediaData(Guid userId, DateTime[] dates)
         {
             TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
 
-            Task<TwitterData>[] tasks = new Task<TwitterData>[1];
+            TwitterData data = GetTwitterData(creds, dates);
 
-            tasks[0] = Task.Factory.StartNew(() => GetTwitterData(creds, dates));
+            if (!string.IsNullOrWhiteSpace(creds.TwitterData))
+            {
+                TwitterData existingData = TwitterData.Parse(creds.TwitterData, new TwitterData());
+                existingData.Update(data);
+                creds.TwitterData = JsonConvert.SerializeObject(existingData);
+            }
+            else
+            {
+                creds.TwitterData = JsonConvert.SerializeObject(data);
+            }
 
-            Task.Factory.ContinueWhenAll(tasks, data => {
-
-                if (!string.IsNullOrWhiteSpace(creds.TwitterData))
-                {
-                    TwitterData existingData = JsonConvert.DeserializeObject<TwitterData>(creds.TwitterData);
-                    existingData.Update(data[0].Result);
-                    creds.TwitterData = JsonConvert.SerializeObject(existingData);
-                }
-                else
-                {
-                    creds.TwitterData = JsonConvert.SerializeObject(data[0].Result);
-                }
-
-                _twitterRepo.Update(creds);
-                });
+            _twitterRepo.Update(creds);
         }
     }
 }

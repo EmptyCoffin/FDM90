@@ -23,7 +23,7 @@ namespace FDM90.Models.Helpers
                        && tweet.ScreenName == twitterDetails.ScreenName
                        && tweet.Count == 200
                     select tweet)
-                .ToListAsync().Result;
+                .ToListAsync().Result.Where(x => !x.Text.StartsWith("RT @", StringComparison.CurrentCulture)).ToList();
         }
 
         public async Task<List<Status>> GetRetweeterFollowers(TwitterCredentials twitterDetails, ulong statusId)

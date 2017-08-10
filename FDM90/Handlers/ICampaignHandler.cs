@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace FDM90.Handlers
 {
-    public interface IGoalHandler
+    public interface ICampaignHandler
     {
-        void CreateGoal(User user, string name, string weekStart, string weekEnd, string targets);
+        void CreateCampaign(User user, string name, string weekStart, string weekEnd, string targets);
 
-        List<Goal> GetUserGoals(Guid userId);
+        List<Campaign> GetUserCampaigns(Guid userId);
 
         Task<bool> DailyUpdate();
     }

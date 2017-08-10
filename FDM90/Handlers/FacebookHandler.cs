@@ -72,9 +72,16 @@ namespace FDM90.Handlers
             return credentials;
         }
 
-        public User SetAccessToken(string shortTermToken, Guid userId, string pageName)
+        public Task SetAccessToken(string shortTermToken, Guid userId, string pageName)
         {
             var permanentTokenString = _facebookClientWrapper.GetPermanentAccessToken(shortTermToken, pageName);
+
+            if (permanentTokenString.Contains(' '))
+                return Task.Factory.StartNew(() => 
+                {
+                    _facebookRepo.Delete(new FacebookCredentials(userId, pageName));
+                    return permanentTokenString;
+                });
 
             //save token to user
             _facebookRepo.Update(new FacebookCredentials()
@@ -84,9 +91,7 @@ namespace FDM90.Handlers
             });
 
             // trigger get info
-            Task.Factory.StartNew(() => GetMediaData(userId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date)));
-
-            return _userHandler.GetUser(userId.ToString());
+            return Task.Factory.StartNew(() => GetMediaData(userId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date)));
         }
 
         public void GetMediaData(Guid userId, DateTime[] dates)
@@ -208,7 +213,7 @@ namespace FDM90.Handlers
             return currentData;
         }
 
-        public IJEnumerable<JToken> GetGoalInfo(Guid userId, DateTime[] dates)
+        public IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates)
         {
             FacebookCredentials facebookCreds = _facebookReadRepo.ReadSpecific(userId.ToString());
 
@@ -241,9 +246,10 @@ namespace FDM90.Handlers
         {
             FacebookCredentials creds = _facebookReadRepo.ReadSpecific(userId.ToString());
 
-            FacebookData todaysData = GetMetricData(new DateTime[] { DateTime.Now.Date }, creds.PermanentAccessToken, new FacebookData());
+            FacebookData todaysData = creds == null || string.IsNullOrWhiteSpace(creds.PermanentAccessToken) ? null :
+                                        GetMetricData(new DateTime[] { DateTime.Now.Date }, creds.PermanentAccessToken, new FacebookData());
 
-            return string.IsNullOrWhiteSpace(creds.FacebookData) ? todaysData : JsonConvert.DeserializeObject<FacebookData>(creds.FacebookData).Update(todaysData);
+            return creds == null || string.IsNullOrWhiteSpace(creds.FacebookData) ? todaysData : JsonConvert.DeserializeObject<FacebookData>(creds.FacebookData).Update(todaysData);
         }
     }
 }

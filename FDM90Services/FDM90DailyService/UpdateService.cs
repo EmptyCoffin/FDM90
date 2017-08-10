@@ -15,7 +15,7 @@ namespace FDM90DailyService
     {
         Timer dailyTimer;
         Timer setupTimer;
-        IGoalHandler _goalHandler;
+        ICampaignHandler _campaignHandler;
 
         public UpdateService()
         {
@@ -53,7 +53,7 @@ namespace FDM90DailyService
         public void Method(object sender, ElapsedEventArgs e)
         {
             Debugger.Launch();
-            _goalHandler.DailyUpdate();
+            _campaignHandler.DailyUpdate();
         }
     }
 }

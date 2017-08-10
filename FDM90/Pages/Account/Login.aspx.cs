@@ -27,15 +27,19 @@ namespace FDM90.Pages.Account
 
         protected void LoginButton_Click(object sender, EventArgs e)
         {
-           var loginResult = _userHandler.LoginUser(new User(userNameTextBox.Text, passwordTextBox.Text));
+            errorLabel.Text = "";
+            var loginResult = _userHandler.LoginUser(new User(userNameTextBox.Text, passwordTextBox.Text));
 
-            Guid leftOver;
-            if (Guid.TryParse(loginResult.UserId.ToString(), out leftOver))
+            if (!loginResult.UserId.Equals(Guid.Empty))
             {
                 UserSingleton.Instance.CurrentUser = loginResult;
                 FormsAuthentication.SetAuthCookie(UserSingleton.Instance.CurrentUser.UserName, false);
                 System.Threading.Thread.Sleep(3 * 1000);
                 Response.Redirect("~/Pages/Content/Home.aspx");
+            }
+            else
+            {
+                errorLabel.Text = loginResult.UserName;
             }
         }
     }

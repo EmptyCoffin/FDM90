@@ -13,6 +13,24 @@ namespace FDM90.Pages.Content {
     public partial class Twitter {
         
         /// <summary>
+        /// twitterPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel twitterPanel;
+        
+        /// <summary>
+        /// twitterUpdateTimer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.Timer twitterUpdateTimer;
+        
+        /// <summary>
         /// tweetList control.
         /// </summary>
         /// <remarks>

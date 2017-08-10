@@ -10,16 +10,16 @@
 namespace FDM90.Pages.Content {
     
     
-    public partial class Goals {
+    public partial class Campaigns {
         
         /// <summary>
-        /// currentGoalDropDown control.
+        /// currentCampaignDropDown control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList currentGoalDropDown;
+        protected global::System.Web.UI.WebControls.DropDownList currentCampaignDropDown;
         
         /// <summary>
         /// metricDropDown control.
@@ -31,12 +31,12 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.DropDownList metricDropDown;
         
         /// <summary>
-        /// goalChart control.
+        /// campaignChart control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.DataVisualization.Charting.Chart goalChart;
+        protected global::System.Web.UI.DataVisualization.Charting.Chart campaignChart;
     }
 }

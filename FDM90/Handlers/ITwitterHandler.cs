@@ -9,7 +9,7 @@ namespace FDM90.Handlers
 {
     public interface ITwitterHandler : IMediaHandler
     {
-        void SaveUserDetails(string oauthToken, string oauthTokenSecret,string screenName, string userId);
+        Task SaveUserDetails(string oauthToken, string oauthTokenSecret,string screenName, string userId);
         TwitterData GetTweets(string userId);
     }
 }

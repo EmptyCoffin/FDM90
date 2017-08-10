@@ -43,6 +43,7 @@ namespace FDM90UnitTests
                 .Verifiable();
 
             _mockUserHandler = new Mock<IUserHandler>();
+            _mockUserHandler.Setup(handler => handler.GetUser(It.IsAny<string>())).Returns((string id) => new User(Guid.Parse(id)));
             _mockUserHandler.Setup(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()))
                 .Callback<User, string>((user, media) =>
                 {
@@ -399,7 +400,7 @@ namespace FDM90UnitTests
         //}
 
         [TestMethod]
-        public void GetGoalInfo_GivenParameters_ReturnsTrueIfValuesAreCorrect()
+        public void GetCampaignInfo_GivenParameters_ReturnsTrueIfValuesAreCorrect()
         {
             //arrange
             FacebookData data = new FacebookData()
@@ -624,7 +625,7 @@ namespace FDM90UnitTests
             //_mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me/insights/page_stories/day", It.IsAny<string>())).Returns(storiesData);
 
             //act
-            var result = _facebookHandler.GetGoalInfo(Guid.NewGuid(), GetDates(new DateTime(2016, 04, 30), new DateTime(2016, 08, 05)));
+            var result = _facebookHandler.GetCampaignInfo(Guid.NewGuid(), GetDates(new DateTime(2016, 04, 30), new DateTime(2016, 08, 05)));
 
             //assert
             Assert.IsNotNull(result);
@@ -642,7 +643,7 @@ namespace FDM90UnitTests
 
 
         //[TestMethod]
-        //public void GetGoalInfo_GivenDifferentDatesParameters_ReturnsTrueIfValuesAreCorrect()
+        //public void GetCampaignInfo_GivenDifferentDatesParameters_ReturnsTrueIfValuesAreCorrect()
         //{
         //    //arrange
         //    FacebookCredentials creds = new FacebookCredentials(Guid.NewGuid(), "TestPage");
@@ -768,7 +769,7 @@ namespace FDM90UnitTests
         //    _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me/insights/page_stories/day", It.IsAny<string>())).Returns(storiesData);
 
         //    //act
-        //    var result = _facebookHandler.GetGoalInfo(Guid.NewGuid(), GetDates(new DateTime(2016, 04, 30), new DateTime(2016, 08, 05)));
+        //    var result = _facebookHandler.GetCampaignInfo(Guid.NewGuid(), GetDates(new DateTime(2016, 04, 30), new DateTime(2016, 08, 05)));
 
         //    //assert
         //    Assert.IsNotNull(result);

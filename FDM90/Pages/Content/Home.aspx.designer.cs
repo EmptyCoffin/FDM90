@@ -13,40 +13,40 @@ namespace FDM90.Pages.Content {
     public partial class Home {
         
         /// <summary>
-        /// goalArea control.
+        /// campaignArea control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl goalArea;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl campaignArea;
         
         /// <summary>
-        /// setupGoalButton control.
+        /// setupCampaignButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button setupGoalButton;
+        protected global::System.Web.UI.WebControls.Button setupCampaignButton;
         
         /// <summary>
-        /// newGoalArea control.
+        /// newCampaignArea control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl newGoalArea;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl newCampaignArea;
         
         /// <summary>
-        /// goalName control.
+        /// campaignName control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox goalName;
+        protected global::System.Web.UI.WebControls.TextBox campaignName;
         
         /// <summary>
         /// startDateButton control.
@@ -103,13 +103,13 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.Label calendarErrorLabel;
         
         /// <summary>
-        /// newGoalGrid control.
+        /// newCampaignGrid control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Table newGoalGrid;
+        protected global::System.Web.UI.WebControls.Table newCampaignGrid;
         
         /// <summary>
         /// overallExposure control.
@@ -139,13 +139,13 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.Label overallEngagement;
         
         /// <summary>
-        /// newGoalButton control.
+        /// newCampaignButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button newGoalButton;
+        protected global::System.Web.UI.WebControls.Button newCampaignButton;
         
         /// <summary>
         /// facebookSetUpButton control.
@@ -154,7 +154,7 @@ namespace FDM90.Pages.Content {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button facebookSetUpButton;
+        protected global::System.Web.UI.WebControls.ImageButton facebookSetUpButton;
         
         /// <summary>
         /// twitterSetUpButton control.
@@ -163,6 +163,6 @@ namespace FDM90.Pages.Content {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button twitterSetUpButton;
+        protected global::System.Web.UI.WebControls.ImageButton twitterSetUpButton;
     }
 }

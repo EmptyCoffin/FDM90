@@ -1,5 +1,5 @@
 ﻿
-namespace FDM90.Model
+namespace FDM90.Models.Helpers
 {
     public class SQLHelper
     {

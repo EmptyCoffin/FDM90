@@ -27,6 +27,6 @@ namespace FDM90.Models
         public string Password { get; set; }
         public bool Facebook { get; set; }
         public bool Twitter { get; set; }
-        public int Goals { get; set; }
+        public int Campaigns { get; set; }
     }
 }

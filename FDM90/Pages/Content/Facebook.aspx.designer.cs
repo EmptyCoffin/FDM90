@@ -49,6 +49,15 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.Button facebookLoginButton;
         
         /// <summary>
+        /// facebookDetailsErrorLabel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label facebookDetailsErrorLabel;
+        
+        /// <summary>
         /// facebookData control.
         /// </summary>
         /// <remarks>
@@ -56,6 +65,24 @@ namespace FDM90.Pages.Content {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl facebookData;
+        
+        /// <summary>
+        /// facebookPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel facebookPanel;
+        
+        /// <summary>
+        /// facebookUpdateTimer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.Timer facebookUpdateTimer;
         
         /// <summary>
         /// likesButton control.

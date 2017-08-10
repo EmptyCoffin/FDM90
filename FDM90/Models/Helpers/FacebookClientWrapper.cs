@@ -47,9 +47,9 @@ namespace FDM90.Models.Helpers
                                                 new string[] { result.access_token }));
 
             JsonArray permanentData = permanentTokenResponse.data;
-            var pToken = permanentData.OfType<JsonObject>().First(page => page["name"].ToString() == pageName.Trim());
+            var pToken = permanentData.OfType<JsonObject>().FirstOrDefault(page => page["name"].ToString() == pageName.Trim());
 
-            return pToken["access_token"].ToString();
+            return pToken == null ? "Page Name Doesn't Exist or is Misspelt" : pToken["access_token"].ToString();
         }
 
         public dynamic GetData(string url, string accessToken)

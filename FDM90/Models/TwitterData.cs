@@ -1,35 +1,70 @@
 ﻿using LinqToTwitter;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 
 namespace FDM90.Models
 {
     public class TwitterData
     {
+        public TwitterData()
+        {
+
+        }
+
         public TwitterData(List<Status> tweets, int numberOfFollowers)
         {
             Tweets = ConvertedTweets(tweets);
             NumberOfFollowers = numberOfFollowers;
-            numberOfRetweets = Tweets.Sum(x => x.RetweetCount);
-            numberOfFavorited = Tweets.Sum(x => x.FavoriteCount);
         }
 
         public int NumberOfFollowers { get; set; }
 
-        public int NumberOfRetweets { get { return numberOfRetweets;  } }
+        [JsonIgnore()]
+        public int NumberOfRetweets { get { return Tweets.Sum(x => x.RetweetCount);  } }
 
-        [NonSerialized]
-        private int numberOfRetweets;
-
-        public int NumberOfFavorited { get { return numberOfFavorited; } }
-
-        [NonSerialized]
-        private int numberOfFavorited;
+        [JsonIgnore()]
+        public int NumberOfFavorited { get { return Tweets.Sum(x => x.FavoriteCount); } }
 
         public List<Tweet> Tweets { get; set; }
+
+        public static T Parse<T>(dynamic json, T data)
+        {
+            if (!string.IsNullOrWhiteSpace(json.ToString()))
+            {
+                JObject jsonObject = JObject.Parse(json.ToString());
+
+                foreach (PropertyInfo property in data.GetType().GetProperties())
+                {
+                    JsonIgnoreAttribute jsonIgnore = (JsonIgnoreAttribute)property.GetCustomAttribute(typeof(JsonIgnoreAttribute));
+
+                    if(jsonIgnore == null)
+                    {
+                        if(property.PropertyType.Namespace.Contains("Collection"))
+                        {
+                            IList listInstance = (IList)Activator.CreateInstance(property.PropertyType);
+
+                            foreach(var value in jsonObject[property.Name])
+                            {
+                                listInstance.Add(Parse(value, Activator.CreateInstance(property.PropertyType.GetGenericArguments().Single())));
+                            }
+
+                            property.SetValue(data, listInstance);
+                        }
+                        else
+                        {
+                            property.SetValue(data, Convert.ChangeType((jsonObject[property.Name]), property.PropertyType));
+                        }
+                    }
+                }
+            }
+            return data;
+        }
 
         public TwitterData Update(TwitterData newTweets)
         {
@@ -43,12 +78,6 @@ namespace FDM90.Models
                 {
                     Tweets.Add(newTweet);
                 }
-            }
-
-            if (newTweets.Tweets.Count > 0)
-            {
-                numberOfRetweets = Tweets.Sum(x => x.RetweetCount);
-                numberOfFavorited = Tweets.Sum(x => x.FavoriteCount);
             }
 
             return this;
@@ -88,12 +117,11 @@ namespace FDM90.Models
         public string Text { get; set; }
         public bool Retweeted { get; set; }
         public bool Favorited { get; set; }
-        public IEnumerable<TwitterUser> RetweetedUsers {get;set;}
+        public List<TwitterUser> RetweetedUsers {get;set;}
     }
 
     public class TwitterUser
     {
-        public string ScreenName { get; set; }
         public int NumberOfFollowers { get; set; }
     }
 }

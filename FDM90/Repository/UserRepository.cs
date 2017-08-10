@@ -1,5 +1,4 @@
 ﻿using FDM90.Models;
-using FDM90.Model;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -7,6 +6,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {
@@ -46,8 +46,8 @@ namespace FDM90.Repository
         public void Create(User newUser)
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
-                        "[UserId], [UserName], [EmailAddress], [Password], [Facebook], [Twitter], [Goals]" + SQLHelper.CloseBracket + SQLHelper.Values
-                        + SQLHelper.OpenBracket + "@UserID, @UserName, @Email, @Password, @Facebook, @Twitter, @Goals" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
+                        "[UserId], [UserName], [EmailAddress], [Password], [Facebook], [Twitter], [Campaigns]" + SQLHelper.CloseBracket + SQLHelper.Values
+                        + SQLHelper.OpenBracket + "@UserID, @UserName, @Email, @Password, @Facebook, @Twitter, @Campaigns" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@UserID", newUser.UserId),
@@ -56,7 +56,7 @@ namespace FDM90.Repository
                             new SqlParameter("@Password", newUser.Password),
                             new SqlParameter("@Facebook", false),
                             new SqlParameter("@Twitter", false),
-                            new SqlParameter("@Goals", 0)
+                            new SqlParameter("@Campaigns", (object)0)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -81,7 +81,7 @@ namespace FDM90.Repository
                             new SqlParameter("@SpecificUser", userName),
                         };
 
-            return SendReaderCommand(sql, parameters).First();
+            return SendReaderCommand(sql, parameters).FirstOrDefault();
         }
 
         /// <summary>
@@ -112,9 +112,12 @@ namespace FDM90.Repository
                 SetUpdateValues(currentDetails, updatedUser, out parameters)
                 + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
-            parameters.Add(new SqlParameter("@UserID", updatedUser.UserId));
+            if (parameters.Count > 0)
+            {
+                parameters.Add(new SqlParameter("@UserID", updatedUser.UserId));
 
-            SendVoidCommand(sql, parameters.ToArray());
+                SendVoidCommand(sql, parameters.ToArray());
+            }
         }
 
         /// <summary>
@@ -150,7 +153,7 @@ namespace FDM90.Repository
             user.Password = reader["Password"].ToString();
             user.Facebook = reader["Facebook"] != null ? bool.Parse(reader["Facebook"].ToString()) : false;
             user.Twitter = reader["Twitter"] != null ? bool.Parse(reader["Twitter"].ToString()) : false;
-            user.Goals = int.Parse(reader["Goals"].ToString());
+            user.Campaigns = int.Parse(reader["Campaigns"].ToString());
             return user;
         }
 

@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Web;
 using System.Data.SqlClient;
-using FDM90.Model;
+using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {
@@ -47,7 +47,14 @@ namespace FDM90.Repository
 
         public void Delete(FacebookCredentials objectId)
         {
-            throw new NotImplementedException();
+            string sql = SQLHelper.Delete + _table + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.And + "[PageName] = @PageName" + SQLHelper.EndingSemiColon;
+
+            SqlParameter[] parameters = new SqlParameter[]{
+                            new SqlParameter("@UserID", objectId.UserId),
+                            new SqlParameter("@PageName", objectId.PageName),
+                        };
+
+            SendVoidCommand(sql, parameters);
         }
 
         public IEnumerable<FacebookCredentials> ReadAll()
@@ -86,9 +93,12 @@ namespace FDM90.Repository
                  SetUpdateValues(currentDetails, objectToUpdate, out parameters)
             + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
-            parameters.Add(new SqlParameter("@UserID", objectToUpdate.UserId));
+            if (parameters.Count > 0)
+            {
+                parameters.Add(new SqlParameter("@UserID", objectToUpdate.UserId));
 
-            SendVoidCommand(sql, parameters.ToArray());
+                SendVoidCommand(sql, parameters.ToArray());
+            }
         }
     }
 }

@@ -54,13 +54,15 @@ namespace FDM90.Handlers
             //Check user exists
             var user = _userSpecific.ReadSpecific(loginUser.UserName);
 
-            if (user.UserId.Equals(Guid.Empty))
+            if (user == null)
             {
+                user = new User();
                 user.UserName = "User doesn't exist";
             }
             else if (EncryptionHelper.DecryptString(user.Password) != loginUser.Password)
             {
                 //check password
+                user = new User();
                 user.UserName = "Password is incorrect";
             }
 
