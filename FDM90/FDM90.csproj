@@ -201,6 +201,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Pages\Account\Login.aspx" />
+    <Content Include="Pages\Account\Logout.aspx" />
     <Content Include="Pages\Account\Registration.aspx" />
     <Content Include="Pages\Content\Facebook.aspx" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -270,6 +271,13 @@
     </Compile>
     <Compile Include="Pages\Account\Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Account\Logout.aspx.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Account\Logout.aspx.designer.cs">
+      <DependentUpon>Logout.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pages\Account\Registration.aspx.cs">
       <DependentUpon>Registration.aspx</DependentUpon>
