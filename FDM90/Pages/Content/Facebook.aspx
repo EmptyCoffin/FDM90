@@ -14,6 +14,7 @@
             </label>
         </div>
         <asp:Button ID="facebookLoginButton" runat="server" class="btn btn-primary btn-block" Text="Sign in and Save" OnClick="facebookLoginButton_Click" />
+        <asp:Label ID="facebookDetailsErrorLabel" runat="server"></asp:Label>
     </div>
     <br />
     <br />

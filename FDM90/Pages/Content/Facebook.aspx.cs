@@ -47,7 +47,18 @@ namespace FDM90.Pages.Content
                     Task refreshTask = _facebookHandler.SetAccessToken(Request.QueryString["code"],
                                                                 facebookCreds.UserId, facebookCreds.PageName);
 
-                    refreshTask.ContinueWith((response) => GetFacebookData(false));
+                    refreshTask.ContinueWith((response) => {
+                        if(string.IsNullOrWhiteSpace((response as Task<string>)?.Result))
+                        {
+                            GetFacebookData(false);
+                            facebookDetailsErrorLabel.Text = "";
+                        }
+                        else
+                        {
+                            detailsPanel.Visible = true;
+                            facebookDetailsErrorLabel.Text = (response as Task<string>).Result;
+                        }
+                    });
 
                     UserSingleton.Instance.CurrentUser.Facebook = true;
                     GetFacebookData(true);
@@ -57,7 +68,6 @@ namespace FDM90.Pages.Content
 
         private void GetFacebookData(bool updateUi)
         {
-            facebookData.Visible = true;
             _facebookData = _facebookHandler.GetFacebookData(facebookCreds.UserId);
 
             if (updateUi)
@@ -103,9 +113,14 @@ namespace FDM90.Pages.Content
 
         protected void facebookUpdateTimer_Tick(object sender, EventArgs e)
         {
-            likesButton.Text = _likeDefault + _facebookData.FanCount;
-            peopleTalkingLabel.Text = _talkingDefault + _facebookData.TalkingAboutCount.ToString();
-            postsButton.Text = _postDefault + string.Format("({0})", _facebookData.Posts.Count);
+            facebookData.Visible = _facebookData != null;
+
+            if (_facebookData != null)
+            {
+                likesButton.Text = _likeDefault + _facebookData.FanCount;
+                peopleTalkingLabel.Text = _talkingDefault + _facebookData.TalkingAboutCount.ToString();
+                postsButton.Text = _postDefault + string.Format("({0})", _facebookData.Posts.Count);
+            }
         }
     }
 }

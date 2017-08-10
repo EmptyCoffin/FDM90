@@ -76,6 +76,13 @@ namespace FDM90.Handlers
         {
             var permanentTokenString = _facebookClientWrapper.GetPermanentAccessToken(shortTermToken, pageName);
 
+            if (permanentTokenString.Contains(' '))
+                return Task.Factory.StartNew(() => 
+                {
+                    _facebookRepo.Delete(new FacebookCredentials(userId, pageName));
+                    return permanentTokenString;
+                });
+
             //save token to user
             _facebookRepo.Update(new FacebookCredentials()
             {
@@ -239,9 +246,10 @@ namespace FDM90.Handlers
         {
             FacebookCredentials creds = _facebookReadRepo.ReadSpecific(userId.ToString());
 
-            FacebookData todaysData = GetMetricData(new DateTime[] { DateTime.Now.Date }, creds.PermanentAccessToken, new FacebookData());
+            FacebookData todaysData = creds == null || string.IsNullOrWhiteSpace(creds.PermanentAccessToken) ? null :
+                                        GetMetricData(new DateTime[] { DateTime.Now.Date }, creds.PermanentAccessToken, new FacebookData());
 
-            return string.IsNullOrWhiteSpace(creds.FacebookData) ? todaysData : JsonConvert.DeserializeObject<FacebookData>(creds.FacebookData).Update(todaysData);
+            return creds == null || string.IsNullOrWhiteSpace(creds.FacebookData) ? todaysData : JsonConvert.DeserializeObject<FacebookData>(creds.FacebookData).Update(todaysData);
         }
     }
 }

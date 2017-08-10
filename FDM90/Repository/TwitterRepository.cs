@@ -79,9 +79,12 @@ namespace FDM90.Repository
                  SetUpdateValues(currentDetails, objectToUpdate, out parameters)
             + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
-            parameters.Add(new SqlParameter("@UserID", objectToUpdate.UserId));
+            if (parameters.Count > 0)
+            {
+                parameters.Add(new SqlParameter("@UserID", objectToUpdate.UserId));
 
-            SendVoidCommand(sql, parameters.ToArray());
+                SendVoidCommand(sql, parameters.ToArray());
+            }
         }
     }
 }

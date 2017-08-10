@@ -79,11 +79,14 @@ namespace FDM90.Repository
                 SetUpdateValues(currentDetails, objectToUpdate, out parameters)
                 + SQLHelper.Where + "[UserId] = @UserID and [CampaignName] = @CampaignName" + SQLHelper.EndingSemiColon;
 
-            parameters.AddRange(new SqlParameter[]{
+            if (parameters.Count > 0)
+            {
+                parameters.AddRange(new SqlParameter[]{
                             new SqlParameter("@UserID", objectToUpdate.UserId),
                             new SqlParameter("@CampaignName", objectToUpdate.CampaignName)
                         });
-            SendVoidCommand(sql, parameters.ToArray());
+                SendVoidCommand(sql, parameters.ToArray());
+            }
         }
     }
 }
