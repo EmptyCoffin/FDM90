@@ -112,7 +112,21 @@ namespace FDM90.Pages.Content
 
                     if (campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == groupRow.First()[1].ToString()).Count() == 0)
                     {
-                        row[5] = groupRow.Sum(x => int.Parse(x[5].ToString()));
+                        if (campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall"
+                                && w[2].ToString() == groupRow.First()[2].ToString()
+                                        && w[1].ToString() == (int.Parse( groupRow.First()[1].ToString()) -1).ToString()).Count() != 0 &&
+                                            (int)campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall"
+                                                && w[2].ToString() == groupRow.First()[2].ToString()
+                                                && w[1].ToString() == (int.Parse(groupRow.First()[1].ToString()) - 1).ToString()).First()[5] > groupRow.Sum(x => int.Parse(x[5].ToString())))
+                        {
+                            row[5] = (int)campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall"
+                                                && w[2].ToString() == groupRow.First()[2].ToString()
+                                                && w[1].ToString() == (int.Parse(groupRow.First()[1].ToString()) - 1).ToString()).First()[5] + groupRow.Sum(x => int.Parse(x[5].ToString()));
+                        }
+                        else
+                        {
+                            row[5] = groupRow.Sum(x => int.Parse(x[5].ToString()));
+                        }
                     }
                     else
                     {
@@ -147,17 +161,27 @@ namespace FDM90.Pages.Content
                 mediaChart.Name = mediaRows.First()[0].ToString();
                 mediaChart.AxisX.IsMarginVisible = false;
                 mediaChart.AxisX.IsMarginVisible = false;
+                mediaChart.AxisX.MajorGrid.Enabled = false;
+                mediaChart.AxisY.MajorGrid.Enabled = false;
                 mediaChart.AxisX.Title = campaignDataTable.Columns[1].ToString();
-                mediaChart.AxisY.Minimum = double.Parse(mediaRows.First()[5].ToString());
+                mediaChart.AxisY.Minimum = double.Parse(mediaRows.First()[5].ToString()) > double.Parse(mediaRows.Last()[3].ToString()) ?
+                                           double.Parse(mediaRows.Last()[3].ToString()) - (double.Parse(mediaRows.Last()[3].ToString()) / 2) :
+                                           double.Parse(mediaRows.First()[5].ToString());
                 mediaChart.AxisY.Maximum = double.Parse(mediaRows.Last()[5].ToString()) > double.Parse(mediaRows.Last()[3].ToString())
                                                 ? double.Parse(mediaRows.Last()[5].ToString()) + (double.Parse(mediaRows.Last()[5].ToString()) / 10) :
                                                 double.Parse(mediaRows.Last()[3].ToString()) + (double.Parse(mediaRows.Last()[3].ToString()) / 10);
                 progressSeries.Name = mediaRows.First()[0].ToString() + "Progress";
                 progressSeries.ChartType = SeriesChartType.Line;
+                progressSeries.MarkerSize = 10;
+                progressSeries.MarkerStyle = MarkerStyle.Star10;
+                progressSeries.ToolTip = "#VALY";
                 progressSeries.Points.DataBind(mediaRows, campaignDataTable.Columns[1].ToString(), campaignDataTable.Columns[5].ToString(), null);
 
                 limitSeries.Name = mediaRows.First()[0].ToString() + "Limit";
                 limitSeries.ChartType = SeriesChartType.Line;
+                limitSeries.MarkerSize = 10;
+                limitSeries.MarkerStyle = MarkerStyle.Star5;
+                limitSeries.ToolTip = "#VALY";
                 limitSeries.Points.DataBind(mediaRows, campaignDataTable.Columns[1].ToString(), campaignDataTable.Columns[3].ToString(), null);
 
                 if(mediaChart.Name == "Overall")
