@@ -92,8 +92,7 @@ namespace FDM90.Repository
         public IEnumerable<User> ReadAll()
         {
             List<User> _currentUsersList = new List<User>();
-            string sql = SQLHelper.SelectAll
-                + SQLHelper.From + _table + SQLHelper.EndingSemiColon;
+            string sql = SQLHelper.SelectAll + _table + SQLHelper.EndingSemiColon;
 
             return SendReaderCommand(sql, new SqlParameter[0]);
         }

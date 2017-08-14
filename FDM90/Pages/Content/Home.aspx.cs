@@ -185,8 +185,10 @@ namespace FDM90.Pages.Content
                 targets.Add(media, mediaTarget);
             }
 
-            _campaignHandler.CreateCampaign(UserSingleton.Instance.CurrentUser,
-                                campaignName.Text, startDateButton.Text, endDateButton.Text, targets.ToString());
+            TaskListSingleton.Instance.CurrentTasks = new List<System.Threading.Tasks.Task>() {
+                _campaignHandler.CreateCampaign(UserSingleton.Instance.CurrentUser,
+                                    campaignName.Text, startDateButton.Text, endDateButton.Text, targets.ToString())
+            };
 
             UserSingleton.Instance.CurrentUser.Campaigns++;
 

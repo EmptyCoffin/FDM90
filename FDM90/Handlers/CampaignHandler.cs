@@ -19,7 +19,6 @@ namespace FDM90.Handlers
         private ITwitterHandler _twitterHandler;
         private IUserHandler _userHandler;
         private List<IMediaHandler> _mediaHandlers = new List<IMediaHandler>();
-        public Task updateCampaignsTask;
 
         public CampaignHandler() : this(new CampaignRepository(), new FacebookHandler(), new TwitterHandler(), new UserHandler())
         {
@@ -36,7 +35,7 @@ namespace FDM90.Handlers
             _mediaHandlers.AddRange(new IMediaHandler[] { _facebookHandler, twitterHandler });
         }
 
-        public void CreateCampaign(User user, string name, string startDate, string endDate, string targets)
+        public Task CreateCampaign(User user, string name, string startDate, string endDate, string targets)
         {
             Campaign newCampaign = new Campaign() {
                 UserId = user.UserId,
@@ -49,7 +48,7 @@ namespace FDM90.Handlers
             _campaignRepo.Create(newCampaign);
             user.Campaigns++;
             _userHandler.UpdateUser(user);
-            updateCampaignsTask = UpdateCampaigns(user.UserId, newCampaign);
+            return UpdateCampaigns(user.UserId, newCampaign);
         }
 
         public Task UpdateCampaigns(Guid userId, Campaign newCampaign)

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.DataVisualization.Charting;
@@ -17,35 +18,77 @@ namespace FDM90.Pages.Content
     {
         private List<Campaign> _userCampaigns;
         private ICampaignHandler _campaignHandler;
+        private IMarketingModelHandler _marketingModelHandler;
         private string[] metrics = { "Exposure", "Influence", "Engagement" };
         private static DataTable campaignDataTable;
+        private static MarketingModel[] marketingModels;
+        private int Exposure {
+            get
+            {
+                return campaignDataTable == null ? 0 
+                    : campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Exposure").Sum(s => int.Parse(s[4].ToString()));
+            }
+        }
 
-        public Campaigns():this(new CampaignHandler())
+        private int Influence
+        {
+            get
+            {
+                return campaignDataTable == null ? 0
+                    : campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Influence").Sum(s => int.Parse(s[4].ToString()));
+            }
+        }
+
+        private int Engagement
+        {
+            get
+            {
+                return campaignDataTable == null ? 0
+                    : campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Engagement").Sum(s => int.Parse(s[4].ToString()));
+            }
+        }
+
+        public Campaigns():this(new CampaignHandler(), new MarketingModelHandler())
         {
 
         }
 
-        public Campaigns(ICampaignHandler campaignHandler)
+        public Campaigns(ICampaignHandler campaignHandler, IMarketingModelHandler marketingModelHandler)
         {
             _campaignHandler = campaignHandler;
+            _marketingModelHandler = marketingModelHandler;
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!Page.IsPostBack)
             {
-                _userCampaigns = _campaignHandler.GetUserCampaigns(UserSingleton.Instance.CurrentUser.UserId);
-                currentCampaignDropDown.DataSource = _userCampaigns.Select(s => s.CampaignName);
-                currentCampaignDropDown.DataBind();
+                if (TaskListSingleton.Instance.CurrentTasks != null)
+                    TaskListSingleton.Instance.CurrentTasks.First().Wait();
 
-                if (!string.IsNullOrEmpty(Request.QueryString["CampaignName"]))
-                    currentCampaignDropDown.SelectedIndex = _userCampaigns.FindIndex(campaign => campaign.CampaignName == Request.QueryString["CampaignName"]);
-
-                metricDropDown.DataSource = metrics;
-                metricDropDown.DataBind();
-
-                UpdateCampaignDataTable();
+                LoadData();
             }
+        }
+
+        private void LoadData()
+        {
+            _userCampaigns = _campaignHandler.GetUserCampaigns(UserSingleton.Instance.CurrentUser.UserId);
+            currentCampaignDropDown.DataSource = _userCampaigns.Select(s => s.CampaignName);
+            currentCampaignDropDown.DataBind();
+
+            if (!string.IsNullOrEmpty(Request.QueryString["CampaignName"]))
+                currentCampaignDropDown.SelectedIndex = _userCampaigns.FindIndex(campaign => campaign.CampaignName == Request.QueryString["CampaignName"]);
+
+            metricDropDown.DataSource = metrics;
+            metricDropDown.DataBind();
+
+            marketingModels = _marketingModelHandler.GetAllMarketingModels().ToArray();
+            var dropdownItems = marketingModels.Select(s => s.Name).ToList();
+            dropdownItems.Insert(0, "Please Select A Calculation to Perform");
+            marketingModelsDropDown.DataSource = dropdownItems;
+            marketingModelsDropDown.DataBind();
+
+            UpdateCampaignDataTable();
         }
 
         private void UpdateCampaignDataTable()
@@ -92,7 +135,7 @@ namespace FDM90.Pages.Content
                     }
                 }
 
-                foreach (var groupRow in campaignDataTable.AsEnumerable().GroupBy(g => new { Week = g[1], Metric = g[2] }))
+                foreach (var groupRow in campaignDataTable.AsEnumerable().GroupBy(g => new { Week = g[1], Metric = g[2] }).OrderBy(o => o.Key.Week))
                 {
                     DataRow row = campaignDataTable.NewRow();
                     row[0] = "Overall";
@@ -175,14 +218,14 @@ namespace FDM90.Pages.Content
                 progressSeries.MarkerSize = 10;
                 progressSeries.MarkerStyle = MarkerStyle.Star10;
                 progressSeries.ToolTip = "#VALY";
+                progressSeries.IsValueShownAsLabel = true;
                 progressSeries.Points.DataBind(mediaRows, campaignDataTable.Columns[1].ToString(), campaignDataTable.Columns[5].ToString(), null);
 
                 limitSeries.Name = mediaRows.First()[0].ToString() + "Limit";
                 limitSeries.ChartType = SeriesChartType.Line;
-                limitSeries.MarkerSize = 10;
-                limitSeries.MarkerStyle = MarkerStyle.Star5;
                 limitSeries.ToolTip = "#VALY";
                 limitSeries.Points.DataBind(mediaRows, campaignDataTable.Columns[1].ToString(), campaignDataTable.Columns[3].ToString(), null);
+                limitSeries.Points.Last().IsValueShownAsLabel = true;
 
                 if(mediaChart.Name == "Overall")
                 {
@@ -215,6 +258,31 @@ namespace FDM90.Pages.Content
         protected void currentCampaignDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCampaignDataTable();
+        }
+
+        protected void marketingModels_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MarketingModel newModel = marketingModels.FirstOrDefault(x => x.Name == marketingModelsDropDown.SelectedValue);
+            if (newModel == null) return;
+
+            modelDescriptionLabel.Text = newModel.Description;
+            modelMetricLabel.Text = newModel.MetricsUsed;
+            modelResultMetricLabel.Text = newModel.ResultMetric;
+
+            var calculationExpression = 
+                System.Linq.Dynamic.DynamicExpression.ParseLambda(new[] 
+                {
+                    Expression.Parameter(typeof(double), "exposure"),
+                    Expression.Parameter(typeof(double), "influence"),
+                    Expression.Parameter(typeof(double), "engagement"),
+                    Expression.Parameter(typeof(double), "totalCost"),
+                    Expression.Parameter(typeof(double), "price") },
+                    null, newModel.CalculationExpression);
+
+            modelCalculationResultLabel.Text = calculationExpression.Compile()
+                                    .DynamicInvoke(Exposure, Influence, Engagement,
+                                                    double.Parse(CampaignCostTextBox.Text), double.Parse(AverageCostOfProductsTextBox.Text)).ToString()
+                                                            + newModel.ResultMetric;
         }
     }
 }

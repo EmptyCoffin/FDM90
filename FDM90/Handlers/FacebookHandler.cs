@@ -161,7 +161,7 @@ namespace FDM90.Handlers
                                 && data.PageLikes.Values.OrderBy(x => x.EndTime).First().EndTime > dates.OrderBy(x => x.Date).First())
             {
                 facebookLikeData = _facebookClientWrapper.GetData(facebookLikeData.paging.previous, accessToken);
-                for (int i = 0; i < facebookLikeData.data.Count; i++)
+                for (int i = 0; i < facebookLikeData.data[0].values.Count; i++)
                 {
                     data.PageLikes.Values.Add(JsonHelper.Parse(facebookLikeData.data[0].values[i], new FacebookInsightValueData()));
                 }
@@ -225,6 +225,10 @@ namespace FDM90.Handlers
             foreach (FacebookPostData post in data.Posts.Where(post => dates.Contains(post.CreatedTime.Date)))
             {
                 facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Exposure", post.CreatedTime.Date, post.TotalReach.Values[0].Value);
+
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Influence", post.CreatedTime.Date, post.Likes?.Count);
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Influence", post.CreatedTime.Date, post.Comments?.Count);
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Influence", post.CreatedTime.Date, post.Shares?.Count);
 
                 facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Engagement", post.CreatedTime.Date, post.EngagedUsers.Values[0].Value);
             }

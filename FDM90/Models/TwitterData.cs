@@ -58,7 +58,8 @@ namespace FDM90.Models
                         }
                         else
                         {
-                            property.SetValue(data, Convert.ChangeType((jsonObject[property.Name]), property.PropertyType));
+                            if(jsonObject[property.Name] != null)
+                                property.SetValue(data, Convert.ChangeType((jsonObject[property.Name]), property.PropertyType));
                         }
                     }
                 }
