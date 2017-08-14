@@ -23,7 +23,7 @@ namespace FDM90.Models
         public int TalkingAboutCount { get; set; }
         [JsonProperty("posts")]
         public List<FacebookPostData> Posts { get; set; }
-        [JsonProperty("page_fans")]
+        [JsonProperty("page_fan_adds")]
         public FacebookInsightsData PageLikes { get; set; }
         [JsonProperty("page_stories")]
         public FacebookInsightsData PageStories { get; set; }
@@ -96,6 +96,8 @@ namespace FDM90.Models
         public List<FacebookFanData> Likes { get; set; }
         [JsonProperty("comments")]
         public List<FacebookCommentsData> Comments { get; set; }
+        [JsonProperty("shares")]
+        public FacebookSharesData Shares { get; set; }
 
     }
 
@@ -138,4 +140,9 @@ namespace FDM90.Models
         public int Value { get; set; }
     }
 
+    public class FacebookSharesData
+    {
+        [JsonProperty("count")]
+        public int Count { get; set; }
+    }
 }

@@ -13,11 +13,12 @@ namespace FDM90.Models.Helpers
 {
     public static class JsonHelper
     {
-        public static JObject AddWeekValue(JObject currentObject, string propertyName, DateTime date, int value)
+        public static JObject AddWeekValue(JObject currentObject, string propertyName, DateTime date, int? value)
         {
             DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
             Calendar calendar = dateInfo.Calendar;
             int weekNumber = calendar.GetWeekOfYear(date, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
+            int itemValue = value ?? 0;
 
             JObject week = new JObject();
             // add to object / update object 
@@ -31,11 +32,11 @@ namespace FDM90.Models.Helpers
             JToken existingValue;
             if (((JObject)currentObject.GetValue("Week" + weekNumber)).TryGetValue(propertyName, out existingValue))
             {
-                ((JObject)currentObject.GetValue("Week" + weekNumber)).GetValue(propertyName).Replace(int.Parse(existingValue.ToString()) + value);
+                ((JObject)currentObject.GetValue("Week" + weekNumber)).GetValue(propertyName).Replace(int.Parse(existingValue.ToString()) + itemValue);
             }
             else
             {
-                ((JObject)currentObject.GetValue("Week" + weekNumber)).Add(propertyName, value);
+                ((JObject)currentObject.GetValue("Week" + weekNumber)).Add(propertyName, itemValue);
             }
 
             return currentObject;

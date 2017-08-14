@@ -64,7 +64,7 @@ namespace FDM90.Handlers
                     numberOfFollowers = numberOfFollowers + tweet.RetweetedUsers.Sum(x => x.NumberOfFollowers);
                 }
 
-                double estimatedExposure = (((double)numberOfFollowers * numberOfMessages) * (numberOfMessages / (double)numberOfFollowers));
+                double estimatedExposure = numberOfFollowers / 10;
 
                 twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Exposure", tweetDate.First().CreatedAt, (int)estimatedExposure);
             }
@@ -81,7 +81,7 @@ namespace FDM90.Handlers
                     numberOfFollowers = numberOfFollowers + tweet.RetweetedUsers.Sum(x => x.NumberOfFollowers);
                 }
 
-                double estimatedInfluence = (((double)numberOfFollowers * numberOfMessages) * (numberOfMessages / (double)numberOfFollowers));
+                double estimatedInfluence = numberOfFollowers / 10;
 
                 twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Influence", tweetDate.First().CreatedAt, (int)estimatedInfluence);
             }

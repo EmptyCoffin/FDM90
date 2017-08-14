@@ -9,7 +9,7 @@ namespace FDM90.Handlers
 {
     public interface ICampaignHandler
     {
-        void CreateCampaign(User user, string name, string weekStart, string weekEnd, string targets);
+        Task CreateCampaign(User user, string name, string weekStart, string weekEnd, string targets);
 
         List<Campaign> GetUserCampaigns(Guid userId);
 

@@ -126,6 +126,10 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Linq.Dynamic, Version=1.0.6132.35681, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.1.0.7\lib\net40\System.Linq.Dynamic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -196,7 +200,9 @@
     <Content Include="Content\jquery-3.1.1.min.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -243,9 +249,11 @@
     <Compile Include="Handlers\CampaignHandler.cs" />
     <Compile Include="Handlers\IFacebookHandler.cs" />
     <Compile Include="Handlers\ICampaignHandler.cs" />
+    <Compile Include="Handlers\IMarketingModelHandler.cs" />
     <Compile Include="Handlers\IMediaHandler.cs" />
     <Compile Include="Handlers\ITwitterHandler.cs" />
     <Compile Include="Handlers\IUserHandler.cs" />
+    <Compile Include="Handlers\MarketingModelHandler.cs" />
     <Compile Include="Handlers\TwitterHandler.cs" />
     <Compile Include="Handlers\UserHandler.cs" />
     <Compile Include="Models\FacebookCredentials.cs" />
@@ -261,6 +269,7 @@
     <Compile Include="Models\Helpers\SQLHelper.cs" />
     <Compile Include="Models\Helpers\TwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\TwitterHelper.cs" />
+    <Compile Include="Models\MarketingModel.cs" />
     <Compile Include="Models\MediaCredentials.cs" />
     <Compile Include="Models\TwitterCredentials.cs" />
     <Compile Include="Models\TwitterData.cs" />
@@ -327,10 +336,12 @@
     <Compile Include="Repository\IReadMultipleSpecific.cs" />
     <Compile Include="Repository\IReadSpecific.cs" />
     <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\MarketingModelRepository.cs" />
     <Compile Include="Repository\RepositoryBase.cs" />
     <Compile Include="Repository\TwitterRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Singleton\ConfigSingleton.cs" />
+    <Compile Include="Singleton\TaskListSingleton.cs" />
     <Compile Include="Singleton\UserSingleton.cs" />
   </ItemGroup>
   <ItemGroup>
