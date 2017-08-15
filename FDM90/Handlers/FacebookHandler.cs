@@ -255,5 +255,10 @@ namespace FDM90.Handlers
 
             return creds == null || string.IsNullOrWhiteSpace(creds.FacebookData) ? todaysData : JsonConvert.DeserializeObject<FacebookData>(creds.FacebookData).Update(todaysData);
         }
+
+        public void PostData(Dictionary<string, string> postParameters, Guid userId)
+        {
+            _facebookClientWrapper.PostData(postParameters, _facebookReadRepo.ReadSpecific(userId.ToString()).PermanentAccessToken);
+        }
     }
 }

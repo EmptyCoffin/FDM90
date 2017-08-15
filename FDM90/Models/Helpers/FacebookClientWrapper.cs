@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using Facebook;
 using FDM90.Singleton;
+using System.IO;
+using System.Dynamic;
 
 namespace FDM90.Models.Helpers
 {
@@ -22,7 +24,7 @@ namespace FDM90.Models.Helpers
 
                 response_type = "code",
 
-                scope = "manage_pages,read_insights"
+                scope = "manage_pages,publish_pages,read_insights"
             });
 
             return login.AbsoluteUri;
@@ -50,6 +52,28 @@ namespace FDM90.Models.Helpers
             var pToken = permanentData.OfType<JsonObject>().FirstOrDefault(page => page["name"].ToString() == pageName.Trim());
 
             return pToken == null ? "Page Name Doesn't Exist or is Misspelt" : pToken["access_token"].ToString();
+        }
+
+        public dynamic PostData(Dictionary<string, string> postParameters, string accessToken)
+        {
+            _accessToken = accessToken;
+
+            dynamic pageId = _fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Id, "", new string[] { FacebookHelper.Id }));
+            string postPath = "feed";
+            dynamic parameters = new ExpandoObject();
+            parameters.message = postParameters["message"];
+
+            if(postParameters.ContainsKey("picture"))
+            {
+                var mediaObject = new FacebookMediaStream();
+                mediaObject.ContentType = "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1);
+                mediaObject.FileName = postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('\\') + 1);
+                mediaObject.SetValue(File.OpenRead(postParameters["picture"]));
+                postPath = "photos";
+                parameters.source = mediaObject;
+            }
+
+            return _fbClient.Post(pageId.id + "/" + postPath, parameters);
         }
 
         public dynamic GetData(string url, string accessToken)

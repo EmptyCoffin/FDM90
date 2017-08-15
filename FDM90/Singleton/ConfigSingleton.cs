@@ -12,6 +12,6 @@ namespace FDM90.Singleton
         public static string FacebookClientSecret { get { return ConfigurationManager.AppSettings["FacebookClientSecret"]; } }
         public static string TwitterConsumerKey { get { return ConfigurationManager.AppSettings["TwitterConsumerKey"]; } }
         public static string TwitterConsumerSecret { get { return ConfigurationManager.AppSettings["TwitterConsumerSecret"]; } }
-
+        public static string FileSaveLocation { get { return ConfigurationManager.AppSettings["FileSaveLocation"]; } }
     }
 }

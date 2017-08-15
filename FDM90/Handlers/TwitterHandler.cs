@@ -192,5 +192,10 @@ namespace FDM90.Handlers
 
             _twitterRepo.Update(creds);
         }
+
+        public void PostData(Dictionary<string, string> postParameters, Guid userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

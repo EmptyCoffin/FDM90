@@ -14,5 +14,6 @@ namespace FDM90.Handlers
         FacebookCredentials SaveLogInDetails(Guid userId, string pageName);
         Task SetAccessToken(string shortTermToken, Guid userId, string pageName);
         FacebookData GetFacebookData(Guid userId);
+        void PostData(Dictionary<string, string> postParameters, Guid accessToken);
     }
 }
