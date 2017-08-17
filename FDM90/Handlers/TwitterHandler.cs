@@ -195,7 +195,9 @@ namespace FDM90.Handlers
 
         public void PostData(Dictionary<string, string> postParameters, Guid userId)
         {
-            throw new NotImplementedException();
+            TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
+
+            _twitterClientWrapper.PostTweet(creds, postParameters);
         }
     }
 }

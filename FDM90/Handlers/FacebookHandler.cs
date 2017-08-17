@@ -98,6 +98,8 @@ namespace FDM90.Handlers
         {
             var currentData = _facebookReadRepo.ReadSpecific(userId.ToString());
 
+            if (string.IsNullOrWhiteSpace(currentData.PermanentAccessToken)) return;
+
             dynamic basicData =
                 _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
                 {

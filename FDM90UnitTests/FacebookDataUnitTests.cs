@@ -231,7 +231,7 @@ namespace FDM90UnitTests
             valueData.Add("end_date", "2017-05-16T07:00:00+0000");
 
             var metricData = new JsonObject();
-            metricData.Add("name", "page_fans");
+            metricData.Add("name", "page_fan_adds");
             metricData.Add("period", "lifetime");
             metricData.Add("values", new JsonArray { valueData, valueData });
 
@@ -244,7 +244,7 @@ namespace FDM90UnitTests
 
             //assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(result.PageLikes.Name, "page_fans");
+            Assert.AreEqual(result.PageLikes.Name, "page_fan_adds");
             Assert.AreEqual(result.PageLikes.Period, "lifetime");
             Assert.AreEqual(result.PageLikes.Values.Count, 2);
             Assert.AreEqual(result.PageLikes.Values[0].Value, 54);
@@ -262,7 +262,7 @@ namespace FDM90UnitTests
             valueData.Add("end_date", "2017-05-16T07:00:00+0000");
 
             var metricData = new JsonObject();
-            metricData.Add("name", "page_fans");
+            metricData.Add("name", "page_fan_adds");
             metricData.Add("period", "lifetime");
             metricData.Add("values", new JsonArray { valueData, valueData });
 
@@ -273,7 +273,7 @@ namespace FDM90UnitTests
             FacebookData currentData = new FacebookData();
             currentData.PageLikes = new FacebookInsightsData()
             {
-                Name = "page_fans",
+                Name = "page_fan_adds",
                 Period = "lifetime",
                 Values = new List<FacebookInsightValueData>()
                 {
@@ -298,7 +298,7 @@ namespace FDM90UnitTests
 
             //assert
             //Assert.IsNotNull(result);
-            //Assert.AreEqual(result.Name, "page_fans");
+            //Assert.AreEqual(result.Name, "page_fan_adds");
             //Assert.AreEqual(result.Period, "lifetime");
             Assert.AreEqual(currentData.PageLikes.Values.Count, 4);
             //Assert.AreEqual(result.Values[0].Value, 24);
