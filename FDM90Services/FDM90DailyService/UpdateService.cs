@@ -17,8 +17,14 @@ namespace FDM90DailyService
         Timer setupTimer;
         ICampaignHandler _campaignHandler;
 
-        public UpdateService()
+        public UpdateService():this (new CampaignHandler())
         {
+
+        }
+
+        public UpdateService(ICampaignHandler campaignHandler)
+        {
+            _campaignHandler = campaignHandler;
             InitializeComponent();
         }
 
@@ -45,14 +51,13 @@ namespace FDM90DailyService
 
             // start 24 hour timer
             dailyTimer = new Timer(TimeSpan.FromHours(24).TotalMilliseconds);
-            dailyTimer.Elapsed += new ElapsedEventHandler(Method);
+            dailyTimer.Elapsed += new ElapsedEventHandler(RunDailyUpdate);
             dailyTimer.Enabled = true;
             dailyTimer.Start();
         }
 
-        public void Method(object sender, ElapsedEventArgs e)
+        public void RunDailyUpdate(object sender, ElapsedEventArgs e)
         {
-            Debugger.Launch();
             _campaignHandler.DailyUpdate();
         }
     }

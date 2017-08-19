@@ -48,9 +48,17 @@ namespace FDM90.Handlers
             return _schedulerMultiReadRepo.ReadMultipleSpecific(userId.ToString());
         }
 
-        public IEnumerable<ScheduledPost> GetSchedulerPostsForTime(DateTime currentTime)
+        private IEnumerable<ScheduledPost> GetSchedulerPostsForTime(DateTime currentTime)
         {
             return _schedulerMultiReadRepo.ReadMultipleSpecific(currentTime.ToString());
+        }
+
+        public void SchedulerPostsForTime(DateTime currentTime)
+        {
+            foreach(ScheduledPost post in _schedulerMultiReadRepo.ReadMultipleSpecific(currentTime.ToString()))
+            {
+                PostNow(post);
+            }
         }
 
         public void DeleteScheduledPost(Guid postId)
