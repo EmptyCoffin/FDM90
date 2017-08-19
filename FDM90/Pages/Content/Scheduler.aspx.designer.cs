@@ -7,153 +7,144 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FDM90.Pages {
+namespace FDM90.Pages.Content {
     
     
-    public partial class Site {
+    public partial class Scheduler {
         
         /// <summary>
-        /// LogInwelcomeMessageTab control.
+        /// PostText control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl LogInwelcomeMessageTab;
+        protected global::System.Web.UI.WebControls.TextBox PostText;
         
         /// <summary>
-        /// LogIn control.
+        /// PostAttachement control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor LogIn;
+        protected global::System.Web.UI.WebControls.FileUpload PostAttachement;
         
         /// <summary>
-        /// welcomeMessage control.
+        /// PostNowCheckbox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label welcomeMessage;
+        protected global::System.Web.UI.WebControls.CheckBox PostNowCheckbox;
         
         /// <summary>
-        /// RegistrationLogoutTab control.
+        /// MediaChannelsCheckBoxList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl RegistrationLogoutTab;
+        protected global::System.Web.UI.WebControls.CheckBoxList MediaChannelsCheckBoxList;
         
         /// <summary>
-        /// SignUp control.
+        /// schedulerArea control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor SignUp;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl schedulerArea;
         
         /// <summary>
-        /// LogOut control.
+        /// PostDateButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor LogOut;
+        protected global::System.Web.UI.WebControls.Button PostDateButton;
         
         /// <summary>
-        /// HomeTab control.
+        /// HoursDropDown control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl HomeTab;
+        protected global::System.Web.UI.WebControls.DropDownList HoursDropDown;
         
         /// <summary>
-        /// CampaignsTab control.
+        /// QuarterDropDowns control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl CampaignsTab;
+        protected global::System.Web.UI.WebControls.DropDownList QuarterDropDowns;
         
         /// <summary>
-        /// Campaigns control.
+        /// calendarArea control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor Campaigns;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl calendarArea;
         
         /// <summary>
-        /// SchedulerTab control.
+        /// calendar control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl SchedulerTab;
+        protected global::System.Web.UI.WebControls.Calendar calendar;
         
         /// <summary>
-        /// Scheduler control.
+        /// setCalendarDate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor Scheduler;
+        protected global::System.Web.UI.WebControls.Button setCalendarDate;
         
         /// <summary>
-        /// FacebookTab control.
+        /// calendarErrorLabel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl FacebookTab;
+        protected global::System.Web.UI.WebControls.Label calendarErrorLabel;
         
         /// <summary>
-        /// Facebook control.
+        /// PostButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor Facebook;
+        protected global::System.Web.UI.WebControls.Button PostButton;
         
         /// <summary>
-        /// TwitterTab control.
+        /// SchedulerPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl TwitterTab;
+        protected global::System.Web.UI.UpdatePanel SchedulerPanel;
         
         /// <summary>
-        /// Twitter control.
+        /// ScheduledPostsList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor Twitter;
-        
-        /// <summary>
-        /// MainContent control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
+        protected global::System.Web.UI.WebControls.ListView ScheduledPostsList;
     }
 }

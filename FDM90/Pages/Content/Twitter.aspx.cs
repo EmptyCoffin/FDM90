@@ -105,10 +105,9 @@ namespace FDM90.Pages.Content
 
             if (TwitterPostAttachement.HasFile)
             {
-                TwitterPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + TwitterPostAttachement.FileName);
-
                 if (imageSuffixes.Contains(TwitterPostAttachement.FileName.Substring(TwitterPostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
+                    TwitterPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + TwitterPostAttachement.FileName);
                     twitterParameters.Add("picture", ConfigSingleton.FileSaveLocation + TwitterPostAttachement.FileName);
                 }
             }

@@ -20,7 +20,8 @@ namespace FDM90.Pages
                 (HtmlGenericControl)Page.Master.FindControl("TwitterTab"),
                 (HtmlGenericControl)Page.Master.FindControl("LogInwelcomeMessageTab"),
                 (HtmlGenericControl)Page.Master.FindControl("RegistrationLogoutTab"),
-                (HtmlGenericControl)Page.Master.FindControl("CampaignsTab")
+                (HtmlGenericControl)Page.Master.FindControl("CampaignsTab"),
+                (HtmlGenericControl)Page.Master.FindControl("SchedulerTab")
             };
             
             var pageName = Page.AppRelativeVirtualPath.Substring(Page.AppRelativeVirtualPath.LastIndexOf('/') + 1, 
@@ -34,6 +35,7 @@ namespace FDM90.Pages
                 Page.Master.FindControl("Facebook").Visible = UserSingleton.Instance.CurrentUser.Facebook;
                 Page.Master.FindControl("Twitter").Visible = UserSingleton.Instance.CurrentUser.Twitter;
                 Page.Master.FindControl("Campaigns").Visible = UserSingleton.Instance.CurrentUser.Campaigns > 0;
+                Page.Master.FindControl("Scheduler").Visible = UserSingleton.Instance.CurrentUser.Facebook || UserSingleton.Instance.CurrentUser.Twitter;
 
                 Label welcomeLabel = (Label)Page.Master.FindControl("welcomeMessage");
                 welcomeLabel.Visible = true;
@@ -46,7 +48,8 @@ namespace FDM90.Pages
             {
                 Page.Master.FindControl("Facebook").Visible = false;
                 Page.Master.FindControl("Twitter").Visible = false;
-
+                Page.Master.FindControl("Campaigns").Visible = false;
+                Page.Master.FindControl("Scheduler").Visible = false;
                 Page.Master.FindControl("LogOut").Visible = false;
                 Page.Master.FindControl("LogIn").Visible = true;
                 Page.Master.FindControl("SignUp").Visible = true;

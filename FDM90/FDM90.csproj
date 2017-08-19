@@ -217,6 +217,7 @@
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Pages\Content\Campaigns.aspx" />
     <Content Include="Pages\Content\Home.aspx" />
+    <Content Include="Pages\Content\Scheduler.aspx" />
     <Content Include="Pages\Content\Twitter.aspx" />
     <Content Include="Pages\Images\FacebookIcon.png" />
     <Content Include="Pages\Images\TwitterIcon.png" />
@@ -252,9 +253,11 @@
     <Compile Include="Handlers\ICampaignHandler.cs" />
     <Compile Include="Handlers\IMarketingModelHandler.cs" />
     <Compile Include="Handlers\IMediaHandler.cs" />
+    <Compile Include="Handlers\ISchedulerHandler.cs" />
     <Compile Include="Handlers\ITwitterHandler.cs" />
     <Compile Include="Handlers\IUserHandler.cs" />
     <Compile Include="Handlers\MarketingModelHandler.cs" />
+    <Compile Include="Handlers\SchedulerHandler.cs" />
     <Compile Include="Handlers\TwitterHandler.cs" />
     <Compile Include="Handlers\UserHandler.cs" />
     <Compile Include="Models\FacebookCredentials.cs" />
@@ -272,6 +275,7 @@
     <Compile Include="Models\Helpers\TwitterHelper.cs" />
     <Compile Include="Models\MarketingModel.cs" />
     <Compile Include="Models\MediaCredentials.cs" />
+    <Compile Include="Models\ScheduledPost.cs" />
     <Compile Include="Models\TwitterCredentials.cs" />
     <Compile Include="Models\TwitterData.cs" />
     <Compile Include="Models\User.cs" />
@@ -317,6 +321,13 @@
     <Compile Include="Pages\Content\Home.aspx.designer.cs">
       <DependentUpon>Home.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Pages\Content\Scheduler.aspx.cs">
+      <DependentUpon>Scheduler.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Content\Scheduler.aspx.designer.cs">
+      <DependentUpon>Scheduler.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Content\Twitter.aspx.cs">
       <DependentUpon>Twitter.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -339,6 +350,7 @@
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Repository\MarketingModelRepository.cs" />
     <Compile Include="Repository\RepositoryBase.cs" />
+    <Compile Include="Repository\SchedulerRepository.cs" />
     <Compile Include="Repository\TwitterRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Singleton\ConfigSingleton.cs" />

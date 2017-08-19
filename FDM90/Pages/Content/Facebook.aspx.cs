@@ -131,11 +131,9 @@ namespace FDM90.Pages.Content
 
             if (FacebookPostAttachement.HasFile)
             {
-
-                FacebookPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
-
                 if (imageSuffixes.Contains(FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
+                    FacebookPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
                     facebookParameters.Add("picture", ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
                 }
             }
