@@ -90,7 +90,7 @@ namespace FDM90.Pages.Content
                 UserId = UserSingleton.Instance.CurrentUser.UserId,
                 PostText = PostText.Text,
                 AttachmentPath = PostAttachement.HasFile ? ConfigSingleton.FileSaveLocation + PostAttachement.FileName : null,
-                MediaChannels = string.Join(", ", MediaChannelsCheckBoxList.Items.Cast<ListItem>().Where(w => w.Selected).Select(s => s.Text))
+                MediaChannels = string.Join(",", MediaChannelsCheckBoxList.Items.Cast<ListItem>().Where(w => w.Selected).Select(s => s.Text))
             };
 
             DateTime postDate;

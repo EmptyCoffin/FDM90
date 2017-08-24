@@ -71,8 +71,8 @@ namespace FDM90.Repository
             else
             {
                 sql += "[PostTime] = @PostTime" + SQLHelper.EndingSemiColon;
-                searchParameter = "@PostTIme";
-                searchValue = objectId;
+                searchParameter = "@PostTime";
+                searchValue = DateTime.Parse(objectId);
             }
 
             SqlParameter[] parameters = new SqlParameter[]{
