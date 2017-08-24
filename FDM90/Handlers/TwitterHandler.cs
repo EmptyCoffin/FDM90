@@ -192,5 +192,12 @@ namespace FDM90.Handlers
 
             _twitterRepo.Update(creds);
         }
+
+        public void PostData(Dictionary<string, string> postParameters, Guid userId)
+        {
+            TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
+
+            _twitterClientWrapper.PostTweet(creds, postParameters);
+        }
     }
 }

@@ -12,6 +12,6 @@ namespace FDM90.Models.Helpers
         string GetPermanentAccessToken(string shortTermToken, string pageName);
         dynamic GetData(string url, string currentData);
         dynamic GetData(string url, string currentData, object parameters);
-
+        dynamic PostData(Dictionary<string, string> postParameters, string accessToken);
     }
 }

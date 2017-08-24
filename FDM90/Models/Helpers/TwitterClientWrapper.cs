@@ -2,6 +2,7 @@
 using LinqToTwitter;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,33 @@ namespace FDM90.Models.Helpers
                        && tweet.Count == 200
                     select tweet)
                 .ToListAsync().Result.Where(x => !x.Text.StartsWith("RT @", StringComparison.CurrentCulture)).ToList();
+        }
+
+        public async Task<Status> PostTweet(TwitterCredentials twitterDetails, Dictionary<string, string> postParameters)
+        {
+            TwitterContext context = await SetContext(twitterDetails);
+
+            while (true)
+            {
+                try
+                {
+                    if (postParameters.ContainsKey("picture"))
+                    {
+                        var media = await context.UploadMediaAsync(File.ReadAllBytes(postParameters["picture"]),
+                                        "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1));
+
+                        return context.TweetAsync(postParameters["message"], new ulong[] { media.MediaID }).Result;
+                    }
+                    else
+                    {
+                        return context.TweetAsync(postParameters["message"]).Result;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Thread.Sleep((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
+                }
+            }
         }
 
         public async Task<List<Status>> GetRetweeterFollowers(TwitterCredentials twitterDetails, ulong statusId)

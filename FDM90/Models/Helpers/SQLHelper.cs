@@ -17,6 +17,7 @@ namespace FDM90.Models.Helpers
         public const string Set = " SET ";
         public const string Delete = "DELETE FROM ";
         public const string Join = " JOIN ";
+        public const string Between = " BETWEEN ";
         public const string On = " ON ";
         public const string EndingSemiColon = " ;";
     }

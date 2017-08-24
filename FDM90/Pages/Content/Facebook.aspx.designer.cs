@@ -67,6 +67,33 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl facebookData;
         
         /// <summary>
+        /// FacebookPostText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox FacebookPostText;
+        
+        /// <summary>
+        /// FacebookPostAttachement control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload FacebookPostAttachement;
+        
+        /// <summary>
+        /// PostButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button PostButton;
+        
+        /// <summary>
         /// facebookPanel control.
         /// </summary>
         /// <remarks>

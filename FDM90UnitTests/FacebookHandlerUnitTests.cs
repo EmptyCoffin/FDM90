@@ -281,9 +281,15 @@ namespace FDM90UnitTests
             Guid newCredGuid = Guid.NewGuid();
             string shortTermToken = "TestShortTerm";
             string newCredPageName = "TestPage";
+            FacebookCredentials creds = new FacebookCredentials(newCredGuid, newCredPageName);
+            _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<string>()))
+                .Returns(() => creds)
+                .Verifiable();
 
             //act
             var result = _facebookHandler.SetAccessToken(shortTermToken, newCredGuid, newCredPageName);
+            result.Wait();
 
             //assert
             _mockFacebookClientWrapper.Verify(wrapper => wrapper.GetLoginUrl(), Times.Never);

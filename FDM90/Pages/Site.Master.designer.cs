@@ -94,6 +94,24 @@ namespace FDM90.Pages {
         protected global::System.Web.UI.HtmlControls.HtmlAnchor Campaigns;
         
         /// <summary>
+        /// SchedulerTab control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl SchedulerTab;
+        
+        /// <summary>
+        /// Scheduler control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor Scheduler;
+        
+        /// <summary>
         /// FacebookTab control.
         /// </summary>
         /// <remarks>

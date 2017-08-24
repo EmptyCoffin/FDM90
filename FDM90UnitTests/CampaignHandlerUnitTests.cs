@@ -103,9 +103,10 @@ namespace FDM90UnitTests
             _twitterReturner.Add("Week" + (currentWeekNumber - 1), metricData);
 
             // act
-            _campaignHandler.CreateCampaign(new User() { UserId = Guid.NewGuid(), Campaigns = 0 }, "TestName", 
+            var resultTask =_campaignHandler.CreateCampaign(new User() { UserId = Guid.NewGuid(), Campaigns = 0 }, "TestName", 
                 DateTime.Now.AddDays(-7).Date.ToShortDateString(), DateTime.Now.AddMonths(7).Date.ToShortDateString(), progressData.ToString());
-            _campaignHandler.updateCampaignsTask.Wait();
+
+            resultTask.Wait();
 
             // assert
             Assert.IsNotNull(createdCampaign.UserId);

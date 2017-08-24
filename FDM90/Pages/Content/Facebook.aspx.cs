@@ -14,12 +14,13 @@ namespace FDM90.Pages.Content
     public partial class Facebook : System.Web.UI.Page
     {
         IFacebookHandler _facebookHandler;
-        FacebookCredentials facebookCreds;
+        static FacebookCredentials facebookCreds;
         static FacebookData _facebookData;
         private string _likeDefault = "Likes: ";
         private string _postDefault = "Your Posts: ";
         private string _talkingDefault = "People Talking: ";
         private string _newLikesDefault = "Number of new likes: ";
+        private string[] imageSuffixes = new string[] { "jpg", "png" };
 
         public Facebook() : this(new FacebookHandler())
         {
@@ -121,6 +122,23 @@ namespace FDM90.Pages.Content
                 peopleTalkingLabel.Text = _talkingDefault + _facebookData.TalkingAboutCount.ToString();
                 postsButton.Text = _postDefault + string.Format("({0})", _facebookData.Posts.Count);
             }
+        }
+
+        protected void PostButton_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
+            facebookParameters.Add("message", FacebookPostText.Text);
+
+            if (FacebookPostAttachement.HasFile)
+            {
+                if (imageSuffixes.Contains(FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.') + 1)))
+                {
+                    FacebookPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
+                    facebookParameters.Add("picture", ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
+                }
+            }
+
+            _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
         }
     }
 }

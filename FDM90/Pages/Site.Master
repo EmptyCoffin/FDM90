@@ -37,6 +37,9 @@
                     <li role="presentation" id="CampaignsTab" runat="server">
                         <a class="btn btn-lg" href="~/Pages/Content/Campaigns.aspx" id="Campaigns" visible="false" runat="server">Campaigns</a>
                     </li>
+                    <li role="presentation" id="SchedulerTab" runat="server">
+                        <a class="btn btn-lg" href="~/Pages/Content/Scheduler.aspx" id="Scheduler" visible="false" runat="server">Scheduler</a>
+                    </li>
                     <li role="presentation" id="FacebookTab" runat="server">
                         <a class="btn btn-lg" href="~/Pages/Content/Facebook.aspx" id="Facebook" visible="false" runat="server">Facebook</a>
                     </li>

@@ -11,6 +11,6 @@ namespace FDM90.Models.Helpers
     {
         Task<List<Status>> GetTweets(TwitterCredentials twitterDetails);
         Task<List<Status>> GetRetweeterFollowers(TwitterCredentials twitterDetails, ulong statusId);
-
+        Task<Status> PostTweet(TwitterCredentials twitterDetails, Dictionary<string, string> postParameters);
     }
 }

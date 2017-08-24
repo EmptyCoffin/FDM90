@@ -19,6 +19,10 @@
     <br />
     <br />
     <div runat="server" id="facebookData" visible="false" class="container">
+    Facebook Update
+    <asp:TextBox ID="FacebookPostText" runat="server"></asp:TextBox>
+    <asp:FileUpload ID="FacebookPostAttachement" runat="server" />
+    <asp:Button ID="PostButton" runat="server" class="btn btn-primary btn-block" Text="Post" OnClick="PostButton_Click" />
         <asp:ScriptManager runat="server" />
         <asp:UpdatePanel ID="facebookPanel" runat="server" UpdateMode="Always">
             <ContentTemplate>

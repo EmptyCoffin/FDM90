@@ -80,6 +80,7 @@
     <Compile Include="FacebookHandlerUnitTests.cs" />
     <Compile Include="CampaignHandlerUnitTests.cs" />
     <Compile Include="TwitterDataUnitTest.cs" />
+    <Compile Include="SchedulerHandlerTests.cs" />
     <Compile Include="UserHandlerUnitTests.cs" />
     <Compile Include="UserRepositoryUnitTests.cs" />
   </ItemGroup>

@@ -1,11 +1,14 @@
 ﻿<%@ Page Async="true" Title="" Language="C#" MasterPageFile="~/Pages/Site.Master" AutoEventWireup="true" CodeBehind="Twitter.aspx.cs" Inherits="FDM90.Pages.Content.Twitter" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    Twitter Update
+    <asp:TextBox ID="TwitterPostText" runat="server"></asp:TextBox>
+    <asp:FileUpload ID="TwitterPostAttachement" runat="server" />
+    <asp:Button ID="PostButton" runat="server" class="btn btn-primary btn-block" Text="Post" OnClick="PostButton_Click" />
     <asp:ScriptManager runat="server" />
     <asp:UpdatePanel ID="twitterPanel" runat="server" UpdateMode="Always">
         <ContentTemplate>
             <asp:Timer ID="twitterUpdateTimer" runat="server" Interval="10000" OnTick="twitterUpdateTimer_Tick" />
-
             <div class="row">
                 <div class="col-md-7">
                     <asp:ListView ID="tweetList" runat="server">

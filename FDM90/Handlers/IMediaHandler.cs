@@ -12,5 +12,6 @@ namespace FDM90.Handlers
         string MediaName { get; }
         IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates);
         void GetMediaData(Guid userId, DateTime[] dates);
+        void PostData(Dictionary<string, string> postParameters, Guid userId);
     }
 }

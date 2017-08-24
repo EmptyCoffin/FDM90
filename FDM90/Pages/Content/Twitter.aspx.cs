@@ -24,6 +24,7 @@ namespace FDM90.Pages.Content
         private string _numberOfFollowersDefault = "Number of Followers: ";
         private string _numberOfRetweetsDefault = "Number of Retweets: ";
         private string _numberOfFavoriteDefault = "Number of Favorited: ";
+        private string[] imageSuffixes = new string[] { "jpg", "png" };
 
         private static readonly HttpClient client = new HttpClient();
 
@@ -95,6 +96,23 @@ namespace FDM90.Pages.Content
 
             tweetList.DataSource = _data.Tweets;
             tweetList.DataBind();
+        }
+
+        protected void PostButton_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, string> twitterParameters = new Dictionary<string, string>();
+            twitterParameters.Add("message", TwitterPostText.Text);
+
+            if (TwitterPostAttachement.HasFile)
+            {
+                if (imageSuffixes.Contains(TwitterPostAttachement.FileName.Substring(TwitterPostAttachement.FileName.LastIndexOf('.') + 1)))
+                {
+                    TwitterPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + TwitterPostAttachement.FileName);
+                    twitterParameters.Add("picture", ConfigSingleton.FileSaveLocation + TwitterPostAttachement.FileName);
+                }
+            }
+
+            _twitterHandler.PostData(twitterParameters, UserSingleton.Instance.CurrentUser.UserId);
         }
     }
 }
