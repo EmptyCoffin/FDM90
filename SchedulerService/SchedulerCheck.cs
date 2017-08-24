@@ -31,10 +31,9 @@ namespace SchedulerService
 
         protected override void OnStart(string[] args)
         {
-            Debugger.Launch();
-            var quarterOfHour = Math.Round(DateTime.Now.Minute / 15.0);
-            var differenceInMilliseconds = TimeSpan.FromMinutes((quarterOfHour == 0 ? 60 : 15 * quarterOfHour) - DateTime.Now.Minute).TotalMilliseconds;
-            setupTimer = new Timer(differenceInMilliseconds);
+            var quarterOfHour = Math.Ceiling(DateTime.Now.Minute / 15.0);
+            DateTime quarterTime = DateTime.Now.AddMinutes((quarterOfHour == 0 ? 15 : 15 * quarterOfHour) - DateTime.Now.Minute);
+            setupTimer = new Timer((quarterTime - DateTime.Now).TotalMilliseconds);
             setupTimer.Elapsed += new ElapsedEventHandler(SetupTimer);
             setupTimer.Enabled = true;
             setupTimer.Start();
@@ -44,6 +43,7 @@ namespace SchedulerService
         {
             setupTimer.Enabled = false;
             setupTimer.Stop();
+            RunQuarterlyUpdate(new object(), new EventArgs() as ElapsedEventArgs);
             // start 15 minute timer
             quarterlyTimer = new Timer(TimeSpan.FromMinutes(15).TotalMilliseconds);
             quarterlyTimer.Elapsed += new ElapsedEventHandler(RunQuarterlyUpdate);
@@ -53,12 +53,13 @@ namespace SchedulerService
 
         public void RunQuarterlyUpdate(object sender, ElapsedEventArgs e)
         {
-            Debugger.Launch();
-            _schedulerHandler.SchedulerPostsForTime(DateTime.Now);
+            DateTime datetimeParameter = DateTime.Now.AddSeconds(-DateTime.Now.Second);
+            _schedulerHandler.SchedulerPostsForTime(datetimeParameter);
         }
 
         protected override void OnStop()
         {
+            quarterlyTimer.Enabled = false;
             quarterlyTimer.Stop();
         }
     }
