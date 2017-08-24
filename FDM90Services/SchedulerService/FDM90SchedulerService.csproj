@@ -65,10 +65,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FDM90\FDM90.csproj">
+    <ProjectReference Include="..\..\FDM90\FDM90.csproj">
       <Project>{f6a7cdbd-e8ea-404c-830b-7b54f702793a}</Project>
       <Name>FDM90</Name>
     </ProjectReference>

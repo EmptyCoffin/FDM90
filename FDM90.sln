@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDM90DailyService", "FDM90Services\FDM90DailyService\FDM90DailyService.csproj", "{9C5B3465-06DB-4519-BF5E-0B328EE043F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDM90SchedulerService", "SchedulerService\FDM90SchedulerService.csproj", "{6048C7B5-897D-448E-B14D-76D41D62CCD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDM90SchedulerService", "FDM90Services\SchedulerService\FDM90SchedulerService.csproj", "{6048C7B5-897D-448E-B14D-76D41D62CCD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
