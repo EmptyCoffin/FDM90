@@ -199,5 +199,14 @@ namespace FDM90.Handlers
 
             _twitterClientWrapper.PostTweet(creds, postParameters);
         }
+
+        public void DailyUpdate()
+        {
+            foreach (TwitterCredentials twitterCreds in _twitterRepo.ReadAll())
+            {
+                Task.Factory.StartNew(() =>
+                        GetMediaData(twitterCreds.UserId, new[] { DateTime.Now.AddDays(-8) }));
+            }
+        }
     }
 }

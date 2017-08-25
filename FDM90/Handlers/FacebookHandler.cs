@@ -262,5 +262,14 @@ namespace FDM90.Handlers
         {
             _facebookClientWrapper.PostData(postParameters, _facebookReadRepo.ReadSpecific(userId.ToString()).PermanentAccessToken);
         }
+
+        public void DailyUpdate()
+        {
+            foreach (FacebookCredentials facebookCreds in _facebookRepo.ReadAll())
+            {
+                Task.Factory.StartNew(() =>
+                        GetMediaData(facebookCreds.UserId, new[] { DateTime.Now.AddDays(-8) }));
+            }
+        }
     }
 }

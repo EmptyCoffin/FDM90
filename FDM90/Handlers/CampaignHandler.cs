@@ -32,7 +32,7 @@ namespace FDM90.Handlers
             _facebookHandler = facebookHandler;
             _twitterHandler = twitterHandler;
             _userHandler = userHandler;
-            _mediaHandlers.AddRange(new IMediaHandler[] { _facebookHandler, twitterHandler });
+            _mediaHandlers.AddRange(new IMediaHandler[] { _facebookHandler, _twitterHandler });
         }
 
         public Task CreateCampaign(User user, string name, string startDate, string endDate, string targets)
