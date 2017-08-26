@@ -18,6 +18,7 @@ namespace FDM90.Pages
                 (HtmlGenericControl)Page.Master.FindControl("HomeTab"),
                 (HtmlGenericControl)Page.Master.FindControl("FacebookTab"),
                 (HtmlGenericControl)Page.Master.FindControl("TwitterTab"),
+                (HtmlGenericControl)Page.Master.FindControl("LinkedInTab"),
                 (HtmlGenericControl)Page.Master.FindControl("LogInwelcomeMessageTab"),
                 (HtmlGenericControl)Page.Master.FindControl("RegistrationLogoutTab"),
                 (HtmlGenericControl)Page.Master.FindControl("CampaignsTab"),
@@ -34,6 +35,7 @@ namespace FDM90.Pages
             {
                 Page.Master.FindControl("Facebook").Visible = UserSingleton.Instance.CurrentUser.Facebook;
                 Page.Master.FindControl("Twitter").Visible = UserSingleton.Instance.CurrentUser.Twitter;
+                Page.Master.FindControl("LinkedIn").Visible = UserSingleton.Instance.CurrentUser.LinkedIn;
                 Page.Master.FindControl("Campaigns").Visible = UserSingleton.Instance.CurrentUser.Campaigns > 0;
                 Page.Master.FindControl("Scheduler").Visible = UserSingleton.Instance.CurrentUser.Facebook || UserSingleton.Instance.CurrentUser.Twitter;
 
@@ -48,6 +50,7 @@ namespace FDM90.Pages
             {
                 Page.Master.FindControl("Facebook").Visible = false;
                 Page.Master.FindControl("Twitter").Visible = false;
+                Page.Master.FindControl("LinkedIn").Visible = false;
                 Page.Master.FindControl("Campaigns").Visible = false;
                 Page.Master.FindControl("Scheduler").Visible = false;
                 Page.Master.FindControl("LogOut").Visible = false;

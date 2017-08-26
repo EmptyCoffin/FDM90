@@ -10,7 +10,6 @@ namespace FDM90.Singleton
 {
     public class ConfigSingleton
     {
-        private static IRepository<ConfigItem> _configItemRepo;
         private static List<ConfigItem> _configList;
 
         static List<ConfigItem> ConfigList
@@ -45,6 +44,8 @@ namespace FDM90.Singleton
         public static string FacebookClientSecret { get { return ConfigList.FirstOrDefault(x => x.Name == "FacebookClientSecret").Value; } }
         public static string TwitterConsumerKey { get { return ConfigList.FirstOrDefault(x => x.Name == "TwitterConsumerKey").Value; } }
         public static string TwitterConsumerSecret { get { return ConfigList.FirstOrDefault(x => x.Name == "TwitterConsumerSecret").Value; } }
+        public static string LinkedInClientId { get { return ConfigList.FirstOrDefault(x => x.Name == "LinkedInClientId").Value; } }
+        public static string LinkedInClientSecret { get { return ConfigList.FirstOrDefault(x => x.Name == "LinkedInClientSecret").Value; } }
         public static string FileSaveLocation { get { return ConfigList.FirstOrDefault(x => x.Name == "FileSaveLocation").Value; } }
     }
 }

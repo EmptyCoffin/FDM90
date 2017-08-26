@@ -24,7 +24,7 @@ namespace FDM90.Handlers
             _facebookHandler = facebookHandler;
             _twitterHandler = twitterHandler;
             _userHandler = userHandler;
-            _mediaHandlers.AddRange(new IMediaHandler[] { _facebookHandler, twitterHandler });
+            _mediaHandlers.AddRange(new IMediaHandler[] { _facebookHandler, _twitterHandler });
         }
 
         public SchedulerHandler():this(new SchedulerRepository(), new FacebookHandler(), new TwitterHandler(), new UserHandler())

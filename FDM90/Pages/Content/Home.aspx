@@ -67,5 +67,6 @@
         <br />
         <asp:ImageButton ID="facebookSetUpButton" ImageUrl="~/Pages/Images/FacebookIcon.png" Visible="false" runat="server" AlternateText="Facebook Set Up" OnClick="facebookSetUpButton_Click" Height="62px" Width="59px" />
         <asp:ImageButton ID="twitterSetUpButton" ImageUrl="~/Pages/Images/TwitterIcon.png" Visible="false" runat="server" AlternateText="Twitter Set Up" OnClick="twitterSetUpButton_Click" Height="66px" Width="59px" />
+        <asp:ImageButton ID="linkedInSetUpButton" ImageUrl="~/Pages/Images/LinkedInIcon.png" Visible="false" runat="server" AlternateText="LinkedIn Set Up" OnClick="linkedInSetUpButton_Click" Height="66px" Width="59px" />
     </div>
 </asp:Content>

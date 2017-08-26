@@ -49,16 +49,24 @@
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Common.Logging, Version=2.0.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.2.0.0\lib\2.0\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Facebook, Version=6.0.10.0, Culture=neutral, PublicKeyToken=58cb4f2111d1e6de, processorArchitecture=MSIL">
       <HintPath>..\packages\Facebook.7.0.6\lib\net45\Facebook.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LinqToTwitter.AspNet, Version=3.2.0.30483, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\linqtotwitter.4.1.0\lib\net45\LinqToTwitter.AspNet.dll</HintPath>
+    <Reference Include="LinkedIn.NET, Version=1.0.2.0, Culture=neutral, PublicKeyToken=88e61090765d8c56, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinkedIn.NET.1.0.2.0\lib\net40-client\LinkedIn.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LinqToTwitter.AspNet, Version=3.2.0.40326, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\linqtotwitter.4.2.0-beta2\lib\net45\LinqToTwitter.AspNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LinqToTwitter.net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=957107be965c25d9, processorArchitecture=MSIL">
-      <HintPath>..\packages\linqtotwitter.4.1.0\lib\net45\LinqToTwitter.net.dll</HintPath>
+      <HintPath>..\packages\linqtotwitter.4.2.0-beta2\lib\net45\LinqToTwitter.net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -217,9 +225,11 @@
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Pages\Content\Campaigns.aspx" />
     <Content Include="Pages\Content\Home.aspx" />
+    <Content Include="Pages\Content\LinkedIn.aspx" />
     <Content Include="Pages\Content\Scheduler.aspx" />
     <Content Include="Pages\Content\Twitter.aspx" />
     <Content Include="Pages\Images\FacebookIcon.png" />
+    <Content Include="Pages\Images\LinkedInIcon.png" />
     <Content Include="Pages\Images\TwitterIcon.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -251,11 +261,13 @@
     <Compile Include="Handlers\CampaignHandler.cs" />
     <Compile Include="Handlers\IFacebookHandler.cs" />
     <Compile Include="Handlers\ICampaignHandler.cs" />
+    <Compile Include="Handlers\ILinkedInHandler.cs" />
     <Compile Include="Handlers\IMarketingModelHandler.cs" />
     <Compile Include="Handlers\IMediaHandler.cs" />
     <Compile Include="Handlers\ISchedulerHandler.cs" />
     <Compile Include="Handlers\ITwitterHandler.cs" />
     <Compile Include="Handlers\IUserHandler.cs" />
+    <Compile Include="Handlers\LinkedInHandler.cs" />
     <Compile Include="Handlers\MarketingModelHandler.cs" />
     <Compile Include="Handlers\SchedulerHandler.cs" />
     <Compile Include="Handlers\TwitterHandler.cs" />
@@ -269,11 +281,14 @@
     <Compile Include="Models\Helpers\FacebookClientWrapper.cs" />
     <Compile Include="Models\Helpers\FacebookHelper.cs" />
     <Compile Include="Models\Helpers\IFacebookClientWrapper.cs" />
+    <Compile Include="Models\Helpers\ILinkedInClientWrapper.cs" />
     <Compile Include="Models\Helpers\ITwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\JsonHelper.cs" />
+    <Compile Include="Models\Helpers\LinkedInClientWrapper.cs" />
     <Compile Include="Models\Helpers\SQLHelper.cs" />
     <Compile Include="Models\Helpers\TwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\TwitterHelper.cs" />
+    <Compile Include="Models\LinkedInCredentials.cs" />
     <Compile Include="Models\MarketingModel.cs" />
     <Compile Include="Models\MediaCredentials.cs" />
     <Compile Include="Models\ScheduledPost.cs" />
@@ -322,6 +337,13 @@
     <Compile Include="Pages\Content\Home.aspx.designer.cs">
       <DependentUpon>Home.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Pages\Content\LinkedIn.aspx.cs">
+      <DependentUpon>LinkedIn.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Content\LinkedIn.aspx.designer.cs">
+      <DependentUpon>LinkedIn.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Content\Scheduler.aspx.cs">
       <DependentUpon>Scheduler.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -350,6 +372,7 @@
     <Compile Include="Repository\IReadMultipleSpecific.cs" />
     <Compile Include="Repository\IReadSpecific.cs" />
     <Compile Include="Repository\IRepository.cs" />
+    <Compile Include="Repository\LinkedInRepository.cs" />
     <Compile Include="Repository\MarketingModelRepository.cs" />
     <Compile Include="Repository\RepositoryBase.cs" />
     <Compile Include="Repository\SchedulerRepository.cs" />

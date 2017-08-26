@@ -38,7 +38,7 @@ namespace FDM90.Models.Helpers
                     if (postParameters.ContainsKey("picture"))
                     {
                         var media = await context.UploadMediaAsync(File.ReadAllBytes(postParameters["picture"]),
-                                        "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1));
+                                        "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1), "tweet_image");
 
                         return context.TweetAsync(postParameters["message"], new ulong[] { media.MediaID }).Result;
                     }

@@ -46,6 +46,9 @@
                     <li role="presentation" id="TwitterTab" runat="server">
                         <a class="btn btn-lg" href="~/Pages/Content/Twitter.aspx" id="Twitter" visible="false" runat="server">Twitter</a>
                     </li>
+                    <li role="presentation" id="LinkedInTab" runat="server">
+                        <a class="btn btn-lg" href="~/Pages/Content/LinkedIn.aspx" id="LinkedIn" visible="false" runat="server">LinkedIn</a>
+                    </li>
                 </ul>
             </div>
             <br />

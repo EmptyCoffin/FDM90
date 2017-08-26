@@ -48,6 +48,8 @@ namespace FDM90.Models
         public bool Facebook { get; set; }
         [IntegratedMediaChannel("Twitter")]
         public bool Twitter { get; set; }
+        [IntegratedMediaChannel("LinkedIn")]
+        public bool LinkedIn { get; set; }
         public int Campaigns { get; set; }
     }
 

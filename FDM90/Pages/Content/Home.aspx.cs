@@ -37,6 +37,7 @@ namespace FDM90.Pages.Content
                 {
                     facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
                     twitterSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Twitter;
+                    linkedInSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.LinkedIn;
                     campaignArea.Visible = true;
                 }
                 SetUpTableControls();
@@ -196,6 +197,11 @@ namespace FDM90.Pages.Content
             setupCampaignButton.Visible = true;
 
             Response.Redirect("Campaigns.aspx?CampaignName=" + campaignName.Text);
+        }
+
+        protected void linkedInSetUpButton_Click(object sender, ImageClickEventArgs e)
+        {
+            Response.Redirect("LinkedIn.aspx");
         }
     }
 }
