@@ -35,6 +35,7 @@ namespace FDM90UnitTests
         {
             _mockFacebookCredsRepo = new Mock<IRepository<FacebookCredentials>>();
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>();
+            _mockFacebookCredsRepo.As<IReadAll<FacebookCredentials>>();
             _mockFacebookCredsRepo.Setup(repository => repository.Create(It.IsAny<FacebookCredentials>()))
                 .Callback<FacebookCredentials>((cred) => callBackCreds = cred)
                 .Verifiable();
@@ -103,7 +104,7 @@ namespace FDM90UnitTests
             //arrange
             FacebookCredentials creds = new FacebookCredentials(Guid.NewGuid(), "TestPage");
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>()))
+                .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() => creds);
 
             //act
@@ -123,7 +124,7 @@ namespace FDM90UnitTests
             //arrange
             FacebookCredentials creds = new FacebookCredentials(Guid.NewGuid(), "TestPage");
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>()))
+                .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() => creds)
                 .Verifiable();
 
@@ -137,7 +138,7 @@ namespace FDM90UnitTests
             _mockFacebookClientWrapper.Verify(wrapper => wrapper.GetData(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Never);
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
+                .Verify(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Create(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
@@ -150,7 +151,7 @@ namespace FDM90UnitTests
             //arrange
             FacebookCredentials creds = new FacebookCredentials(Guid.NewGuid(), "TestPage");
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>()))
+                .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() =>
                 {
                     creds.PermanentAccessToken = "PermanentAccessToken";
@@ -174,7 +175,7 @@ namespace FDM90UnitTests
             //arrange
             FacebookCredentials creds = new FacebookCredentials(Guid.NewGuid(), "TestPage");
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>()))
+                .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() =>
                 {
                     creds.PermanentAccessToken = "PermanentAccessToken";
@@ -191,7 +192,7 @@ namespace FDM90UnitTests
             _mockFacebookClientWrapper.Verify(wrapper => wrapper.GetData(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Never);
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
+                .Verify(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Create(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
@@ -234,7 +235,7 @@ namespace FDM90UnitTests
             _mockFacebookClientWrapper.Verify(wrapper => wrapper.GetData(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Never);
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Never);
+                .Verify(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Create(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
@@ -283,7 +284,7 @@ namespace FDM90UnitTests
             string newCredPageName = "TestPage";
             FacebookCredentials creds = new FacebookCredentials(newCredGuid, newCredPageName);
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>()))
+                .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() => creds)
                 .Verifiable();
 
@@ -298,7 +299,7 @@ namespace FDM90UnitTests
             _mockFacebookClientWrapper.Verify(wrapper => wrapper.GetData(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Never);
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
+                .Verify(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Create(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
@@ -509,7 +510,7 @@ namespace FDM90UnitTests
 
             FacebookCredentials creds = new FacebookCredentials(Guid.NewGuid(), "TestPage");
             _mockFacebookCredsRepo.As<IReadSpecific<FacebookCredentials>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>()))
+                .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() =>
                 {
                     creds.PermanentAccessToken = "PermanentAccessToken";

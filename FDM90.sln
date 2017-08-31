@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{99E144CB-B2A2-4899-9399-DC3FD3916F76}"
 	ProjectSection(SolutionItems) = preProject
 		DataBaseScript.txt = DataBaseScript.txt
+		Local.testsettings = Local.testsettings
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FDM90DailyService", "FDM90Services\FDM90DailyService\FDM90DailyService.csproj", "{9C5B3465-06DB-4519-BF5E-0B328EE043F6}"

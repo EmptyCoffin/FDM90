@@ -16,17 +16,13 @@ namespace FDM90.Repository
         private static IDbConnection _connection;
         private static object _lockableObject = new object();
         protected abstract string _table { get; }
-        public IDbConnection Connection
-        {
-            get { return _connection == null ? new SqlConnection(WebConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ConnectionString) : _connection; }
-        }
 
-    protected RepositoryBase(IDbConnection connection)
+        protected RepositoryBase(IDbConnection connection)
         {
             _connection = connection;
         }
 
-        protected RepositoryBase()
+        protected RepositoryBase() : this (new SqlConnection(WebConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ConnectionString))
         {
         }
 
@@ -38,7 +34,7 @@ namespace FDM90.Repository
             {
                 try
                 {
-                    using (IDbConnection connection = Connection)
+                    using (IDbConnection connection = _connection)
                     {
                         IDbCommand command = connection.CreateCommand();
                         command.CommandText = sqlText;
@@ -64,7 +60,7 @@ namespace FDM90.Repository
             {
                 try
                 {
-                    using (IDbConnection connection = Connection)
+                    using (IDbConnection connection = _connection)
                     {
 
                         IDbCommand command = connection.CreateCommand();
@@ -99,10 +95,14 @@ namespace FDM90.Repository
         {
             string valuesToSet = string.Empty;
             List<SqlParameter> param = new List<SqlParameter>();
+            DateTime potentialDateTime;
+            Guid potentialGuid;
 
             foreach (var property in existingObject.GetType().GetProperties())
             {
-                if (property.GetValue(updatedObject) != null && property.GetValue(updatedObject).ToString() != property.GetValue(existingObject)?.ToString())
+                if (property.GetValue(updatedObject) != null && property.GetValue(updatedObject).ToString() != property.GetValue(existingObject)?.ToString()
+                        && (DateTime.TryParse(property.GetValue(updatedObject).ToString(), out potentialDateTime) ? potentialDateTime != new DateTime() : true)
+                        && (Guid.TryParse(property.GetValue(updatedObject).ToString(), out potentialGuid) ? potentialGuid != Guid.Empty : true))
                 {
                     valuesToSet += string.Format("[{0}] = @{0},", property.Name);
                     param.Add(new SqlParameter(string.Format("@{0}", property.Name), property.GetValue(updatedObject)));

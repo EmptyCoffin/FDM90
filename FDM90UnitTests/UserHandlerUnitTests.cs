@@ -20,12 +20,11 @@ namespace FDM90UnitTests
         {
             _mockUserRepo = new Mock<IRepository<User>>();
             _mockUserRepo.Setup(repository => repository.Create(It.IsAny<User>())).Callback<User>(user => createUser = user).Verifiable();
-            _mockUserRepo.Setup(repository => repository.ReadAll()).Verifiable();
             _mockUserRepo.Setup(repository => repository.Update(It.IsAny<User>())).Callback<User>(user => updatedUser = user).Verifiable();
             _mockUserRepo.Setup(repository => repository.Delete(It.IsAny<User>())).Verifiable();
 
             _mockUserRepo.As<IReadSpecific<User>>();
-            _mockUserRepo.As<IReadSpecific<User>>().Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Verifiable();
+            _mockUserRepo.As<IReadSpecific<User>>().Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Verifiable();
 
             _userHandler = new UserHandler(_mockUserRepo.Object);
         }
@@ -80,10 +79,9 @@ namespace FDM90UnitTests
 
             //assert
             _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Once);
-            _mockUserRepo.Verify(repository => repository.ReadAll(), Times.Never);
             _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Never);
             _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Never);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<User>()), Times.Never);
         }
 
         [TestMethod]
@@ -110,7 +108,7 @@ namespace FDM90UnitTests
         {
             //arrange
             _mockUserRepo.As<IReadSpecific<User>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => null);
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => null);
             User specificUser = new User("TestUserName", "TestPassword");
 
             //act
@@ -132,7 +130,7 @@ namespace FDM90UnitTests
             //arrange
             User returningUser = new User("TestUserName", "TestPassword") {UserId = Guid.NewGuid()};
             _mockUserRepo.As<IReadSpecific<User>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
             User specificUser = new User("TestUserName", "TestPassword");
 
             //act
@@ -154,7 +152,7 @@ namespace FDM90UnitTests
             //arrange
             User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid() };
             _mockUserRepo.As<IReadSpecific<User>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
             User specificUser = new User("TestUserName", "TestPassword");
 
             //act
@@ -176,7 +174,7 @@ namespace FDM90UnitTests
             //arrange
             User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid() };
             _mockUserRepo.As<IReadSpecific<User>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
             User specificUser = new User("TestUserName", "TestPassword");
 
             //act
@@ -184,10 +182,9 @@ namespace FDM90UnitTests
 
             //assert
             _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.Verify(repository => repository.ReadAll(), Times.Never);
             _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Never);
             _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<User>()), Times.Once);
         }
 
         [TestMethod]
@@ -196,7 +193,7 @@ namespace FDM90UnitTests
             //arrange
             User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
             _mockUserRepo.As<IReadSpecific<User>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
             User specificUser = new User() { UserId = returningUser.UserId };
 
             //act
@@ -211,10 +208,9 @@ namespace FDM90UnitTests
             Assert.AreEqual(returningUser.Facebook, result.Facebook);
 
             _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.Verify(repository => repository.ReadAll(), Times.Never);
             _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Never);
             _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<User>()), Times.Once);
         }
 
         [TestMethod]
@@ -223,7 +219,7 @@ namespace FDM90UnitTests
             //arrange
             User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
             _mockUserRepo.As<IReadSpecific<User>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
             User specificUser = new User() { UserId = returningUser.UserId };
 
             //act
@@ -245,7 +241,7 @@ namespace FDM90UnitTests
             //arrange
             User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
             _mockUserRepo.As<IReadSpecific<User>>()
-                .Setup(specific => specific.ReadSpecific(It.IsAny<string>())).Returns(() => returningUser);
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
             User specificUser = new User() { UserId = returningUser.UserId };
 
             //act
@@ -253,10 +249,9 @@ namespace FDM90UnitTests
 
             //assert
             _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.Verify(repository => repository.ReadAll(), Times.Never);
             _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Once);
             _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
-            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<string>()), Times.Once);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<User>()), Times.Once);
         }
     }
 }

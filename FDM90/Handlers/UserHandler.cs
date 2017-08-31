@@ -13,7 +13,7 @@ namespace FDM90.Handlers
     public class UserHandler : IUserHandler
     {
         private IRepository<User> _userRepo;
-        private IReadSpecific<User> _userSpecific;
+        private IReadSpecific<User> _userReadSpecific;
 
         public UserHandler():this(new UserRepository())
         {
@@ -23,7 +23,7 @@ namespace FDM90.Handlers
         public UserHandler(IRepository<User> userRepo)
         {
             _userRepo = userRepo;
-            _userSpecific = (IReadSpecific<User>)userRepo;
+            _userReadSpecific = (IReadSpecific<User>)userRepo;
         }
 
         public User RegisterUser(string userName, string emailAddress, string password)
@@ -52,7 +52,7 @@ namespace FDM90.Handlers
         public User LoginUser(User loginUser)
         {
             //Check user exists
-            var user = _userSpecific.ReadSpecific(loginUser.UserName);
+            var user = _userReadSpecific.ReadSpecific(loginUser);
 
             if (user == null)
             {
@@ -75,7 +75,7 @@ namespace FDM90.Handlers
             User currentUser = new User();
             try
             {
-                currentUser = _userSpecific.ReadSpecific(user.UserId.ToString());
+                currentUser = _userReadSpecific.ReadSpecific(user);
                 bool updated = false;
 
                 foreach (PropertyInfo property in currentUser.GetType().GetProperties())
@@ -99,7 +99,7 @@ namespace FDM90.Handlers
 
         public User GetUser(string userId)
         {
-            return _userSpecific.ReadSpecific(userId);
+            return _userReadSpecific.ReadSpecific(new User(Guid.Parse(userId)));
         }
 
         public void UpdateUser(User user)

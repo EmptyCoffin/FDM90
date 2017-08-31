@@ -166,7 +166,7 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["Campaigns"]).Returns(() => _returningUsers[count].Campaigns);
 
             //act
-            var result = _userRepo.ReadSpecific(_specificGuid.ToString());
+            var result = _userRepo.ReadSpecific(specificUser);
 
             //assert
             Assert.AreEqual(1, _parameterObjects.Count);
@@ -197,7 +197,7 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["Campaigns"]).Returns(() => _returningUsers[count].Campaigns);
 
             //act
-            var result = _userRepo.ReadSpecific(_specificGuid.ToString());
+            var result = _userRepo.ReadSpecific(specificUser);
 
             //assert
             Assert.AreEqual(specificUser.UserId, result.UserId);
@@ -222,7 +222,7 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["Campaigns"]).Returns(() => _returningUsers[count].Campaigns);
 
             //act
-            var result = _userRepo.ReadSpecific("Test User 2");
+            var result = _userRepo.ReadSpecific(specificUser);
 
             //assert
             Assert.AreEqual(1, _parameterObjects.Count);
@@ -253,7 +253,7 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["Campaigns"]).Returns(() => _returningUsers[count].Campaigns);
 
             //act
-            var result = _userRepo.ReadSpecific("Test User 2");
+            var result = _userRepo.ReadSpecific(specificUser);
 
             //assert
             Assert.AreEqual(specificUser.UserId, result.UserId);
@@ -261,66 +261,6 @@ namespace FDM90UnitTests
             Assert.AreEqual(specificUser.Password, result.Password);
             Assert.AreEqual(specificUser.EmailAddress, result.EmailAddress);
         }
-
-        [TestMethod]
-        public void ReadAllUsers_GivenMethodCall_CorrectValuesSentToConnection()
-        {
-            //arrange
-            _mockIDataReader.Setup(reader => reader.Read())
-                .Returns(() => count < _returningUsers.Count - 1)
-                .Callback(() => count++);
-            _mockIDataReader.Setup(reader => reader["UserId"]).Returns(() => _returningUsers[count].UserId);
-            _mockIDataReader.Setup(reader => reader["UserName"]).Returns(() => _returningUsers[count].UserName);
-            _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(() => _returningUsers[count].EmailAddress);
-            _mockIDataReader.Setup(reader => reader["Password"]).Returns(() => _returningUsers[count].Password);
-            _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(() => _returningUsers[count].Facebook);
-            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
-            _mockIDataReader.Setup(reader => reader["Campaigns"]).Returns(() => _returningUsers[count].Campaigns);
-
-            //act
-            var result = _userRepo.ReadAll();
-
-            //assert
-            Assert.AreEqual(0, _parameterObjects.Count);
-
-            Assert.IsTrue(
-                TestHelper.CheckSqlStatementString(
-                    StatementType.Select,
-                    "[FDM90].[dbo].[User]",
-                    new[] {"UserName"},
-                    _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
-        }
-
-        [TestMethod]
-        public void ReadAllUsers_GivenMethodCall_CorrectValuesReturned()
-        {
-            //arrange
-            _mockIDataReader.Setup(reader => reader.Read())
-                .Returns(() => count < _returningUsers.Count - 1)
-                .Callback(() => count++);
-            _mockIDataReader.Setup(reader => reader["UserId"]).Returns(() => _returningUsers[count].UserId);
-            _mockIDataReader.Setup(reader => reader["UserName"]).Returns(() => _returningUsers[count].UserName);
-            _mockIDataReader.Setup(reader => reader["EmailAddress"]).Returns(() => _returningUsers[count].EmailAddress);
-            _mockIDataReader.Setup(reader => reader["Password"]).Returns(() => _returningUsers[count].Password);
-            _mockIDataReader.Setup(reader => reader["Facebook"]).Returns(() => _returningUsers[count].Facebook);
-            _mockIDataReader.Setup(reader => reader["Twitter"]).Returns(() => _returningUsers[count].Twitter);
-            _mockIDataReader.Setup(reader => reader["Campaigns"]).Returns(() => _returningUsers[count].Campaigns);
-
-            //act
-            var result = _userRepo.ReadAll().ToList();
-
-            //assert
-            Assert.AreEqual(_returningUsers.Count, result.Count());
-
-            for (int i = 0; i < result.Count(); i++)
-            {
-                Assert.AreEqual(_returningUsers[i].UserId, result[i].UserId);
-                Assert.AreEqual(_returningUsers[i].UserName, result[i].UserName);
-                Assert.AreEqual(_returningUsers[i].Password, result[i].Password);
-                Assert.AreEqual(_returningUsers[i].EmailAddress, result[i].EmailAddress);
-            }
-        }
-
 
         [TestMethod]
         public void UpdateUser_GivenUpdatedUser_CorrectValuesSentToConnection()
@@ -353,7 +293,7 @@ namespace FDM90UnitTests
                     StatementType.Update,
                     "[FDM90].[dbo].[User]",
                     new[] { "UserName", "UserId" },
-                    _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
+                    _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString, 1));
         }
 
         [TestMethod]

@@ -24,7 +24,7 @@ namespace FDM90UnitTests
         {
             new FacebookCredentials()
             {
-                UserId = new Guid(),
+                UserId = Guid.NewGuid(),
                 PageName = "Page1"
             },
             new FacebookCredentials()
@@ -34,13 +34,15 @@ namespace FDM90UnitTests
             },
             new FacebookCredentials()
             {
-                UserId = new Guid(),
+                UserId = Guid.NewGuid(),
                 PageName = "Page3"
             },
             new FacebookCredentials()
             {
-                UserId = new Guid(),
-                PageName = "Page4"
+                UserId = Guid.NewGuid(),
+                PageName = "Page4",
+                PermanentAccessToken = "ThisIsAPermanentAccessToken",
+                FacebookData = "This IS Facebook Data"
             },
         };
 
@@ -146,12 +148,12 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(specificCreds.PermanentAccessToken);
 
             //act
-            var result = _facebookRepo.ReadSpecific(_specificGuid.ToString());
+            var result = _facebookRepo.ReadSpecific(specificCreds);
 
             //assert
             Assert.AreEqual(1, _parameterObjects.Count);
             Assert.AreEqual("@UserId", _parameterObjects.Cast<SqlParameter>().ToArray()[0].ParameterName);
-            Assert.AreEqual(_specificGuid.ToString(), _parameterObjects.Cast<SqlParameter>().ToArray()[0].Value);
+            Assert.AreEqual(_specificGuid, _parameterObjects.Cast<SqlParameter>().ToArray()[0].Value);
 
             Assert.IsTrue(
                 TestHelper.CheckSqlStatementString(
@@ -173,12 +175,58 @@ namespace FDM90UnitTests
             _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(specificCreds.PermanentAccessToken);
 
             //act
-            var result = _facebookRepo.ReadSpecific(_specificGuid.ToString());
+            var result = _facebookRepo.ReadSpecific(specificCreds);
 
             //assert
             Assert.AreEqual(specificCreds.UserId, result.UserId);
             Assert.AreEqual(specificCreds.PageName, result.PageName);
             Assert.AreEqual(specificCreds.PermanentAccessToken, result.PermanentAccessToken);
+        }
+
+        [TestMethod]
+        public void ReadAllCreds_GivenMethodCall_CorrectValuesSentToConnection()
+        {
+            //arrange
+            _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < _returningCreds.Count - 1).Callback(() => count++);
+            _mockIDataReader.Setup(reader => reader["UserId"]).Returns(() => _returningCreds[count].UserId);
+            _mockIDataReader.Setup(reader => reader["PageName"]).Returns(() => _returningCreds[count].PageName);
+            _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(() => _returningCreds[count].PermanentAccessToken);
+
+            //act
+            var result = _facebookRepo.ReadAll();
+
+            //assert
+            Assert.AreEqual(0, _parameterObjects.Count);
+
+            Assert.IsTrue(
+                TestHelper.CheckSqlStatementString(
+                    StatementType.Select,
+                    "[FDM90].[dbo].[Facebook]",
+                    new[] { "UserId" },
+                    _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
+        }
+
+        [TestMethod]
+        public void ReadAllCreds_GivenUserId_CorrectValueReturned()
+        {
+            //arrange
+            _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < _returningCreds.Count - 1).Callback(() => count++);
+            _mockIDataReader.Setup(reader => reader["UserId"]).Returns(() => _returningCreds[count].UserId);
+            _mockIDataReader.Setup(reader => reader["PageName"]).Returns(() => _returningCreds[count].PageName);
+            _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(() => _returningCreds[count].PermanentAccessToken);
+
+            //act
+            var result = _facebookRepo.ReadAll().ToList();
+
+            //assert
+            Assert.AreEqual(_returningCreds.Count, result.Count);
+
+            for(int i = 0; i < _returningCreds.Count; i++)
+            {
+                Assert.AreEqual(_returningCreds[i].UserId, result[i].UserId);
+                Assert.AreEqual(_returningCreds[i].PageName, result[i].PageName);
+                Assert.AreEqual(_returningCreds[i].PermanentAccessToken, result[i].PermanentAccessToken);
+            }
         }
 
         [TestMethod]
@@ -208,8 +256,30 @@ namespace FDM90UnitTests
                     StatementType.Update,
                     "[FDM90].[dbo].[Facebook]",
                     new[] { "PermanentAccessToken", "UserId" },
-                    _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
+                    _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString, 1));
         }
 
+        [TestMethod]
+        public void DeleteCreds_GivenCredsId_CorrectValuesSentToConnection()
+        {
+            //arrange
+            FacebookCredentials deleteCreds = new FacebookCredentials()
+            {
+                UserId = Guid.NewGuid()
+            };
+
+            //act
+            _facebookRepo.Delete(deleteCreds);
+
+            //assert
+            Assert.AreEqual(1, _parameterObjects.Count);
+
+            Assert.IsTrue(
+                TestHelper.CheckSqlStatementString(
+                    StatementType.Delete,
+                    "[FDM90].[dbo].[Facebook]",
+                    new[] { "UserId" },
+                    _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
+        }
     }
 }

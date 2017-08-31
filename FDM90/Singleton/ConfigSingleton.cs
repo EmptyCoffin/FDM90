@@ -10,7 +10,7 @@ namespace FDM90.Singleton
 {
     public class ConfigSingleton
     {
-        private static IRepository<ConfigItem> _configItemRepo;
+        private static IReadAll<ConfigItem> _configItemRepo;
         private static List<ConfigItem> _configList;
 
         static List<ConfigItem> ConfigList
@@ -31,7 +31,7 @@ namespace FDM90.Singleton
         }
            
 
-        public ConfigSingleton(IRepository<ConfigItem> configItemRepo)
+        public ConfigSingleton(IReadAll<ConfigItem> configItemRepo)
         {
             _configList = configItemRepo.ReadAll().ToList();
         }

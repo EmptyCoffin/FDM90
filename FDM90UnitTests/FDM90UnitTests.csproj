@@ -81,6 +81,10 @@
     <Compile Include="CampaignHandlerUnitTests.cs" />
     <Compile Include="TwitterDataUnitTest.cs" />
     <Compile Include="SchedulerHandlerTests.cs" />
+    <Compile Include="ConfigRepositoryUnitTests.cs" />
+    <Compile Include="CampaignRepositoryUnitTests.cs" />
+    <Compile Include="MarketingModelRepositoryUnitTests.cs" />
+    <Compile Include="SchedulerRepositoryUnitTests.cs" />
     <Compile Include="UserHandlerUnitTests.cs" />
     <Compile Include="UserRepositoryUnitTests.cs" />
   </ItemGroup>

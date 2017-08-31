@@ -68,33 +68,19 @@ namespace FDM90.Repository
         /// </summary>
         /// <param name="userId"></param>
         /// <returns>specific object from database</returns>
-        public User ReadSpecific(string userName)
+        public User ReadSpecific(User user)
         {
             string sql = SQLHelper.SelectAll
                 + _table + SQLHelper.Where;
 
-            Guid test;
-            sql += !Guid.TryParse(userName, out test) ? "[UserName] = @SpecificUser" + SQLHelper.EndingSemiColon 
+            sql += Guid.Empty.Equals(user.UserId) ? "[UserName] = @SpecificUser" + SQLHelper.EndingSemiColon 
                                                         : "[UserId] = @SpecificUser" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
-                            new SqlParameter("@SpecificUser", userName),
+                            new SqlParameter("@SpecificUser", Guid.Empty.Equals(user.UserId) ? user.UserName : user.UserId.ToString()),
                         };
 
             return SendReaderCommand(sql, parameters).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Reads all of current object
-        /// with database table
-        /// </summary>
-        /// <returns>current objects in database</returns>
-        public IEnumerable<User> ReadAll()
-        {
-            List<User> _currentUsersList = new List<User>();
-            string sql = SQLHelper.SelectAll + _table + SQLHelper.EndingSemiColon;
-
-            return SendReaderCommand(sql, new SqlParameter[0]);
         }
 
         /// <summary>
@@ -104,7 +90,7 @@ namespace FDM90.Repository
         /// <param name="objectToUpdate"></param>
         public void Update(User updatedUser)
         {
-            User currentDetails = ReadSpecific(updatedUser.UserId.ToString());
+            User currentDetails = ReadSpecific(updatedUser);
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
@@ -150,8 +136,8 @@ namespace FDM90.Repository
             user.EmailAddress = reader["EmailAddress"].ToString();
             user.UserName = reader["UserName"].ToString();
             user.Password = reader["Password"].ToString();
-            user.Facebook = reader["Facebook"] != null ? bool.Parse(reader["Facebook"].ToString()) : false;
-            user.Twitter = reader["Twitter"] != null ? bool.Parse(reader["Twitter"].ToString()) : false;
+            user.Facebook = bool.Parse(reader["Facebook"].ToString());
+            user.Twitter = bool.Parse(reader["Twitter"].ToString());
             user.Campaigns = int.Parse(reader["Campaigns"].ToString());
             return user;
         }

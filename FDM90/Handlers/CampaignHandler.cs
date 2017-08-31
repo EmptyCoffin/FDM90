@@ -15,6 +15,8 @@ namespace FDM90.Handlers
     {
         private IRepository<Campaign> _campaignRepo;
         private IReadMultipleSpecific<Campaign> _campaignReadMultipleRepo;
+        private IReadAll<Campaign> _campaignReadRepo;
+        private IReadSpecific<Campaign> _campaignReadSpecificRepo;
         private IFacebookHandler _facebookHandler;
         private ITwitterHandler _twitterHandler;
         private IUserHandler _userHandler;
@@ -29,6 +31,8 @@ namespace FDM90.Handlers
         {
             _campaignRepo = campaignRepo;
             _campaignReadMultipleRepo = (IReadMultipleSpecific<Campaign>)campaignRepo;
+            _campaignReadRepo = (IReadAll<Campaign>)campaignRepo;
+            _campaignReadSpecificRepo = (IReadSpecific<Campaign>)campaignRepo;
             _facebookHandler = facebookHandler;
             _twitterHandler = twitterHandler;
             _userHandler = userHandler;
@@ -126,7 +130,7 @@ namespace FDM90.Handlers
         public Task<bool> DailyUpdate()
         {
             List<Task<bool>> tasks = new List<Task<bool>>();
-            foreach(var userCampaigns in _campaignRepo.ReadAll().GroupBy(x => x.UserId))
+            foreach(var userCampaigns in _campaignReadRepo.ReadAll().GroupBy(x => x.UserId))
             {
                 User user = _userHandler.GetUser(userCampaigns.First().UserId.ToString());
 

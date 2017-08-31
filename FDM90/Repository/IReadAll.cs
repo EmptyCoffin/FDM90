@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace FDM90.Repository
 {
-    public interface IReadSpecific<T> where T:class
+    public interface IReadAll<T> where T:class
     {
-        T ReadSpecific(T identifyingItem);
+        IEnumerable<T> ReadAll();
     }
 }

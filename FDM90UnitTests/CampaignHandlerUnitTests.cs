@@ -45,9 +45,11 @@ namespace FDM90UnitTests
             _mockCampaignRepo.Setup(x => x.Create(It.IsAny<Campaign>())).Callback<Campaign>(campaign => createdCampaign = campaign).Verifiable();
             _mockCampaignRepo.Setup(x => x.Update(It.IsAny<Campaign>())).Callback<Campaign>(campaign => updatedCampaign = campaign).Verifiable();
             _mockCampaignRepo.As<IReadMultipleSpecific<Campaign>>().Setup(s => s.ReadMultipleSpecific(It.IsAny<string>())).Returns(_returningCampaigns).Verifiable();
-            _mockCampaignRepo.Setup(s => s.ReadAll()).Returns(_returningCampaigns).Verifiable();
+            _mockCampaignRepo.As<IReadAll<Campaign>>().Setup(s => s.ReadAll()).Returns(_returningCampaigns).Verifiable();
+            _mockCampaignRepo.As<IReadSpecific<Campaign>>();
 
             _mockFacebookHandler = new Mock<IFacebookHandler>();
+            _mockFacebookHandler.As<IReadAll<FacebookCredentials>>();
             _mockFacebookHandler.Setup(x => x.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()))
                 .Callback<Guid, DateTime[]>((passedGuid, passedDates) => _passedFacebookHandlerDates = passedDates)
                 .Returns(_facebookReturner.Values()).Verifiable();

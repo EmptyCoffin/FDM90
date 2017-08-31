@@ -16,7 +16,8 @@ namespace FDM90.Handlers
 {
     public class TwitterHandler : ITwitterHandler
     {
-        private IReadSpecific<TwitterCredentials> _twitterReadRepo;
+        private IReadAll<TwitterCredentials> _twitterReadAllRepo;
+        private IReadSpecific<TwitterCredentials> _twitterReadSpecificRepo;
         private IRepository<TwitterCredentials> _twitterRepo;
         private IUserHandler _userHandler;
         private ITwitterClientWrapper _twitterClientWrapper;
@@ -29,7 +30,8 @@ namespace FDM90.Handlers
         public TwitterHandler(IRepository<Models.TwitterCredentials> twitterRepo, IUserHandler userHandler, ITwitterClientWrapper twitterClientWrapper)
         {
             _twitterRepo = twitterRepo;
-            _twitterReadRepo = (IReadSpecific<Models.TwitterCredentials>)twitterRepo;
+            _twitterReadAllRepo = (IReadAll<TwitterCredentials>)twitterRepo;
+            _twitterReadSpecificRepo = (IReadSpecific<TwitterCredentials>)twitterRepo;
             _userHandler = userHandler;
             _twitterClientWrapper = twitterClientWrapper;
         }
@@ -48,7 +50,7 @@ namespace FDM90.Handlers
             JObject twitterTargets = new JObject();
 
             // get user twitter
-            var twitterDetails = _twitterReadRepo.ReadSpecific(userId.ToString());
+            var twitterDetails = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
             var data = TwitterData.Parse(twitterDetails.TwitterData, new TwitterData());
             int screenNameFollowerCount = data.NumberOfFollowers;
@@ -150,7 +152,7 @@ namespace FDM90.Handlers
 
         public TwitterData GetTweets(string userId)
         {
-            TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
+            TwitterCredentials creds = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = Guid.Parse(userId) });
             TwitterData todaysData = GetTwitterData(creds, new DateTime[] { DateTime.Now.Date });
 
             return !string.IsNullOrWhiteSpace(creds.TwitterData) ? TwitterData.Parse(creds.TwitterData, new TwitterData()).Update(todaysData) : todaysData;
@@ -175,7 +177,7 @@ namespace FDM90.Handlers
 
         public void GetMediaData(Guid userId, DateTime[] dates)
         {
-            TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
+            TwitterCredentials creds = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
             TwitterData data = GetTwitterData(creds, dates);
 
@@ -195,14 +197,14 @@ namespace FDM90.Handlers
 
         public void PostData(Dictionary<string, string> postParameters, Guid userId)
         {
-            TwitterCredentials creds = _twitterReadRepo.ReadSpecific(userId.ToString());
+            TwitterCredentials creds = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
             _twitterClientWrapper.PostTweet(creds, postParameters);
         }
 
         public void DailyUpdate()
         {
-            foreach (TwitterCredentials twitterCreds in _twitterRepo.ReadAll())
+            foreach (TwitterCredentials twitterCreds in _twitterReadAllRepo.ReadAll())
             {
                 Task.Factory.StartNew(() =>
                         GetMediaData(twitterCreds.UserId, new[] { DateTime.Now.AddDays(-8) }));

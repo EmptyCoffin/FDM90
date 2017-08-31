@@ -9,7 +9,7 @@ using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {
-    public class TwitterRepository : RepositoryBase<TwitterCredentials>, IRepository<TwitterCredentials>, IReadSpecific<TwitterCredentials>
+    public class TwitterRepository : RepositoryBase<TwitterCredentials>, IRepository<TwitterCredentials>, IReadAll<TwitterCredentials>, IReadSpecific<TwitterCredentials>
     {
         protected override string _table
         {
@@ -47,13 +47,13 @@ namespace FDM90.Repository
             throw new NotImplementedException();
         }
 
-        public TwitterCredentials ReadSpecific(string identifyingItem)
+        public TwitterCredentials ReadSpecific(TwitterCredentials identifyingItem)
         {
             string sql = SQLHelper.SelectAll
                          + _table + SQLHelper.Where + "[UserId] = @UserId" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
-                            new SqlParameter("@UserId", identifyingItem)
+                            new SqlParameter("@UserId", identifyingItem.UserId)
                         };
 
             return SendReaderCommand(sql, parameters).FirstOrDefault();
@@ -72,7 +72,7 @@ namespace FDM90.Repository
 
         public void Update(TwitterCredentials objectToUpdate)
         {
-            TwitterCredentials currentDetails = ReadSpecific(objectToUpdate.UserId.ToString());
+            TwitterCredentials currentDetails = ReadSpecific(objectToUpdate);
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             string sql = SQLHelper.Update + _table + SQLHelper.Set +

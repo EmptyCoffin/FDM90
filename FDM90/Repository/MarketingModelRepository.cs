@@ -9,24 +9,24 @@ using System.Data.SqlClient;
 
 namespace FDM90.Repository
 {
-    public class MarketingModelRepository : RepositoryBase<MarketingModel>, IRepository<MarketingModel>
+    public class MarketingModelRepository : RepositoryBase<MarketingModel>, IReadAll<MarketingModel>
     {
+        public MarketingModelRepository()
+        {
+
+        }
+
+        public MarketingModelRepository(IDbConnection connection) : base(connection)
+        {
+
+        }
+
         protected override string _table
         {
             get
             {
                 return "[FDM90].[dbo].[MarketingModel]";
             }
-        }
-
-        public void Create(MarketingModel objectToCreate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(MarketingModel objectId)
-        {
-            throw new NotImplementedException();
         }
 
         public IEnumerable<MarketingModel> ReadAll()
@@ -42,13 +42,9 @@ namespace FDM90.Repository
             model.Name = reader["Name"].ToString();
             model.Description = reader["Description"].ToString();
             model.MetricsUsed = reader["MetricsUsed"].ToString();
+            model.ResultMetric = reader["ResultMetric"].ToString();
             model.CalculationExpression = reader["CalculationExpression"].ToString();
             return model;
-        }
-
-        public void Update(MarketingModel objectToUpdate)
-        {
-            throw new NotImplementedException();
         }
     }
 }

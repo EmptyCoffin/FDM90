@@ -9,24 +9,24 @@ using System.Data.SqlClient;
 
 namespace FDM90.Repository
 {
-    public class ConfigRepository : RepositoryBase<ConfigItem>, IRepository<ConfigItem>
+    public class ConfigRepository : RepositoryBase<ConfigItem>, IReadAll<ConfigItem>
     {
+        public ConfigRepository()
+        {
+
+        }
+
+        public ConfigRepository(IDbConnection connection) : base(connection)
+        {
+
+        }
+
         protected override string _table
         {
             get
             {
                 return "[FDM90].[dbo].[Configuration]";
             }
-        }
-
-        public void Create(ConfigItem objectToCreate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(ConfigItem objectId)
-        {
-            throw new NotImplementedException();
         }
 
         public IEnumerable<ConfigItem> ReadAll()
@@ -42,11 +42,6 @@ namespace FDM90.Repository
             item.Name = reader["Name"].ToString();
             item.Value = reader["Value"].ToString();
             return item;
-        }
-
-        public void Update(ConfigItem objectToUpdate)
-        {
-            throw new NotImplementedException();
         }
     }
 }
