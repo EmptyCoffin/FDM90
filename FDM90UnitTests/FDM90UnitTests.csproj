@@ -85,6 +85,7 @@
     <Compile Include="CampaignRepositoryUnitTests.cs" />
     <Compile Include="MarketingModelRepositoryUnitTests.cs" />
     <Compile Include="SchedulerRepositoryUnitTests.cs" />
+    <Compile Include="TwitterRepositoryUnitTests.cs" />
     <Compile Include="UserHandlerUnitTests.cs" />
     <Compile Include="UserRepositoryUnitTests.cs" />
   </ItemGroup>
