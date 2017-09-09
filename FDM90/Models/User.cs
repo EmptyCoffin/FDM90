@@ -31,7 +31,7 @@ namespace FDM90.Models
                 foreach (object attr in attrs)
                 {
                     IntegratedMediaChannelAttribute channel = attr as IntegratedMediaChannelAttribute;
-                    if (channel != null && (bool)prop.GetValue(this) == true)
+                    if ((bool)prop.GetValue(this) == true)
                     {
                         channels.Add(channel.MediaChannelName);
                     }

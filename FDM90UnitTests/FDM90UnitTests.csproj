@@ -97,6 +97,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="FacebookDataUnitTests.cs" />
+    <Compile Include="JsonHelperUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryBaseUnitTest.cs" />
     <Compile Include="TestHelper.cs" />
@@ -112,6 +113,7 @@
     <Compile Include="TwitterRepositoryUnitTests.cs" />
     <Compile Include="MarketingModelHandlerUnitTests.cs" />
     <Compile Include="TwitterHandlerUnitTests.cs" />
+    <Compile Include="UserModelUnitTests.cs" />
     <Compile Include="UserHandlerUnitTests.cs" />
     <Compile Include="UserRepositoryUnitTests.cs" />
   </ItemGroup>

@@ -69,15 +69,21 @@ namespace FDM90.Models
 
         public TwitterData Update(TwitterData newTweets)
         {
-            foreach (Tweet newTweet in newTweets.Tweets)
+            if (newTweets.NumberOfFollowers != 0 && newTweets.NumberOfFollowers != NumberOfFollowers)
+                NumberOfFollowers = newTweets.NumberOfFollowers;
+
+            if (newTweets.Tweets != null)
             {
-                if (Tweets.Count(current => current.StatusID == newTweet.StatusID) > 0)
+                foreach (Tweet newTweet in newTweets.Tweets)
                 {
-                    Tweets[Tweets.FindIndex(x => x.StatusID == newTweet.StatusID)] = newTweet;
-                }
-                else
-                {
-                    Tweets.Add(newTweet);
+                    if (Tweets.Count(current => current.StatusID == newTweet.StatusID) > 0)
+                    {
+                        Tweets[Tweets.FindIndex(x => x.StatusID == newTweet.StatusID)] = newTweet;
+                    }
+                    else
+                    {
+                        Tweets.Add(newTweet);
+                    }
                 }
             }
 
