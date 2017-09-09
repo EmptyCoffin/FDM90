@@ -253,5 +253,77 @@ namespace FDM90UnitTests
             _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
             _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<User>()), Times.Once);
         }
+
+        [TestMethod]
+        public void GetUser_GivenParameter_ReturnsTrueIfUserReturned()
+        {
+            //arrange
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
+            _mockUserRepo.As<IReadSpecific<User>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
+
+            //act
+            var result = _userHandler.GetUser(returningUser.UserId.ToString());
+
+            //assert
+            Assert.AreEqual(returningUser.UserId, result.UserId);
+            Assert.AreEqual(returningUser.Password, result.Password);
+            Assert.AreEqual(returningUser.UserName, result.UserName);
+            Assert.AreEqual(returningUser.EmailAddress, result.EmailAddress);
+            Assert.AreEqual(returningUser.Twitter, result.Twitter);
+            Assert.AreEqual(returningUser.Facebook, result.Facebook);
+        }
+
+        [TestMethod]
+        public void GetUser_GivenParameter_ReturnsTrueIfReadSpecificCalledCorrectly()
+        {
+            //arrange
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
+            _mockUserRepo.As<IReadSpecific<User>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
+
+            //act
+            var result = _userHandler.GetUser(returningUser.UserId.ToString());
+
+            //assert
+            _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
+            _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Never);
+            _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<User>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void UpdateUser_GivenParameter_ReturnsTrueIfUpdatedUserPassed()
+        {
+            //arrange
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
+
+            //act
+            _userHandler.UpdateUser(returningUser);
+
+            //assert
+            Assert.AreEqual(returningUser.UserId, updatedUser.UserId);
+            Assert.AreEqual(returningUser.Password, updatedUser.Password);
+            Assert.AreEqual(returningUser.UserName, updatedUser.UserName);
+            Assert.AreEqual(returningUser.EmailAddress, updatedUser.EmailAddress);
+            Assert.AreEqual(returningUser.Twitter, updatedUser.Twitter);
+            Assert.AreEqual(returningUser.Facebook, updatedUser.Facebook);
+        }
+
+        [TestMethod]
+        public void UpdateUser_GivenParameter_ReturnsTrueIfUpdateCalledCorrectly()
+        {
+            //arrange
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
+
+            //act
+            _userHandler.UpdateUser(returningUser);
+
+            //assert
+            _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
+            _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Once);
+            _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<User>()), Times.Never);
+        }
     }
 }

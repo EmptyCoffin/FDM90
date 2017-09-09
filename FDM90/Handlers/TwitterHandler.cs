@@ -55,52 +55,38 @@ namespace FDM90.Handlers
             var data = TwitterData.Parse(twitterDetails.TwitterData, new TwitterData());
             int screenNameFollowerCount = data.NumberOfFollowers;
             // get exposure - followers and followers of those retweeted/favorited
-            foreach (var tweetDate in data.Tweets.Where(w => w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
+            foreach (var tweetDate in data.Tweets.GroupBy(x => x.CreatedAt.Date))
             {
-                var numberOfMessages = tweetDate.Count();
-                var numberOfFollowers = screenNameFollowerCount;
-
-                foreach (Tweet tweet in tweetDate.Where(y => y.RetweetCount > 0))
-                {
-                    // get retweeters followers
-                    numberOfFollowers = numberOfFollowers + tweet.RetweetedUsers.Sum(x => x.NumberOfFollowers);
-                }
-
-                double estimatedExposure = numberOfFollowers / 10;
-
-                twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Exposure", tweetDate.First().CreatedAt, (int)estimatedExposure);
-            }
-
-            // get influence - followers of those retweeted/favorited
-            foreach (var tweetDate in data.Tweets.Where(w => w.FavoriteCount > 0 && w.RetweetCount > 0).GroupBy(x => x.CreatedAt.Date))
-            {
-                var numberOfMessages = tweetDate.Count();
-                var numberOfFollowers = 0;
+                var userFollowers = screenNameFollowerCount * tweetDate.Count();
+                int retweetFavoriteUserFollowers = 0;
+                int retweetFavoriteCount = 0;
 
                 foreach (Tweet tweet in tweetDate.Where(y => y.RetweetCount > 0 || y.FavoriteCount > 0))
                 {
                     // get retweeters followers
-                    numberOfFollowers = numberOfFollowers + tweet.RetweetedUsers.Sum(x => x.NumberOfFollowers);
+                    retweetFavoriteUserFollowers += tweet.RetweetedUsers.Sum(x => x.NumberOfFollowers);
+                    retweetFavoriteCount += tweet.FavoriteCount + tweet.RetweetCount;
                 }
 
-                double estimatedInfluence = numberOfFollowers / 10;
+                double estimatedExposure = (userFollowers + retweetFavoriteUserFollowers) / 10;
 
-                twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Influence", tweetDate.First().CreatedAt, (int)estimatedInfluence);
-            }
+                twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Exposure", tweetDate.First().CreatedAt, (int)estimatedExposure);
 
-            // get engagement - replies/mentions, direct messages, retweets, hashtags mentions, favorited
-            foreach (var datedTweets in data.Tweets.Where(x => x.RetweetCount > 0 || x.FavoriteCount > 0).GroupBy(x => x.CreatedAt.Date))
-            {
-                var numberOfEngagements = 0;
-
-                foreach (Tweet tweet in datedTweets)
+                if (retweetFavoriteUserFollowers > 0)
                 {
-                    // get retweeters followers
-                    numberOfEngagements = numberOfEngagements + tweet.FavoriteCount + tweet.RetweetCount;
+                    // get influence - followers of those retweeted/favorited
+                    double estimatedInfluence = retweetFavoriteUserFollowers / 10;
+
+                    twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Influence", tweetDate.First().CreatedAt, (int)estimatedInfluence);
                 }
 
-                twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Engagement", datedTweets.First().CreatedAt, (int)numberOfEngagements);
+                if(retweetFavoriteUserFollowers > 0)
+                {
+                    // get engagement - replies/mentions, direct messages, retweets, hashtags mentions, favorited
+                    twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Engagement", tweetDate.First().CreatedAt, (int)retweetFavoriteCount);
+                }
             }
+
             return twitterTargets.Values();
         }
 
@@ -130,9 +116,9 @@ namespace FDM90.Handlers
             TwitterData data = null;
             var tweets = _twitterClientWrapper.GetTweets(twitterDetails).Result;
 
-            if (tweets.Count(tweet => dates.Contains(tweet.CreatedAt.Date)) > 0)
+            if (tweets.Count(tweet => dates.Select(x => x.Date).Contains(tweet.CreatedAt.Date)) > 0)
             {
-                tweets.RemoveAll(remove => !dates.Contains(remove.CreatedAt.Date));
+                tweets.RemoveAll(remove => !dates.Select(x => x.Date).Contains(remove.CreatedAt.Date));
 
                 data = new TwitterData(tweets, tweets.OrderBy(x => x.CreatedAt.Date).First().User.FollowersCount);
 
@@ -179,6 +165,8 @@ namespace FDM90.Handlers
         {
             TwitterCredentials creds = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
+            if (creds == null) return;
+
             TwitterData data = GetTwitterData(creds, dates);
 
             if (!string.IsNullOrWhiteSpace(creds.TwitterData))
@@ -202,13 +190,16 @@ namespace FDM90.Handlers
             _twitterClientWrapper.PostTweet(creds, postParameters);
         }
 
-        public void DailyUpdate()
+        public List<Task> DailyUpdate()
         {
+            List<Task> tasks = new List<Task>();
+
             foreach (TwitterCredentials twitterCreds in _twitterReadAllRepo.ReadAll())
             {
-                Task.Factory.StartNew(() =>
-                        GetMediaData(twitterCreds.UserId, new[] { DateTime.Now.AddDays(-8) }));
+                tasks.Add(Task.Factory.StartNew(() =>
+                       GetMediaData(twitterCreds.UserId, new[] { DateTime.Now.AddDays(-8) })));
             }
+            return tasks;
         }
     }
 }

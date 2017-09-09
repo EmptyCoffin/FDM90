@@ -240,12 +240,7 @@ namespace FDM90.Handlers
             });
         }
 
-        public IEnumerable<Campaign> GetUserCampaigns(Guid userId)
-        {
-            return _campaignReadMultipleRepo.ReadMultipleSpecific(userId.ToString());
-        }
-
-        List<Campaign> ICampaignHandler.GetUserCampaigns(Guid userId)
+        public List<Campaign> GetUserCampaigns(Guid userId)
         {
             return _campaignReadMultipleRepo.ReadMultipleSpecific(userId.ToString()).ToList();
         }

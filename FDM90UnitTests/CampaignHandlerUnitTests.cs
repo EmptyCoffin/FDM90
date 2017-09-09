@@ -66,6 +66,30 @@ namespace FDM90UnitTests
             _campaignHandler = new CampaignHandler(_mockCampaignRepo.Object, _mockFacebookHandler.Object, _mockTwitterHandler.Object, _mockUserHandler.Object);
         }
 
+        [TestCleanup]
+        public void CleanUp()
+        {
+            updatedCampaign = null;
+            createdCampaign = null;
+            _returningCampaigns = null;
+            _returningUser = null;
+            _facebookReturner = null;
+            _twitterReturner = null;
+            _passedFacebookHandlerDates = null;
+            _passedTwitterHandlerDates = null;
+
+            _mockCampaignRepo = null;
+            _mockFacebookHandler = null;
+            _mockTwitterHandler = null;
+            _mockUserHandler = null;
+
+            _campaignHandler = null;
+
+            dateInfo = DateTimeFormatInfo.CurrentInfo;
+            calendar = dateInfo.Calendar;
+            currentWeekNumber = -1;
+        }
+
         [TestMethod]
         public void CampaignHandler_ConstructorTest()
         {

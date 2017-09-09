@@ -69,8 +69,9 @@ namespace FDM90.Handlers
 
         public void PostNow(ScheduledPost newPost)
         {
-            foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(w => 
-                                                        _userHandler.GetUser(newPost.UserId.ToString()).GetIntegratedMediaChannels().Contains(w.MediaName)
+            User postingUser = _userHandler.GetUser(newPost.UserId.ToString());
+            foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(w =>
+                                                        postingUser.GetIntegratedMediaChannels().Contains(w.MediaName)
                                                                 && newPost.MediaChannels.Split(',').Contains(w.MediaName)))
             {
                 Dictionary<string, string> postParameters = new Dictionary<string, string>();

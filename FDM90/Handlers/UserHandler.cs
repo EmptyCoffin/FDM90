@@ -15,7 +15,7 @@ namespace FDM90.Handlers
         private IRepository<User> _userRepo;
         private IReadSpecific<User> _userReadSpecific;
 
-        public UserHandler():this(new UserRepository())
+        public UserHandler() : this(new UserRepository())
         {
 
         }
@@ -29,23 +29,16 @@ namespace FDM90.Handlers
         public User RegisterUser(string userName, string emailAddress, string password)
         {
             User newUser = null;
-            try
+            newUser = new User()
             {
-                newUser = new User()
-                {
-                    UserId = Guid.NewGuid(),
-                    UserName = userName,
-                    EmailAddress = emailAddress,
-                    Password = EncryptionHelper.EncryptString(password)
-                };
+                UserId = Guid.NewGuid(),
+                UserName = userName,
+                EmailAddress = emailAddress,
+                Password = EncryptionHelper.EncryptString(password)
+            };
 
-                //write to db
-                _userRepo.Create(newUser);
-            }
-            catch (Exception ex)
-            {
-
-            }
+            //write to db
+            _userRepo.Create(newUser);
             return newUser;
         }
 
@@ -73,27 +66,21 @@ namespace FDM90.Handlers
         public User UpdateUserMediaActivation(User user, string socialMedia)
         {
             User currentUser = new User();
-            try
-            {
-                currentUser = _userReadSpecific.ReadSpecific(user);
-                bool updated = false;
+            currentUser = _userReadSpecific.ReadSpecific(user);
+            bool updated = false;
 
-                foreach (PropertyInfo property in currentUser.GetType().GetProperties())
+            foreach (PropertyInfo property in currentUser.GetType().GetProperties())
+            {
+                if (property.Name.Contains(socialMedia))
                 {
-                    if (property.Name.Contains(socialMedia))
-                    {
-                        property.SetValue(currentUser, true);
-                        updated = true;
-                    }
+                    property.SetValue(currentUser, true);
+                    updated = true;
                 }
-
-                if(updated)
-                    _userRepo.Update(currentUser);
             }
-            catch(Exception ex)
-            {
 
-            }
+            if (updated)
+                _userRepo.Update(currentUser);
+
             return currentUser;
         }
 
