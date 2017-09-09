@@ -6,9 +6,11 @@ using Facebook;
 using FDM90.Singleton;
 using System.IO;
 using System.Dynamic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FDM90.Models.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public class FacebookClientWrapper : IFacebookClientWrapper
     {
         private string _accessToken = string.Empty;
