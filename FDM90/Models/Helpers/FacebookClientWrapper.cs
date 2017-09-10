@@ -20,7 +20,7 @@ namespace FDM90.Models.Helpers
         {
             dynamic login = _fbClient.GetLoginUrl(new
             {
-                client_id = ConfigSingleton.FacebookClientId,
+                client_id = ConfigSingleton.Instance.FacebookClientId,
 
                 redirect_uri = "http://localhost:1900/Pages/Content/Facebook.aspx",
 
@@ -37,8 +37,8 @@ namespace FDM90.Models.Helpers
             //generate longer live token
             dynamic result = _fbClient.Post(FacebookHelper.PostAuthParameter, new
             {
-                client_id = ConfigSingleton.FacebookClientId,
-                client_secret = ConfigSingleton.FacebookClientSecret,
+                client_id = ConfigSingleton.Instance.FacebookClientId,
+                client_secret = ConfigSingleton.Instance.FacebookClientSecret,
                 redirect_uri = "http://localhost:1900/Pages/Content/Facebook.aspx",
                 code = shortTermToken
             });

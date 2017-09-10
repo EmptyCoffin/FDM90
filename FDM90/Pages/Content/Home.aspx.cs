@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -13,6 +14,7 @@ using System.Web.UI.WebControls;
 
 namespace FDM90.Pages.Content
 {
+    [ExcludeFromCodeCoverage]
     public partial class Home : System.Web.UI.Page
     {
         private string[] metrics = { "Exposure", "Influence", "Engagement" };

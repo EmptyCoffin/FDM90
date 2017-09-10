@@ -106,8 +106,8 @@ namespace FDM90.Models.Helpers
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore()
                 {
-                    ConsumerKey = ConfigSingleton.TwitterConsumerKey,
-                    ConsumerSecret = ConfigSingleton.TwitterConsumerSecret,
+                    ConsumerKey = ConfigSingleton.Instance.TwitterConsumerKey,
+                    ConsumerSecret = ConfigSingleton.Instance.TwitterConsumerSecret,
                     OAuthToken = twitterDetails.AccessToken,
                     OAuthTokenSecret = twitterDetails.AccessTokenSecret
                 }

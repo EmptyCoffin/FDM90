@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FDM90
 {
+    [ExcludeFromCodeCoverage]
     public class Global : System.Web.HttpApplication
     {
 

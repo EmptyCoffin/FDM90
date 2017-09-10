@@ -3,6 +3,7 @@ using FDM90.Models;
 using FDM90.Singleton;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -11,6 +12,7 @@ using System.Web.UI.WebControls;
 
 namespace FDM90.Pages.Content
 {
+    [ExcludeFromCodeCoverage]
     public partial class Facebook : System.Web.UI.Page
     {
         IFacebookHandler _facebookHandler;
@@ -140,8 +142,8 @@ namespace FDM90.Pages.Content
             {
                 if (imageSuffixes.Contains(FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
-                    FacebookPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
-                    facebookParameters.Add("picture", ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
+                    FacebookPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + FacebookPostAttachement.FileName);
+                    facebookParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + FacebookPostAttachement.FileName);
                 }
             }
 

@@ -4,6 +4,7 @@ using FDM90.Singleton;
 using LinqToTwitter;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -16,6 +17,7 @@ using System.Web.UI.WebControls;
 
 namespace FDM90.Pages.Content
 {
+    [ExcludeFromCodeCoverage]
     public partial class Twitter : System.Web.UI.Page
     {
         ITwitterHandler _twitterHandler;
@@ -48,8 +50,8 @@ namespace FDM90.Pages.Content
                     {
                         CredentialStore = new SessionStateCredentialStore
                         {
-                            ConsumerKey = ConfigSingleton.TwitterConsumerKey,
-                            ConsumerSecret = ConfigSingleton.TwitterConsumerSecret
+                            ConsumerKey = ConfigSingleton.Instance.TwitterConsumerKey,
+                            ConsumerSecret = ConfigSingleton.Instance.TwitterConsumerSecret
                         },
                         GoToTwitterAuthorization =
                     twitterUrl => Response.Redirect(twitterUrl, false)
@@ -107,8 +109,8 @@ namespace FDM90.Pages.Content
             {
                 if (imageSuffixes.Contains(TwitterPostAttachement.FileName.Substring(TwitterPostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
-                    TwitterPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + TwitterPostAttachement.FileName);
-                    twitterParameters.Add("picture", ConfigSingleton.FileSaveLocation + TwitterPostAttachement.FileName);
+                    TwitterPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
+                    twitterParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
                 }
             }
 
