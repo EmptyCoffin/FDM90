@@ -17,12 +17,17 @@ namespace FDM90.Repository
         private static object _lockableObject = new object();
         protected abstract string _table { get; }
 
+        public IDbConnection Connection		
+        {		
+            get { return _connection == null ? new SqlConnection(WebConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ConnectionString) : _connection; }		
+         }
+
         protected RepositoryBase(IDbConnection connection)
         {
             _connection = connection;
         }
 
-        protected RepositoryBase() : this (new SqlConnection(WebConfigurationManager.ConnectionStrings[SQLHelper.DatabaseConnectionString].ConnectionString))
+        protected RepositoryBase()
         {
         }
 
@@ -34,7 +39,7 @@ namespace FDM90.Repository
             {
                 try
                 {
-                    using (IDbConnection connection = _connection)
+                    using (IDbConnection connection = Connection)
                     {
                         IDbCommand command = connection.CreateCommand();
                         command.CommandText = sqlText;
@@ -60,7 +65,7 @@ namespace FDM90.Repository
             {
                 try
                 {
-                    using (IDbConnection connection = _connection)
+                    using (IDbConnection connection = Connection)
                     {
 
                         IDbCommand command = connection.CreateCommand();
