@@ -7,8 +7,9 @@ using FDM90.Repository;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using System.Data;
 using System.Linq;
-using System.Threading;
+using System.Linq.Expressions;
 
 namespace FDM90UnitTests
 {
@@ -19,6 +20,7 @@ namespace FDM90UnitTests
         private Mock<IFacebookHandler> _mockFacebookHandler;
         private Mock<ITwitterHandler> _mockTwitterHandler;
         private Mock<IUserHandler> _mockUserHandler;
+        private string[] _medias = new[] { "Facebook", "Twitter" };
 
         private CampaignHandler _campaignHandler;
         private static Campaign updatedCampaign;
@@ -33,6 +35,12 @@ namespace FDM90UnitTests
         private static DateTimeFormatInfo dateInfo = DateTimeFormatInfo.CurrentInfo;
         private Calendar calendar = dateInfo.Calendar;
         int currentWeekNumber;
+        int overallProgressExposure = 0;
+        int overallProgressInfluence = 0;
+        int overallProgressEngagement = 0;
+        int overallTargetExposure = 0;
+        int overallTargetInfluence = 0;
+        int overallTargetEngagement = 0;
 
         [TestInitialize]
         public void StartUp()
@@ -88,6 +96,12 @@ namespace FDM90UnitTests
             dateInfo = DateTimeFormatInfo.CurrentInfo;
             calendar = dateInfo.Calendar;
             currentWeekNumber = -1;
+            overallProgressExposure = 0;
+            overallProgressInfluence = 0;
+            overallProgressEngagement = 0;
+            overallTargetExposure = 0;
+            overallTargetInfluence = 0;
+            overallTargetEngagement = 0;
         }
 
         [TestMethod]
@@ -629,6 +643,148 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("50"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 1}"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 2}"));
+        }
+
+        [TestMethod]
+        public void GenerateCampaignDataTable_GivenCampaign_ReturnsTrueIfDataTableIsReturned()
+        {
+            // arrange
+
+            // act
+            var result = _campaignHandler.GenerateCampaignDataTable(new Campaign() { Progress = GetProgressData().ToString(), Targets = GetTargetData().ToString() });
+
+            // assert
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Exposure").Sum(s => int.Parse(s[4].ToString())));
+            Assert.IsNotNull(result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Influence").Sum(s => int.Parse(s[4].ToString())));
+            Assert.IsNotNull(result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Engagement").Sum(s => int.Parse(s[4].ToString())));
+
+            // check all inidividual values sum to overall value
+            Assert.AreEqual(overallProgressExposure, result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Exposure").Sum(s => int.Parse(s[4].ToString())));
+            Assert.AreEqual(overallProgressInfluence, result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Influence").Sum(s => int.Parse(s[4].ToString())));
+            Assert.AreEqual(overallProgressEngagement, result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Engagement").Sum(s => int.Parse(s[4].ToString())));
+
+            // check all overall fields have overall target
+            Assert.IsTrue(result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Exposure").All(a => a[3].ToString() == overallTargetExposure.ToString()));
+            Assert.IsTrue(result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Influence").All(a => a[3].ToString() == overallTargetInfluence.ToString()));
+            Assert.IsTrue(result.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Engagement").All(a => a[3].ToString() == overallTargetEngagement.ToString()));
+
+            // last accumulated media values added together is same as overall
+            Assert.AreEqual(int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Facebook" && w[2].ToString() == "Exposure")[5].ToString()) + int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Twitter" && w[2].ToString() == "Exposure")[5].ToString()), int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Overall" && w[2].ToString() == "Exposure")[5].ToString()));
+            Assert.AreEqual(int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Facebook" && w[2].ToString() == "Influence")[5].ToString()) + int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Twitter" && w[2].ToString() == "Influence")[5].ToString()), int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Overall" && w[2].ToString() == "Influence")[5].ToString()));
+            Assert.AreEqual(int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Facebook" && w[2].ToString() == "Engagement")[5].ToString()) + int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Twitter" && w[2].ToString() == "Engagement")[5].ToString()), int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Overall" && w[2].ToString() == "Engagement")[5].ToString()));
+
+            // media values added together is same as overall
+            Assert.AreEqual(result.AsEnumerable().Where(w => w[0].ToString() == "Facebook" && w[2].ToString() == "Exposure").Sum(s => int.Parse(s[4].ToString())) + result.AsEnumerable().Where(w => w[0].ToString() == "Twitter" && w[2].ToString() == "Exposure").Sum(s => int.Parse(s[4].ToString())), int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Overall" && w[2].ToString() == "Exposure")[5].ToString()));
+            Assert.AreEqual(result.AsEnumerable().Where(w => w[0].ToString() == "Facebook" && w[2].ToString() == "Influence").Sum(s => int.Parse(s[4].ToString())) + result.AsEnumerable().Where(w => w[0].ToString() == "Twitter" && w[2].ToString() == "Influence").Sum(s => int.Parse(s[4].ToString())), int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Overall" && w[2].ToString() == "Influence")[5].ToString()));
+            Assert.AreEqual(result.AsEnumerable().Where(w => w[0].ToString() == "Facebook" && w[2].ToString() == "Engagement").Sum(s => int.Parse(s[4].ToString())) + result.AsEnumerable().Where(w => w[0].ToString() == "Twitter" && w[2].ToString() == "Engagement").Sum(s => int.Parse(s[4].ToString())), int.Parse(result.AsEnumerable().Last(w => w[0].ToString() == "Overall" && w[2].ToString() == "Engagement")[5].ToString()));
+        }
+
+        private JObject GetProgressData()
+        {
+            var progressData = new JObject();
+            Random rdm = new Random();
+
+            foreach (var item in _medias)
+            {
+                var weekData = new JObject();
+
+                for (int i = 0; i < 10; i++)
+                {
+                    var metricData = new JObject();
+                    int exposureNewValue = rdm.Next(1, 100);
+                    overallProgressExposure += exposureNewValue;
+                    metricData.Add("Exposure", exposureNewValue);
+
+                    int influenceNewValue = rdm.Next(1, 100);
+                    overallProgressInfluence += influenceNewValue;
+                    metricData.Add("Influence", influenceNewValue);
+
+                    int engagmentNewValue = rdm.Next(1, 100);
+                    overallProgressEngagement += engagmentNewValue;
+                    metricData.Add("Engagement", engagmentNewValue);
+
+                    weekData.Add("Week" + i, metricData);
+                }
+
+                progressData.Add(item, weekData);
+            }
+
+            return progressData;
+        }
+
+        private JObject GetSkippedProgressData()
+        {
+            var progressData = new JObject();
+            Random rdm = new Random();
+            bool skip = true;
+
+            foreach (var item in _medias)
+            {
+                var weekData = new JObject();
+
+                for (int i = 0; i < 10; i++)
+                {
+                    if (skip && i == 9)
+                    {
+                        var metricData = new JObject();
+                        int exposureNewValue = rdm.Next(1, 100);
+                        overallProgressExposure += exposureNewValue;
+                        metricData.Add("Exposure", exposureNewValue);
+
+                        weekData.Add("Week" + i, metricData);
+
+                        skip = false;
+                    }
+                    else
+                    {
+                        var metricData = new JObject();
+                        int exposureNewValue = rdm.Next(1, 100);
+                        overallProgressExposure += exposureNewValue;
+                        metricData.Add("Exposure", exposureNewValue);
+
+                        int influenceNewValue = rdm.Next(1, 100);
+                        overallProgressInfluence += influenceNewValue;
+                        metricData.Add("Influence", influenceNewValue);
+
+                        int engagmentNewValue = rdm.Next(1, 100);
+                        overallProgressEngagement += engagmentNewValue;
+                        metricData.Add("Engagement", engagmentNewValue);
+
+                        weekData.Add("Week" + i, metricData);
+                    }
+                }
+                progressData.Add(item, weekData);
+            }
+
+            return progressData;
+        }
+
+        private JObject GetTargetData()
+        {
+            var targetData = new JObject();
+            Random rdm = new Random();
+
+            foreach (var item in _medias)
+            {
+                var metricData = new JObject();
+
+                var exposureTarget = rdm.Next(400, 1000);
+                overallTargetExposure += exposureTarget;
+                metricData.Add("Exposure", exposureTarget);
+
+                var influenceTarget = rdm.Next(400, 1000);
+                overallTargetInfluence += influenceTarget;
+                metricData.Add("Influence", influenceTarget);
+
+                var engagementTarget = rdm.Next(400, 1000);
+                overallTargetEngagement += engagementTarget;
+                metricData.Add("Engagement", engagementTarget);
+
+                targetData.Add(item, metricData);
+            }
+
+            return targetData;
         }
     }
 }

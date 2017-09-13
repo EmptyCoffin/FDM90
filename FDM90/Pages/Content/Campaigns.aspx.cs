@@ -65,7 +65,7 @@ namespace FDM90.Pages.Content
         {
             if (!Page.IsPostBack)
             {
-                if (TaskListSingleton.Instance.CurrentTasks != null)
+                if (TaskListSingleton.Instance.CurrentTasks.Count() > 0)
                     TaskListSingleton.Instance.CurrentTasks.First().Wait();
 
                 LoadData();
