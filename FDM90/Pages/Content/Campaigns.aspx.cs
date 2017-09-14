@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
@@ -24,10 +25,11 @@ namespace FDM90.Pages.Content
         private string[] metrics = { "Exposure", "Influence", "Engagement" };
         private static DataTable campaignDataTable;
         private static MarketingModel[] marketingModels;
-        private int Exposure {
+        private int Exposure
+        {
             get
             {
-                return campaignDataTable == null ? 0 
+                return campaignDataTable == null ? 0
                     : campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Exposure").Sum(s => int.Parse(s[4].ToString()));
             }
         }
@@ -50,7 +52,7 @@ namespace FDM90.Pages.Content
             }
         }
 
-        public Campaigns():this(new CampaignHandler(), new MarketingModelHandler())
+        public Campaigns() : this(new CampaignHandler(), new MarketingModelHandler())
         {
 
         }
@@ -147,7 +149,7 @@ namespace FDM90.Pages.Content
                 limitSeries.Points.DataBind(mediaRows, campaignDataTable.Columns[1].ToString(), campaignDataTable.Columns[3].ToString(), null);
                 limitSeries.Points.Last().IsValueShownAsLabel = true;
 
-                if(mediaChart.Name == "Overall")
+                if (mediaChart.Name == "Overall")
                 {
                     campaignChart.ChartAreas.Insert(0, mediaChart);
                 }
@@ -166,7 +168,7 @@ namespace FDM90.Pages.Content
                 campaignChart.Titles[campaignChart.ChartAreas.Count() - 1].DockedToChartArea = mediaChart.Name;
                 campaignChart.Titles[campaignChart.ChartAreas.Count() - 1].IsDockedInsideChartArea = false;
             }
-
+            campaignChart.ImageStorageMode = ImageStorageMode.UseHttpHandler;
             campaignChart.DataBind();
         }
 
@@ -189,8 +191,8 @@ namespace FDM90.Pages.Content
             modelMetricLabel.Text = newModel.MetricsUsed;
             modelResultMetricLabel.Text = newModel.ResultMetric;
 
-            var calculationExpression = 
-                System.Linq.Dynamic.DynamicExpression.ParseLambda(new[] 
+            var calculationExpression =
+                System.Linq.Dynamic.DynamicExpression.ParseLambda(new[]
                 {
                     Expression.Parameter(typeof(double), "exposure"),
                     Expression.Parameter(typeof(double), "influence"),
@@ -201,8 +203,20 @@ namespace FDM90.Pages.Content
 
             modelCalculationResultLabel.Text = calculationExpression.Compile()
                                     .DynamicInvoke(Exposure, Influence, Engagement,
-                                                    double.Parse(CampaignCostTextBox.Text), double.Parse(AverageCostOfProductsTextBox.Text)).ToString()
-                                                            + newModel.ResultMetric;
+                                                    double.Parse(CampaignCostTextBox.Text), double.Parse(AverageCostOfProductsTextBox.Text)).ToString();
+        }
+
+        protected void DownloadChart_Click(object sender, EventArgs e)
+        {
+            Response.ContentType = "image/png";
+
+            Response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}_{1}_{2}.png", 
+                                        currentCampaignDropDown.SelectedValue, metricDropDown.SelectedValue.ToString(), DateTime.Now.ToString()));
+
+            campaignChart.SaveImage(Response.OutputStream, ChartImageFormat.Png);
+
+            Response.Flush();
+            Response.End();
         }
     }
 }
