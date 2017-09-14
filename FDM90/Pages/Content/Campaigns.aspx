@@ -7,8 +7,10 @@
     <br />
     <asp:DropDownList runat="server" ID="metricDropDown" AutoPostBack="true" OnSelectedIndexChanged="metricDropDown_SelectedIndexChanged"></asp:DropDownList>
     <br />
-    <asp:Chart ID="campaignChart" runat="server" Height="702px" Width="937px">
+    <asp:Chart ID="campaignChart" runat="server" Height="702px" Width="937px" EnableViewState="true">
     </asp:Chart>
+    <br />
+    <asp:Button runat="server" ID="DownloadChart" Text="Download Chart" OnClick="DownloadChart_Click" />
     <br />
     <asp:ScriptManager runat="server" />
     <asp:UpdatePanel ID="campaignPanel" runat="server" UpdateMode="Always">
