@@ -118,21 +118,10 @@ namespace FDM90UnitTests
         public void CreateCampaign_GivenValues_ShouldCallCreateAndUpdate()
         {
             // arrange
-            var progressData = new JObject();
-            var facebookData = new JObject();
-            var twitterData = new JObject();
             var metricData = new JObject();
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
-
-            facebookData.Add("Week" + (currentWeekNumber - 1), metricData);
-            twitterData.Add("Week" + (currentWeekNumber - 1), metricData);
-            facebookData.Add("Week" + (currentWeekNumber - 2), metricData);
-            twitterData.Add("Week" + +(currentWeekNumber - 2), metricData);
-
-            progressData.Add("Facebook", facebookData);
-            progressData.Add("Twitter", twitterData);
 
             _returningUser.Facebook = true;
             _returningUser.Twitter = true;
@@ -144,7 +133,7 @@ namespace FDM90UnitTests
 
             // act
             var resultTask =_campaignHandler.CreateCampaign(new User() { UserId = Guid.NewGuid(), Campaigns = 0 }, "TestName", 
-                DateTime.Now.AddDays(-7).Date.ToShortDateString(), DateTime.Now.AddMonths(7).Date.ToShortDateString(), progressData.ToString());
+                DateTime.Now.AddDays(-7).Date.ToShortDateString(), DateTime.Now.AddMonths(7).Date.ToShortDateString(), "{ \"Facebook\": { \"Exposure\": \"3500\", \"Influence\": \"2100\", \"Engagement\": \"1700\" }, \"Twitter\": { \"Exposure\": \"9000\", \"Influence\": \"4500\", \"Engagement\": \"2400\" }   }");
 
             resultTask.Wait();
 
@@ -286,7 +275,6 @@ namespace FDM90UnitTests
         public void UpdateCampaigns_GivenNoExistingValuesInRangeFromPreviousDate_ShouldHavePopulatedProgress()
         {
             // arrange
-            var progressData = new JObject();
             var metricData = new JObject();
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
@@ -479,6 +467,8 @@ namespace FDM90UnitTests
 
             // act
             _campaignHandler.DailyUpdate().Wait();
+
+            // assert
             _mockCampaignRepo.Verify(x => x.Update(It.IsAny<Campaign>()), Times.Exactly(1));
             Assert.IsNotNull(updatedCampaign);
             Assert.IsTrue(updatedCampaign.Progress.Contains("Facebook"));

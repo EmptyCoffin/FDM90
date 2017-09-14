@@ -122,8 +122,11 @@ namespace FDM90.Handlers
 
             return Task.Factory.ContinueWhenAll(tasks.ToArray(), taskReturned =>
             {
-                newCampaign.Progress = newProgress.ToString();
-                _campaignRepo.Update(newCampaign);
+                if (newProgress != null)
+                {
+                    newCampaign.Progress = newProgress.ToString();
+                    _campaignRepo.Update(newCampaign);
+                }
             });
 
         }
