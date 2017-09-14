@@ -9,8 +9,18 @@ using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {
-    public class TwitterRepository : RepositoryBase<TwitterCredentials>, IRepository<TwitterCredentials>, IReadSpecific<TwitterCredentials>
+    public class TwitterRepository : RepositoryBase<TwitterCredentials>, IRepository<TwitterCredentials>, IReadAll<TwitterCredentials>, IReadSpecific<TwitterCredentials>
     {
+        public TwitterRepository()
+        {
+
+        }
+
+        public TwitterRepository(IDbConnection connection):base(connection)
+        {
+
+        }
+
         protected override string _table
         {
             get
@@ -39,21 +49,29 @@ namespace FDM90.Repository
 
         public void Delete(TwitterCredentials objectId)
         {
-            throw new NotImplementedException();
+            string sql = SQLHelper.Delete + _table + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
+
+            SqlParameter[] parameters = new SqlParameter[]{
+                            new SqlParameter("@UserID", objectId.UserId)
+                        };
+
+            SendVoidCommand(sql, parameters);
         }
 
         public IEnumerable<TwitterCredentials> ReadAll()
         {
-            throw new NotImplementedException();
+            string sql = SQLHelper.SelectAll + _table + SQLHelper.EndingSemiColon;
+
+            return SendReaderCommand(sql, new SqlParameter[0]);
         }
 
-        public TwitterCredentials ReadSpecific(string identifyingItem)
+        public TwitterCredentials ReadSpecific(TwitterCredentials identifyingItem)
         {
             string sql = SQLHelper.SelectAll
                          + _table + SQLHelper.Where + "[UserId] = @UserId" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
-                            new SqlParameter("@UserId", identifyingItem)
+                            new SqlParameter("@UserId", identifyingItem.UserId)
                         };
 
             return SendReaderCommand(sql, parameters).FirstOrDefault();
@@ -64,7 +82,7 @@ namespace FDM90.Repository
             TwitterCredentials creds = new TwitterCredentials();
             creds.UserId = Guid.Parse(reader["UserId"].ToString());
             creds.AccessToken = reader["AccessToken"].ToString();
-            creds.AccessTokenSecret = reader["AccessTokenSecret"]?.ToString();
+            creds.AccessTokenSecret = reader["AccessTokenSecret"].ToString();
             creds.ScreenName = reader["ScreenName"]?.ToString();
             creds.TwitterData = reader["TwitterData"]?.ToString();
             return creds;
@@ -72,7 +90,7 @@ namespace FDM90.Repository
 
         public void Update(TwitterCredentials objectToUpdate)
         {
-            TwitterCredentials currentDetails = ReadSpecific(objectToUpdate.UserId.ToString());
+            TwitterCredentials currentDetails = ReadSpecific(objectToUpdate);
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             string sql = SQLHelper.Update + _table + SQLHelper.Set +

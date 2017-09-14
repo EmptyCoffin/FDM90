@@ -11,7 +11,7 @@ namespace FDM90UnitTests
     public class TestHelper
     {
         public static bool CheckSqlStatementString(StatementType statementType, string sqlTable, string[] columns,
-                                                        string[] parameters, string stringToTest)
+                                                        string[] parameters, string stringToTest, int skipLastAmount = 0)
         {
             Regex format = null;
 
@@ -37,9 +37,9 @@ namespace FDM90UnitTests
 
                 case StatementType.Update:
                     format = new Regex(@"UPDATE\s.*" + SqlTable(sqlTable) +
-                                    @"\s.*SET\s.*" + CreateColumnParameter(columns, parameters, true) 
-                                    + CreateWhereCondition(new string[] { columns[columns.Length-1]},
-                                            new string[] { parameters[parameters.Length - 1] }) + @"\s;");
+                                    @"\s.*SET\s.*" + CreateColumnParameter(columns, parameters, skipLastAmount) 
+                                    + CreateWhereCondition(columns.Skip(columns.Count() - skipLastAmount).ToArray(),
+                                                    parameters.Skip(parameters.Count() - skipLastAmount).ToArray()) + @"\s;");
                     break;
                 case StatementType.Delete:
                     format = new Regex(@"DELETE FROM\s.*" + SqlTable(sqlTable) + CreateWhereCondition(columns, parameters));
@@ -54,10 +54,10 @@ namespace FDM90UnitTests
             return format.IsMatch(stringToTest);
         }
 
-        private static string CreateColumnParameter(string[] columns, string[] parameters, bool skipLast = false)
+        private static string CreateColumnParameter(string[] columns, string[] parameters, int skipLastAmount = 0)
         {
             string columnParams = string.Empty;
-            int count = skipLast ? columns.Length - 1 : columns.Length;
+            int count = skipLastAmount > 0 ? columns.Length - skipLastAmount : columns.Length;
             for (int i = 0; i < count; i++)
             {
                 columnParams += @"\[" + columns[i] + @"\]\s=\s" + parameters[i] + @".";

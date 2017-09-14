@@ -10,7 +10,6 @@ namespace FDM90.Repository
     public interface IRepository<T> where T : class
     {
         void Create(T objectToCreate);
-        IEnumerable<T> ReadAll();
         void Update(T objectToUpdate);
         void Delete(T objectId);
     }

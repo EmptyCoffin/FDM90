@@ -11,6 +11,16 @@ namespace FDM90.Repository
 {
     public class SchedulerRepository : RepositoryBase<ScheduledPost>, IRepository<ScheduledPost>, IReadMultipleSpecific<ScheduledPost>
     {
+        public SchedulerRepository()
+        {
+
+        }
+
+        public SchedulerRepository(IDbConnection connection) : base(connection)
+        {
+
+        }
+
         protected override string _table
         {
             get
@@ -23,11 +33,11 @@ namespace FDM90.Repository
         {
             string sql = SQLHelper.Insert + _table + SQLHelper.OpenBracket +
                         "[PostId], [UserId], [PostText], [AttachmentPath], [PostTime], [MediaChannels]" + SQLHelper.CloseBracket + SQLHelper.Values
-                        + SQLHelper.OpenBracket + "@PostId, @UserID, @PostText, @AttachmentPath, @PostTime, @MediaChannels" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
+                        + SQLHelper.OpenBracket + "@PostId, @UserId, @PostText, @AttachmentPath, @PostTime, @MediaChannels" + SQLHelper.CloseBracket + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
                             new SqlParameter("@PostId", objectToCreate.PostId),
-                            new SqlParameter("@UserID", objectToCreate.UserId),
+                            new SqlParameter("@UserId", objectToCreate.UserId),
                             new SqlParameter("@PostText", (object)objectToCreate.PostText ?? DBNull.Value),
                             new SqlParameter("@AttachmentPath", (object)objectToCreate.AttachmentPath ?? DBNull.Value),
                             new SqlParameter("@PostTime", objectToCreate.PostTime),
@@ -46,13 +56,6 @@ namespace FDM90.Repository
                         };
 
             SendVoidCommand(sql, parameters);
-        }
-
-        public IEnumerable<ScheduledPost> ReadAll()
-        {
-            string sql = SQLHelper.SelectAll + _table + SQLHelper.EndingSemiColon;
-
-            return SendReaderCommand(sql, new SqlParameter[0]);
         }
 
         public IEnumerable<ScheduledPost> ReadMultipleSpecific(string objectId)
@@ -87,8 +90,8 @@ namespace FDM90.Repository
             ScheduledPost post = new ScheduledPost();
             post.PostId = Guid.Parse(reader["PostId"].ToString());
             post.UserId = Guid.Parse(reader["UserId"].ToString());
-            post.PostText = reader["PostText"].ToString();
-            post.AttachmentPath = reader["AttachmentPath"].ToString();
+            post.PostText = reader["PostText"]?.ToString();
+            post.AttachmentPath = reader["AttachmentPath"]?.ToString();
             post.PostTime = DateTime.Parse(reader["PostTime"].ToString());
             post.MediaChannels = reader["MediaChannels"].ToString();
             return post;
@@ -96,10 +99,11 @@ namespace FDM90.Repository
 
         public void Update(ScheduledPost objectToUpdate)
         {
+            ScheduledPost currentDetails = ReadMultipleSpecific(objectToUpdate.UserId.ToString()).FirstOrDefault(x => x.PostId == objectToUpdate.PostId);
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             string sql = SQLHelper.Update + _table + SQLHelper.Set +
-                 SetUpdateValues(new ScheduledPost(), objectToUpdate, out parameters)
+                 SetUpdateValues(currentDetails, objectToUpdate, out parameters)
             + SQLHelper.Where + "[PostId] = @PostId" + SQLHelper.EndingSemiColon;
 
             if (parameters.Count > 0)

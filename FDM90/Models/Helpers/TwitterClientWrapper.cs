@@ -2,6 +2,7 @@
 using LinqToTwitter;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,6 +11,7 @@ using System.Web;
 
 namespace FDM90.Models.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public class TwitterClientWrapper : ITwitterClientWrapper
     {
 
@@ -104,8 +106,8 @@ namespace FDM90.Models.Helpers
             {
                 CredentialStore = new SingleUserInMemoryCredentialStore()
                 {
-                    ConsumerKey = ConfigSingleton.TwitterConsumerKey,
-                    ConsumerSecret = ConfigSingleton.TwitterConsumerSecret,
+                    ConsumerKey = ConfigSingleton.Instance.TwitterConsumerKey,
+                    ConsumerSecret = ConfigSingleton.Instance.TwitterConsumerSecret,
                     OAuthToken = twitterDetails.AccessToken,
                     OAuthTokenSecret = twitterDetails.AccessTokenSecret
                 }

@@ -6,9 +6,11 @@ using Facebook;
 using FDM90.Singleton;
 using System.IO;
 using System.Dynamic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace FDM90.Models.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public class FacebookClientWrapper : IFacebookClientWrapper
     {
         private string _accessToken = string.Empty;
@@ -18,7 +20,7 @@ namespace FDM90.Models.Helpers
         {
             dynamic login = _fbClient.GetLoginUrl(new
             {
-                client_id = ConfigSingleton.FacebookClientId,
+                client_id = ConfigSingleton.Instance.FacebookClientId,
 
                 redirect_uri = "http://localhost:1900/Pages/Content/Facebook.aspx",
 
@@ -35,8 +37,8 @@ namespace FDM90.Models.Helpers
             //generate longer live token
             dynamic result = _fbClient.Post(FacebookHelper.PostAuthParameter, new
             {
-                client_id = ConfigSingleton.FacebookClientId,
-                client_secret = ConfigSingleton.FacebookClientSecret,
+                client_id = ConfigSingleton.Instance.FacebookClientId,
+                client_secret = ConfigSingleton.Instance.FacebookClientSecret,
                 redirect_uri = "http://localhost:1900/Pages/Content/Facebook.aspx",
                 code = shortTermToken
             });

@@ -43,6 +43,14 @@
       <HintPath>..\packages\Facebook.7.0.6\lib\net45\Facebook.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LinqToTwitter.AspNet, Version=3.2.0.30483, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\linqtotwitter.4.1.0\lib\net45\LinqToTwitter.AspNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="LinqToTwitter.net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=957107be965c25d9, processorArchitecture=MSIL">
+      <HintPath>..\packages\linqtotwitter.4.1.0\lib\net45\LinqToTwitter.net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Moq, Version=4.7.1.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.7.1\lib\net45\Moq.dll</HintPath>
@@ -54,8 +62,26 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -73,6 +99,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="FacebookDataUnitTests.cs" />
+    <Compile Include="JsonHelperUnitTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryBaseUnitTest.cs" />
     <Compile Include="TestHelper.cs" />
@@ -81,6 +108,20 @@
     <Compile Include="CampaignHandlerUnitTests.cs" />
     <Compile Include="TwitterDataUnitTest.cs" />
     <Compile Include="SchedulerHandlerTests.cs" />
+    <Compile Include="ConfigRepositoryUnitTests.cs" />
+    <Compile Include="CampaignRepositoryUnitTests.cs" />
+    <Compile Include="MarketingModelRepositoryUnitTests.cs" />
+    <Compile Include="SchedulerRepositoryUnitTests.cs" />
+    <Compile Include="TwitterRepositoryUnitTests.cs" />
+    <Compile Include="MarketingModelHandlerUnitTests.cs" />
+    <Compile Include="TwitterHandlerUnitTests.cs" />
+    <Compile Include="TaskListSingletonUnitTests.cs" />
+    <Compile Include="ConfigSingletonUnitTests.cs" />
+    <Compile Include="DateHelperUnitTests.cs" />
+    <Compile Include="EncryptionHelperUnitTest.cs" />
+    <Compile Include="FacebookHelperUnitTests.cs" />
+    <Compile Include="UserSingletonUnitTest.cs" />
+    <Compile Include="UserModelUnitTests.cs" />
     <Compile Include="UserHandlerUnitTests.cs" />
     <Compile Include="UserRepositoryUnitTests.cs" />
   </ItemGroup>

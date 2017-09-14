@@ -10,30 +10,33 @@ namespace FDM90.Singleton
 {
     public class ConfigSingleton
     {
-        private static IRepository<ConfigItem> _configItemRepo;
-        private static List<ConfigItem> _configList;
+        private static IReadAll<ConfigItem> _configItemRepo;
+        private static ConfigSingleton _instance;
+
+        public static ConfigSingleton Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = new ConfigSingleton();
+
+                return _instance;
+            }
+        }
+
 
         static List<ConfigItem> ConfigList
         {
             get
             {
-                if (_configList == null)
-                {
-                    new ConfigSingleton();
-                }
-
-                return _configList;
-            }
-            set
-            {
-                _configList = value;
+                return _configItemRepo.ReadAll().ToList();
             }
         }
-           
 
-        public ConfigSingleton(IRepository<ConfigItem> configItemRepo)
+
+        public ConfigSingleton(IReadAll<ConfigItem> configItemRepo)
         {
-            _configList = configItemRepo.ReadAll().ToList();
+            _configItemRepo = configItemRepo;
         }
 
         public ConfigSingleton():this(new ConfigRepository())
@@ -41,10 +44,10 @@ namespace FDM90.Singleton
 
         }
 
-        public static string FacebookClientId { get { return ConfigList.FirstOrDefault(x => x.Name == "FacebookClientId").Value; } }
-        public static string FacebookClientSecret { get { return ConfigList.FirstOrDefault(x => x.Name == "FacebookClientSecret").Value; } }
-        public static string TwitterConsumerKey { get { return ConfigList.FirstOrDefault(x => x.Name == "TwitterConsumerKey").Value; } }
-        public static string TwitterConsumerSecret { get { return ConfigList.FirstOrDefault(x => x.Name == "TwitterConsumerSecret").Value; } }
-        public static string FileSaveLocation { get { return ConfigList.FirstOrDefault(x => x.Name == "FileSaveLocation").Value; } }
+        public string FacebookClientId { get { return ConfigList.FirstOrDefault(x => x.Name == "FacebookClientId").Value; } }
+        public string FacebookClientSecret { get { return ConfigList.FirstOrDefault(x => x.Name == "FacebookClientSecret").Value; } }
+        public string TwitterConsumerKey { get { return ConfigList.FirstOrDefault(x => x.Name == "TwitterConsumerKey").Value; } }
+        public string TwitterConsumerSecret { get { return ConfigList.FirstOrDefault(x => x.Name == "TwitterConsumerSecret").Value; } }
+        public string FileSaveLocation { get { return ConfigList.FirstOrDefault(x => x.Name == "FileSaveLocation").Value; } }
     }
 }

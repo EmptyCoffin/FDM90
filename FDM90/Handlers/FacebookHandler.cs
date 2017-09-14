@@ -16,7 +16,8 @@ namespace FDM90.Handlers
 {
     public class FacebookHandler : IFacebookHandler
     {
-        private IReadSpecific<FacebookCredentials> _facebookReadRepo;
+        private IReadAll<FacebookCredentials> _facebookReadAllRepo;
+        private IReadSpecific<FacebookCredentials> _facebookReadSpecificRepo;
         private IRepository<FacebookCredentials> _facebookRepo;
         private IUserHandler _userHandler;
         private IFacebookClientWrapper _facebookClientWrapper;
@@ -38,36 +39,26 @@ namespace FDM90.Handlers
             IFacebookClientWrapper facebookClientWrapper)
         {
             _facebookRepo = facebookRepo;
-            _facebookReadRepo = (IReadSpecific<FacebookCredentials>)facebookRepo;
+            _facebookReadAllRepo = (IReadAll<FacebookCredentials>)facebookRepo;
+            _facebookReadSpecificRepo = (IReadSpecific<FacebookCredentials>)facebookRepo;
             _userHandler = userHandler;
             _facebookClientWrapper = facebookClientWrapper;
         }
 
         public FacebookCredentials GetLogInDetails(Guid userId)
         {
-            var result = _facebookReadRepo.ReadSpecific(userId.ToString()) ?? new FacebookCredentials();
-
-            result.PermanentAccessToken = result.PermanentAccessToken ?? _facebookClientWrapper.GetLoginUrl();
-
-            //login
-            return result;
+            return _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId });
         }
 
         public FacebookCredentials SaveLogInDetails(Guid userId, string pageName)
         {
             FacebookCredentials credentials = new FacebookCredentials(userId, pageName);
-            try
-            {
-                _facebookRepo.Create(credentials);
 
-                _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), MediaName);
+            _facebookRepo.Create(credentials);
 
-                credentials.PermanentAccessToken = _facebookClientWrapper.GetLoginUrl();
-            }
-            catch (Exception ex)
-            {
+            _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), MediaName);
 
-            }
+            credentials.PermanentAccessToken = _facebookClientWrapper.GetLoginUrl();
 
             return credentials;
         }
@@ -96,7 +87,7 @@ namespace FDM90.Handlers
 
         public void GetMediaData(Guid userId, DateTime[] dates)
         {
-            var currentData = _facebookReadRepo.ReadSpecific(userId.ToString());
+            var currentData = _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId });
 
             if (string.IsNullOrWhiteSpace(currentData.PermanentAccessToken)) return;
 
@@ -147,7 +138,7 @@ namespace FDM90.Handlers
                 }
             }
 
-            data.Posts.RemoveAll(remove => !dates.Contains(remove.CreatedTime.Date));
+            data.Posts.RemoveAll(remove => !dates.Select(x => x.Date).Contains(remove.CreatedTime.Date));
 
             data = GetPostDetails(data, accessToken);
 
@@ -169,7 +160,7 @@ namespace FDM90.Handlers
                 }
             }
 
-            data.PageLikes.Values.RemoveAll(remove => !dates.Contains(remove.EndTime.Date));
+            data.PageLikes.Values.RemoveAll(remove => !dates.Select(x => x.Date).Contains(remove.EndTime.Date));
 
             dynamic storiesData =
                     _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Insight, "", new string[]
@@ -191,7 +182,7 @@ namespace FDM90.Handlers
                 }
             }
 
-            data.PageStories.Values.RemoveAll(remove => !dates.Contains(remove.EndTime.Date));
+            data.PageStories.Values.RemoveAll(remove => !dates.Select(x => x.Date).Contains(remove.EndTime.Date));
             return data;
         }
 
@@ -217,7 +208,7 @@ namespace FDM90.Handlers
 
         public IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates)
         {
-            FacebookCredentials facebookCreds = _facebookReadRepo.ReadSpecific(userId.ToString());
+            FacebookCredentials facebookCreds = _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId });
 
             // exposure - fan reach group by week
             JObject facebookTargets = new JObject();
@@ -250,7 +241,7 @@ namespace FDM90.Handlers
 
         public FacebookData GetFacebookData(Guid userId)
         {
-            FacebookCredentials creds = _facebookReadRepo.ReadSpecific(userId.ToString());
+            FacebookCredentials creds = _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId });
 
             FacebookData todaysData = creds == null || string.IsNullOrWhiteSpace(creds.PermanentAccessToken) ? null :
                                         GetMetricData(new DateTime[] { DateTime.Now.Date }, creds.PermanentAccessToken, new FacebookData());
@@ -260,16 +251,18 @@ namespace FDM90.Handlers
 
         public void PostData(Dictionary<string, string> postParameters, Guid userId)
         {
-            _facebookClientWrapper.PostData(postParameters, _facebookReadRepo.ReadSpecific(userId.ToString()).PermanentAccessToken);
+            _facebookClientWrapper.PostData(postParameters, _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId }).PermanentAccessToken);
         }
 
-        public void DailyUpdate()
+        public List<Task> DailyUpdate()
         {
-            foreach (FacebookCredentials facebookCreds in _facebookRepo.ReadAll())
+            List<Task> tasks = new List<Task>();
+            foreach (FacebookCredentials facebookCreds in _facebookReadAllRepo.ReadAll())
             {
-                Task.Factory.StartNew(() =>
-                        GetMediaData(facebookCreds.UserId, new[] { DateTime.Now.AddDays(-8) }));
+                 tasks.Add(Task.Factory.StartNew(() =>
+                        GetMediaData(facebookCreds.UserId, new[] { DateTime.Now.AddDays(-8) })));
             }
+            return tasks;
         }
     }
 }

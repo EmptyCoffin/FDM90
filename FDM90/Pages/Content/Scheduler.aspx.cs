@@ -3,6 +3,7 @@ using FDM90.Models;
 using FDM90.Singleton;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -11,6 +12,7 @@ using System.Web.UI.WebControls;
 
 namespace FDM90.Pages.Content
 {
+    [ExcludeFromCodeCoverage]
     public partial class Scheduler : System.Web.UI.Page
     {
         private ISchedulerHandler _schedulerHandler;
@@ -81,7 +83,7 @@ namespace FDM90.Pages.Content
             {
                 if (imageSuffixes.Contains(PostAttachement.FileName.Substring(PostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
-                    PostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + PostAttachement.FileName);
+                    PostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + PostAttachement.FileName);
                 }
             }
 
@@ -89,7 +91,7 @@ namespace FDM90.Pages.Content
             {
                 UserId = UserSingleton.Instance.CurrentUser.UserId,
                 PostText = PostText.Text,
-                AttachmentPath = PostAttachement.HasFile ? ConfigSingleton.FileSaveLocation + PostAttachement.FileName : null,
+                AttachmentPath = PostAttachement.HasFile ? ConfigSingleton.Instance.FileSaveLocation + PostAttachement.FileName : null,
                 MediaChannels = string.Join(",", MediaChannelsCheckBoxList.Items.Cast<ListItem>().Where(w => w.Selected).Select(s => s.Text))
             };
 
@@ -195,7 +197,7 @@ namespace FDM90.Pages.Content
 
                 if (newImage.HasFile)
                 {
-                    var filePath = ConfigSingleton.FileSaveLocation + newImage.FileName;
+                    var filePath = ConfigSingleton.Instance.FileSaveLocation + newImage.FileName;
 
                     newImage.SaveAs(filePath);
                     editedPost.AttachmentPath = filePath;

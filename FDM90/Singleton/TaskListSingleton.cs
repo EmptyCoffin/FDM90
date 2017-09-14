@@ -20,7 +20,7 @@ namespace FDM90.Singleton
             }
         }
 
-        public List<System.Threading.Tasks.Task> CurrentTasks;
+        public List<System.Threading.Tasks.Task> CurrentTasks = new List<System.Threading.Tasks.Task>();
 
         private TaskListSingleton() { }
 

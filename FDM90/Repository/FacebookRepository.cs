@@ -9,7 +9,7 @@ using FDM90.Models.Helpers;
 
 namespace FDM90.Repository
 {
-    public class FacebookRepository : RepositoryBase<FacebookCredentials>, IRepository<FacebookCredentials>, IReadSpecific<FacebookCredentials>
+    public class FacebookRepository : RepositoryBase<FacebookCredentials>, IRepository<FacebookCredentials>, IReadSpecific<FacebookCredentials>, IReadAll<FacebookCredentials>
     {
         public FacebookRepository()
         {
@@ -47,11 +47,10 @@ namespace FDM90.Repository
 
         public void Delete(FacebookCredentials objectId)
         {
-            string sql = SQLHelper.Delete + _table + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.And + "[PageName] = @PageName" + SQLHelper.EndingSemiColon;
+            string sql = SQLHelper.Delete + _table + SQLHelper.Where + "[UserId] = @UserID" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
-                            new SqlParameter("@UserID", objectId.UserId),
-                            new SqlParameter("@PageName", objectId.PageName),
+                            new SqlParameter("@UserID", objectId.UserId)
                         };
 
             SendVoidCommand(sql, parameters);
@@ -59,16 +58,18 @@ namespace FDM90.Repository
 
         public IEnumerable<FacebookCredentials> ReadAll()
         {
-            throw new NotImplementedException();
+            string sql = SQLHelper.SelectAll + _table + SQLHelper.EndingSemiColon;
+
+            return SendReaderCommand(sql, new SqlParameter[0]);
         }
 
-        public FacebookCredentials ReadSpecific(string userId)
+        public FacebookCredentials ReadSpecific(FacebookCredentials objectToRead)
         {
             string sql = SQLHelper.SelectAll
                          + _table + SQLHelper.Where + "[UserId] = @UserId" + SQLHelper.EndingSemiColon;
 
             SqlParameter[] parameters = new SqlParameter[]{
-                            new SqlParameter("@UserId", userId),
+                            new SqlParameter("@UserId", objectToRead.UserId),
                         };
 
             return SendReaderCommand(sql, parameters).FirstOrDefault();
@@ -86,7 +87,7 @@ namespace FDM90.Repository
 
         public void Update(FacebookCredentials objectToUpdate)
         {
-            FacebookCredentials currentDetails = ReadSpecific(objectToUpdate.UserId.ToString());
+            FacebookCredentials currentDetails = ReadSpecific(objectToUpdate);
             List<SqlParameter> parameters = new List<SqlParameter>();
 
             string sql = SQLHelper.Update + _table + SQLHelper.Set +

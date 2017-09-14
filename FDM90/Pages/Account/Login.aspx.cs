@@ -2,10 +2,12 @@
 using FDM90.Models;
 using FDM90.Singleton;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Web.Security;
 
 namespace FDM90.Pages.Account
 {
+    [ExcludeFromCodeCoverage]
     public partial class Login : System.Web.UI.Page
     {
         private IUserHandler _userHandler;

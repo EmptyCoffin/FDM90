@@ -348,6 +348,7 @@
     <Compile Include="Repository\FacebookRepository.cs" />
     <Compile Include="Repository\CampaignRepository.cs" />
     <Compile Include="Repository\IReadMultipleSpecific.cs" />
+    <Compile Include="Repository\IReadAll.cs" />
     <Compile Include="Repository\IReadSpecific.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Repository\MarketingModelRepository.cs" />

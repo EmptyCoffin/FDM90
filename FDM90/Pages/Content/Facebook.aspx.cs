@@ -3,6 +3,7 @@ using FDM90.Models;
 using FDM90.Singleton;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -11,6 +12,7 @@ using System.Web.UI.WebControls;
 
 namespace FDM90.Pages.Content
 {
+    [ExcludeFromCodeCoverage]
     public partial class Facebook : System.Web.UI.Page
     {
         IFacebookHandler _facebookHandler;
@@ -36,33 +38,40 @@ namespace FDM90.Pages.Content
         {
             if (!Page.IsPostBack)
             {
-                facebookCreds = _facebookHandler.GetLogInDetails(UserSingleton.Instance.CurrentUser.UserId);
-                inputPageName.Text = facebookCreds.PageName;
-
-                if (!string.IsNullOrWhiteSpace(facebookCreds.PermanentAccessToken) && !facebookCreds.PermanentAccessToken.StartsWith("https://www."))
+                if (!UserSingleton.Instance.CurrentUser.Facebook)
                 {
-                    GetFacebookData(true);
+                    if (!string.IsNullOrWhiteSpace(Request.QueryString["code"]))
+                    {
+                        Task refreshTask = _facebookHandler.SetAccessToken(Request.QueryString["code"],
+                                                                    facebookCreds.UserId, facebookCreds.PageName);
+
+                        refreshTask.ContinueWith((response) =>
+                        {
+                            if (string.IsNullOrWhiteSpace((response as Task<string>)?.Result))
+                            {
+                                GetFacebookData(false);
+                                facebookDetailsErrorLabel.Text = "";
+                            }
+                            else
+                            {
+                                detailsPanel.Visible = true;
+                                facebookDetailsErrorLabel.Text = (response as Task<string>).Result;
+                            }
+                        });
+
+                        UserSingleton.Instance.CurrentUser.Facebook = true;
+                        GetFacebookData(true);
+                    }
                 }
-                else if (!string.IsNullOrWhiteSpace(Request.QueryString["code"]))
+                else
                 {
-                    Task refreshTask = _facebookHandler.SetAccessToken(Request.QueryString["code"],
-                                                                facebookCreds.UserId, facebookCreds.PageName);
+                    facebookCreds = _facebookHandler.GetLogInDetails(UserSingleton.Instance.CurrentUser.UserId);
+                    inputPageName.Text = facebookCreds.PageName;
 
-                    refreshTask.ContinueWith((response) => {
-                        if(string.IsNullOrWhiteSpace((response as Task<string>)?.Result))
-                        {
-                            GetFacebookData(false);
-                            facebookDetailsErrorLabel.Text = "";
-                        }
-                        else
-                        {
-                            detailsPanel.Visible = true;
-                            facebookDetailsErrorLabel.Text = (response as Task<string>).Result;
-                        }
-                    });
-
-                    UserSingleton.Instance.CurrentUser.Facebook = true;
-                    GetFacebookData(true);
+                    if (!string.IsNullOrWhiteSpace(facebookCreds.PermanentAccessToken) && !facebookCreds.PermanentAccessToken.StartsWith("https://www."))
+                    {
+                        GetFacebookData(true);
+                    }
                 }
             }
         }
@@ -133,8 +142,8 @@ namespace FDM90.Pages.Content
             {
                 if (imageSuffixes.Contains(FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
-                    FacebookPostAttachement.SaveAs(ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
-                    facebookParameters.Add("picture", ConfigSingleton.FileSaveLocation + FacebookPostAttachement.FileName);
+                    FacebookPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + FacebookPostAttachement.FileName);
+                    facebookParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + FacebookPostAttachement.FileName);
                 }
             }
 

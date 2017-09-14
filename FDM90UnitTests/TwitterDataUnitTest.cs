@@ -1,6 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FDM90.Models;
+using System.Linq;
+using System.Collections.Generic;
+using LinqToTwitter;
 
 namespace FDM90UnitTests
 {
@@ -8,9 +11,188 @@ namespace FDM90UnitTests
     public class TwitterDataUnitTest
     {
         [TestMethod]
-        public void Test()
+        public void ParseString_GivenTwitterDataJson_ReturnsTrueIfValuesMatch()
         {
-            TwitterData tester = TwitterData.Parse("{\"NumberOfFollowers\":1375,\"Tweets\":[{\"CreatedAt\":\"2017-08-07T12:56:17Z\",\"ScreenName\":\"WalworthGarden\",\"FavoriteCount\":6,\"RetweetCount\":1,\"StatusID\":894542712900333573,\"Text\":\"Organic marrow for sale. Pop in. https://t.co/NLgcJbsaW1\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":304}]},{\"CreatedAt\":\"2017-08-07T11:53:24Z\",\"ScreenName\":\"WalworthGarden\",\"FavoriteCount\":5,\"RetweetCount\":1,\"StatusID\":894526890169552896,\"Text\":\"Fruit from the Quince tree 👌🏻 https://t.co/CM4VWVA4es\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":304}]},{\"CreatedAt\":\"2017-08-06T10:00:35Z\",\"ScreenName\":\"WalworthGarden\",\"FavoriteCount\":2,\"RetweetCount\":0,\"StatusID\":894136108715565056,\"Text\":\"Bright and delicate Ceratostigma plumbaginoides https://t.co/qecogAqRH9\",\"Retweeted\":false,\"Favorited\":true,\"RetweetedUsers\":[]},{\"CreatedAt\":\"2017-08-05T10:00:44Z\",\"ScreenName\":\"WalworthGarden\",\"FavoriteCount\":4,\"RetweetCount\":1,\"StatusID\":893773760641282048,\"Text\":\"Don’t forget we’re open 7days a week, so pop by for some plants and a fresh juice made from 100% fruit and veg! 👌🏻🍏 https://t.co/7gh4lzyd3Z\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":82}]},{\"CreatedAt\":\"2017-08-04T17:01:06Z\",\"ScreenName\":\"WalworthGarden\",\"FavoriteCount\":3,\"RetweetCount\":1,\"StatusID\":893517160441622529,\"Text\":\"Train with us &amp; gain a level 2 diploma in #Horticulture. Contact now to start this September 5th! https://t.co/ska8rtpEZA\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":32}]},{\"CreatedAt\":\"2017-08-04T15:01:42Z\",\"ScreenName\":\"WalworthGarden\",\"FavoriteCount\":3,\"RetweetCount\":0,\"StatusID\":893487112804335617,\"Text\":\"An eye catching display of flowers from the ginger #PlantofTheWeek https://t.co/b0fsZNVxhi\",\"Retweeted\":false,\"Favorited\":true,\"RetweetedUsers\":[]}]}", new TwitterData());
+            // act
+            TwitterData result = TwitterData.Parse(GetTwitterDataString(), new TwitterData());
+
+            // assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(50, result.NumberOfFollowers);
+            Assert.AreEqual(4, result.Tweets.Count);
+            Assert.IsTrue(result.Tweets.Any(x => x.CreatedAt != null));
+            Assert.IsTrue(result.Tweets.Any(x => x.StatusID != 0));
+        }
+
+        [TestMethod]
+        public void ReadOnlyVariables_GivenTwitterDataJson_ReturnsTrueIfValuesArePopulatedCorrectly()
+        {
+            // act
+            TwitterData result = TwitterData.Parse(GetTwitterDataString(), new TwitterData());
+
+            // assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(32, result.NumberOfRetweets);
+            Assert.AreEqual(20, result.NumberOfFavorited);
+        }
+
+        [TestMethod]
+        public void Update_GivenTwitterDataJson_ReturnsTrueIfNewTweetsAreAdded()
+        {
+            // arrange
+            TwitterData newData = new TwitterData() {
+                Tweets = new List<Tweet>()
+                {
+                    new Tweet()
+                    {
+                        CreatedAt = DateTime.Now.Date,
+                        Text = "This is a new tweet",
+                        FavoriteCount = 0,
+                        RetweetCount = 0,
+                        StatusID = 1543511348
+                    }
+                }
+            };
+
+            // act
+            TwitterData result = TwitterData.Parse(GetTwitterDataString(), new TwitterData()).Update(newData);
+
+            // assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(32, result.NumberOfRetweets);
+            Assert.AreEqual(20, result.NumberOfFavorited);
+        }
+
+        [TestMethod]
+        public void Update_GivenTwitterDataJson_ReturnsTrueIfOldTweetsAreUpdated()
+        {
+            // arrange
+            TwitterData newData = new TwitterData()
+            {
+                Tweets = new List<Tweet>()
+                {
+                    new Tweet()
+                    {
+                        CreatedAt = DateTime.Now.Date,
+                        Text = "This Is Test Tweet 1",
+                        FavoriteCount = 20,
+                        RetweetCount = 8,
+                        StatusID = 1254987456
+                    }
+                }
+            };
+
+            // act
+            TwitterData result = TwitterData.Parse(GetTwitterDataString(), new TwitterData()).Update(newData);
+
+            // assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(4, result.Tweets.Count);
+            Assert.AreEqual(newData.Tweets[0].RetweetCount, result.Tweets.First(x => x.StatusID == newData.Tweets[0].StatusID).RetweetCount);
+            Assert.AreEqual(newData.Tweets[0].FavoriteCount, result.Tweets.First(x => x.StatusID == newData.Tweets[0].StatusID).FavoriteCount);
+        }
+
+        [TestMethod]
+        public void Update_GivenNumberOfFollowersGreaterOrSmallerThanCurrent_ReturnsTrueIfNumberOfFollowersIsUpdated()
+        {
+
+            // arrange
+            TwitterData smallerData = new TwitterData()
+            {
+                NumberOfFollowers = 40
+            };
+
+            TwitterData greaterData = new TwitterData()
+            {
+                NumberOfFollowers = 67
+            };
+
+            // act & assert
+            TwitterData result = TwitterData.Parse(GetTwitterDataString(), new TwitterData());
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(50, result.NumberOfFollowers);
+
+            result = result.Update(smallerData);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(40, result.NumberOfFollowers);
+
+            result = result.Update(greaterData);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(67, result.NumberOfFollowers);
+        }
+
+        [TestMethod]
+        public void ParseString_GivenTwitterUserDataJson_ReturnsTrueIfValuesMatch()
+        {
+            // act
+            TwitterUser result = TwitterData.Parse((dynamic)"{\"NumberOfFollowers\":181}", new TwitterUser());
+
+            // assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(181, result.NumberOfFollowers);
+        }
+
+        [TestMethod]
+        public void Constructor_ParseListOfStatus_ReturnsTrueIfValuesPopulatedProperly()
+        {
+            // arrange
+            List<Status> statuses = new List<Status>()
+            {
+                new Status()
+                {
+                    CreatedAt= DateTime.Now.Date,
+                    ScreenName = "TestScreenName",
+                    FavoriteCount= 10,
+                    RetweetCount= 27,
+                    StatusID= 123454103,
+                    Text = "This Is Test Text 1"
+                },
+                new Status()
+                {
+                    CreatedAt= DateTime.Now.Date,
+                    ScreenName = "TestScreenName",
+                    FavoriteCount= 7,
+                    RetweetCount= 0,
+                    StatusID= 18135432649,
+                    Text = "This Is Test Text 2"
+                },
+                new Status()
+                {
+                    CreatedAt= DateTime.Now.Date,
+                    ScreenName = "TestScreenName",
+                    FavoriteCount= 0,
+                    RetweetCount= 54,
+                    StatusID= 8461321348,
+                    Text = "This Is Test Text 3"
+                }
+            };
+
+            // act
+            TwitterData result = new TwitterData(statuses, 384);
+
+            // assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(384, result.NumberOfFollowers);
+
+            for (int i = 0; i < statuses.Count; i++)
+            {
+                Assert.AreEqual(statuses[i].StatusID, result.Tweets[i].StatusID);
+                Assert.AreEqual(statuses[i].CreatedAt, result.Tweets[i].CreatedAt);
+                Assert.AreEqual(statuses[i].ScreenName, result.Tweets[i].ScreenName);
+                Assert.AreEqual(statuses[i].FavoriteCount, result.Tweets[i].FavoriteCount);
+                Assert.AreEqual(statuses[i].RetweetCount, result.Tweets[i].RetweetCount);
+                Assert.AreEqual(statuses[i].Text, result.Tweets[i].Text);
+                Assert.AreEqual(statuses[i].RetweetCount > 0, result.Tweets[i].Retweeted);
+                Assert.AreEqual(statuses[i].FavoriteCount > 0, result.Tweets[i].Favorited);
+            }
+        }
+
+        private string GetTwitterDataString()
+        {
+            return "{\"NumberOfFollowers\":50,\"Tweets\":[{\"CreatedAt\":\"2017-07-28T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":3,\"RetweetCount\":6,\"StatusID\":1254987456,\"Text\":\"This Is Test Tweet 1\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493}]},{\"CreatedAt\":\"2017-07-24T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":16,\"StatusID\":546158431,\"Text\":\"This Is Test Tweet 2\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235},{\"NumberOfFollowers\":257},{\"NumberOfFollowers\":241},{\"NumberOfFollowers\":342},{\"NumberOfFollowers\":32},{\"NumberOfFollowers\":2},{\"NumberOfFollowers\":422},{\"NumberOfFollowers\":110},{\"NumberOfFollowers\":215}]},{\"CreatedAt\":\"2017-07-30T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":1,\"RetweetCount\":2,\"StatusID\":549845579112,\"Text\":\"This Is Test Tweet 3\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143}]},{\"CreatedAt\":\"2017-08-01T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":8,\"StatusID\":32154578612,\"Text\":\"This Is Test Tweet 4\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235}]}]}";
         }
     }
 }

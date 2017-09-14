@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
+using Moq;
+using System.Collections.Generic;
 using FDM90.Models;
 using FDM90.Repository;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+using System.Data.SqlClient;
+using System.Linq;
 
 namespace FDM90UnitTests
 {
     [TestClass]
-    public class FacebookRepositoryUnitTests
+    public class TwitterRepositoryUnitTests
     {
         private Mock<IDbConnection> _mockIDbConnection;
         private Mock<IDbCommand> _mockIDbCommand;
@@ -20,33 +20,39 @@ namespace FDM90UnitTests
         private IList<object> _parameterObjects = new List<object>();
         private string setSqlString = String.Empty;
         private static Guid _specificGuid = Guid.NewGuid();
-        private List<FacebookCredentials> _returningCreds = new List<FacebookCredentials>()
+        private List<TwitterCredentials> _returningCreds = new List<TwitterCredentials>()
         {
-            new FacebookCredentials()
+            new TwitterCredentials()
             {
                 UserId = Guid.NewGuid(),
-                PageName = "Page1"
+                ScreenName = "Screen Name 1",
+                AccessToken = "ThisIsAPermanentAccessToken1",
+                AccessTokenSecret = "ThisIsAccessTokenSecret1"
             },
-            new FacebookCredentials()
+            new TwitterCredentials()
             {
                 UserId = _specificGuid,
-                PageName = "Page2"
+                ScreenName = "Screen Name 2",
+                AccessToken = "ThisIsAPermanentAccessToken2",
+                AccessTokenSecret = "ThisIsAccessTokenSecret2"
             },
-            new FacebookCredentials()
+            new TwitterCredentials()
             {
                 UserId = Guid.NewGuid(),
-                PageName = "Page3"
+                AccessToken = "ThisIsAPermanentAccessToken3",
+                AccessTokenSecret = "ThisIsAccessTokenSecret3"
             },
-            new FacebookCredentials()
+            new TwitterCredentials()
             {
                 UserId = Guid.NewGuid(),
-                PageName = "Page4",
-                PermanentAccessToken = "ThisIsAPermanentAccessToken",
-                FacebookData = "This IS Facebook Data"
+                ScreenName = "Screen Name 4",
+                AccessToken = "ThisIsAPermanentAccessToken4",
+                AccessTokenSecret = "ThisIsAccessTokenSecret4",
+                TwitterData = "This is Twitter Data"
             },
         };
 
-        private FacebookRepository _facebookRepo;
+        private TwitterRepository _twitterRepo;
         private int count = -1;
 
         [TestInitialize]
@@ -73,7 +79,7 @@ namespace FDM90UnitTests
             _mockIDbConnection.Setup(connection => connection.CreateCommand()).Returns(_mockIDbCommand.Object);
             _mockIDbConnection.Setup(connection => connection.Dispose());
 
-            _facebookRepo = new FacebookRepository(_mockIDbConnection.Object);
+            _twitterRepo = new TwitterRepository(_mockIDbConnection.Object);
         }
 
         [TestCleanup]
@@ -84,7 +90,7 @@ namespace FDM90UnitTests
             _mockIDataParameters = null;
             _mockIDataReader = null;
             setSqlString = string.Empty;
-            _facebookRepo = null;
+            _twitterRepo = null;
             count = -1;
         }
 
@@ -94,35 +100,37 @@ namespace FDM90UnitTests
             //arrange
 
             //act
-            _facebookRepo = new FacebookRepository();
+            _twitterRepo = new TwitterRepository();
 
             //assert
-            Assert.IsNotNull(_facebookRepo);
+            Assert.IsNotNull(_twitterRepo);
         }
 
         [TestMethod]
         public void CreateCreds_GivenValues_CorrectValuesSentToConnection()
         {
             //arrange
-            FacebookCredentials testCreds = new FacebookCredentials()
+            TwitterCredentials testCreds = new TwitterCredentials()
             {
                 UserId = new Guid(),
-                PageName = "TestPageName"
+                AccessToken = "TestAccessToken",
+                AccessTokenSecret = "TestAccessTokenSecret",
+                ScreenName = "TestPageName"
             };
 
             //act
-            _facebookRepo.Create(testCreds);
+            _twitterRepo.Create(testCreds);
 
             //assert
-            Assert.AreEqual(2, _parameterObjects.Count);
-            foreach (var property in testCreds.GetType().GetProperties())
+            Assert.AreEqual(4, _parameterObjects.Count);
+            foreach (var property in testCreds.GetType().GetProperties().OrderBy(x => x.Name))
             {
                 if (property.GetValue(testCreds) == null) continue;
-                foreach (var parameter in _parameterObjects)
+                foreach (var parameter in _parameterObjects.Cast<SqlParameter>().OrderBy(x => x.ParameterName))
                 {
                     var sqlParameter = (SqlParameter)parameter;
 
-                    if (!sqlParameter.ParameterName.Contains(property.Name)) continue;
+                    if (!sqlParameter.ParameterName.Equals(property.Name)) continue;
                     Assert.AreEqual("@" + property.Name, sqlParameter.ParameterName);
                     Assert.AreEqual(property.GetValue(testCreds), sqlParameter.Value);
                 }
@@ -131,8 +139,8 @@ namespace FDM90UnitTests
             Assert.IsTrue(
                 TestHelper.CheckSqlStatementString(
                     StatementType.Insert,
-                    "[FDM90].[dbo].[Facebook]",
-                    new string[] { "UserId", "PageName" }, 
+                    "[FDM90].[dbo].[Twitter]",
+                    new string[] { "UserId", "AccessToken", "AccessTokenSecret", "ScreenName" },
                     _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
         }
 
@@ -140,15 +148,16 @@ namespace FDM90UnitTests
         public void ReadSpecificCreds_GivenUserId_CorrectValuesSentToConnection()
         {
             //arrange
-            FacebookCredentials specificCreds = _returningCreds.First(x => x.UserId == _specificGuid);
+            TwitterCredentials specificCreds = _returningCreds.First(x => x.UserId == _specificGuid);
 
             _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < 0).Callback(() => count++);
             _mockIDataReader.Setup(reader => reader["UserId"]).Returns(specificCreds.UserId);
-            _mockIDataReader.Setup(reader => reader["PageName"]).Returns(specificCreds.PageName);
-            _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(specificCreds.PermanentAccessToken);
+            _mockIDataReader.Setup(reader => reader["ScreenName"]).Returns(specificCreds.ScreenName);
+            _mockIDataReader.Setup(reader => reader["AccessToken"]).Returns(specificCreds.AccessToken);
+            _mockIDataReader.Setup(reader => reader["AccessTokenSecret"]).Returns(specificCreds.AccessTokenSecret);
 
             //act
-            var result = _facebookRepo.ReadSpecific(specificCreds);
+            var result = _twitterRepo.ReadSpecific(specificCreds);
 
             //assert
             Assert.AreEqual(1, _parameterObjects.Count);
@@ -158,7 +167,7 @@ namespace FDM90UnitTests
             Assert.IsTrue(
                 TestHelper.CheckSqlStatementString(
                     StatementType.Select,
-                    "[FDM90].[dbo].[Facebook]",
+                    "[FDM90].[dbo].[Twitter]",
                     new[] { "UserId" },
                     _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
         }
@@ -167,20 +176,22 @@ namespace FDM90UnitTests
         public void ReadSpecificCreds_GivenUserId_CorrectValueReturned()
         {
             //arrange
-            FacebookCredentials specificCreds = _returningCreds.First(x => x.UserId == _specificGuid);
+            TwitterCredentials specificCreds = _returningCreds.First(x => x.UserId == _specificGuid);
 
             _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < 0).Callback(() => count++);
             _mockIDataReader.Setup(reader => reader["UserId"]).Returns(specificCreds.UserId);
-            _mockIDataReader.Setup(reader => reader["PageName"]).Returns(specificCreds.PageName);
-            _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(specificCreds.PermanentAccessToken);
+            _mockIDataReader.Setup(reader => reader["ScreenName"]).Returns(specificCreds.ScreenName);
+            _mockIDataReader.Setup(reader => reader["AccessToken"]).Returns(specificCreds.AccessToken);
+            _mockIDataReader.Setup(reader => reader["AccessTokenSecret"]).Returns(specificCreds.AccessTokenSecret);
 
             //act
-            var result = _facebookRepo.ReadSpecific(specificCreds);
+            var result = _twitterRepo.ReadSpecific(specificCreds);
 
             //assert
             Assert.AreEqual(specificCreds.UserId, result.UserId);
-            Assert.AreEqual(specificCreds.PageName, result.PageName);
-            Assert.AreEqual(specificCreds.PermanentAccessToken, result.PermanentAccessToken);
+            Assert.AreEqual(specificCreds.ScreenName, result.ScreenName);
+            Assert.AreEqual(specificCreds.AccessToken, result.AccessToken);
+            Assert.AreEqual(specificCreds.AccessTokenSecret, result.AccessTokenSecret);
         }
 
         [TestMethod]
@@ -189,11 +200,12 @@ namespace FDM90UnitTests
             //arrange
             _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < _returningCreds.Count - 1).Callback(() => count++);
             _mockIDataReader.Setup(reader => reader["UserId"]).Returns(() => _returningCreds[count].UserId);
-            _mockIDataReader.Setup(reader => reader["PageName"]).Returns(() => _returningCreds[count].PageName);
-            _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(() => _returningCreds[count].PermanentAccessToken);
+            _mockIDataReader.Setup(reader => reader["ScreenName"]).Returns(() => _returningCreds[count].ScreenName);
+            _mockIDataReader.Setup(reader => reader["AccessToken"]).Returns(() => _returningCreds[count].AccessToken);
+            _mockIDataReader.Setup(reader => reader["AccessTokenSecret"]).Returns(() => _returningCreds[count].AccessTokenSecret);
 
             //act
-            var result = _facebookRepo.ReadAll();
+            var result = _twitterRepo.ReadAll();
 
             //assert
             Assert.AreEqual(0, _parameterObjects.Count);
@@ -201,8 +213,8 @@ namespace FDM90UnitTests
             Assert.IsTrue(
                 TestHelper.CheckSqlStatementString(
                     StatementType.Select,
-                    "[FDM90].[dbo].[Facebook]",
-                    new[] { "UserId" },
+                    "[FDM90].[dbo].[Twitter]",
+                    new string[0],
                     _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
         }
 
@@ -212,20 +224,24 @@ namespace FDM90UnitTests
             //arrange
             _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < _returningCreds.Count - 1).Callback(() => count++);
             _mockIDataReader.Setup(reader => reader["UserId"]).Returns(() => _returningCreds[count].UserId);
-            _mockIDataReader.Setup(reader => reader["PageName"]).Returns(() => _returningCreds[count].PageName);
-            _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(() => _returningCreds[count].PermanentAccessToken);
+            _mockIDataReader.Setup(reader => reader["ScreenName"]).Returns(() => _returningCreds[count].ScreenName);
+            _mockIDataReader.Setup(reader => reader["AccessToken"]).Returns(() => _returningCreds[count].AccessToken);
+            _mockIDataReader.Setup(reader => reader["AccessTokenSecret"]).Returns(() => _returningCreds[count].AccessTokenSecret);
+            _mockIDataReader.Setup(reader => reader["TwitterData"]).Returns(() => _returningCreds[count].TwitterData);
 
             //act
-            var result = _facebookRepo.ReadAll().ToList();
+            var result = _twitterRepo.ReadAll().ToList();
 
             //assert
             Assert.AreEqual(_returningCreds.Count, result.Count);
 
-            for(int i = 0; i < _returningCreds.Count; i++)
+            for (int i = 0; i < _returningCreds.Count; i++)
             {
                 Assert.AreEqual(_returningCreds[i].UserId, result[i].UserId);
-                Assert.AreEqual(_returningCreds[i].PageName, result[i].PageName);
-                Assert.AreEqual(_returningCreds[i].PermanentAccessToken, result[i].PermanentAccessToken);
+                Assert.AreEqual(_returningCreds[i].ScreenName, result[i].ScreenName);
+                Assert.AreEqual(_returningCreds[i].AccessToken, result[i].AccessToken);
+                Assert.AreEqual(_returningCreds[i].AccessTokenSecret, result[i].AccessTokenSecret);
+                Assert.AreEqual(_returningCreds[i].TwitterData, result[i].TwitterData);
             }
         }
 
@@ -233,17 +249,18 @@ namespace FDM90UnitTests
         public void UpdateCreds_GivenUpdatedCreds_CorrectValuesSentToConnection()
         {
             //arrange
-            FacebookCredentials specificCreds = _returningCreds.First(x => x.UserId == _specificGuid);
+            TwitterCredentials specificCreds = _returningCreds.First(x => x.UserId == _specificGuid);
 
             _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < 0).Callback(() => count++);
             _mockIDataReader.Setup(reader => reader["UserId"]).Returns(specificCreds.UserId);
-            _mockIDataReader.Setup(reader => reader["PageName"]).Returns(specificCreds.PageName);
-            _mockIDataReader.Setup(reader => reader["PermanentAccessToken"]).Returns(specificCreds.PermanentAccessToken);
+            _mockIDataReader.Setup(reader => reader["ScreenName"]).Returns(specificCreds.ScreenName);
+            _mockIDataReader.Setup(reader => reader["AccessToken"]).Returns(specificCreds.AccessToken);
+            _mockIDataReader.Setup(reader => reader["AccessTokenSecret"]).Returns(specificCreds.AccessTokenSecret);
 
-            specificCreds.PermanentAccessToken = "TESTACCESSTOKEN";
+            specificCreds.AccessToken = "TESTACCESSTOKEN";
 
             //act
-            _facebookRepo.Update(specificCreds);
+            _twitterRepo.Update(specificCreds);
 
             //assert
             Assert.AreEqual(3, _parameterObjects.Count);
@@ -254,8 +271,8 @@ namespace FDM90UnitTests
             Assert.IsTrue(
                 TestHelper.CheckSqlStatementString(
                     StatementType.Update,
-                    "[FDM90].[dbo].[Facebook]",
-                    new[] { "PermanentAccessToken", "UserId" },
+                    "[FDM90].[dbo].[Twitter]",
+                    new[] { "AccessToken", "UserId" },
                     _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString, 1));
         }
 
@@ -263,13 +280,13 @@ namespace FDM90UnitTests
         public void DeleteCreds_GivenCredsId_CorrectValuesSentToConnection()
         {
             //arrange
-            FacebookCredentials deleteCreds = new FacebookCredentials()
+            TwitterCredentials deleteCreds = new TwitterCredentials()
             {
                 UserId = Guid.NewGuid()
             };
 
             //act
-            _facebookRepo.Delete(deleteCreds);
+            _twitterRepo.Delete(deleteCreds);
 
             //assert
             Assert.AreEqual(1, _parameterObjects.Count);
@@ -277,7 +294,7 @@ namespace FDM90UnitTests
             Assert.IsTrue(
                 TestHelper.CheckSqlStatementString(
                     StatementType.Delete,
-                    "[FDM90].[dbo].[Facebook]",
+                    "[FDM90].[dbo].[Twitter]",
                     new[] { "UserId" },
                     _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
         }

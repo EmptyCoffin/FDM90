@@ -9,14 +9,14 @@ namespace FDM90.Handlers
 {
     public class MarketingModelHandler : IMarketingModelHandler
     {
-        private IRepository<MarketingModel> _marketingModelRepo;
+        private IReadAll<MarketingModel> _marketingModelRepo;
 
         public MarketingModelHandler() : this(new MarketingModelRepository())
         {
 
         }
 
-        public MarketingModelHandler(IRepository<MarketingModel> marketingModelRepo)
+        public MarketingModelHandler(IReadAll<MarketingModel> marketingModelRepo)
         {
             _marketingModelRepo = marketingModelRepo;
         }
