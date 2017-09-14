@@ -169,7 +169,7 @@ namespace FDM90UnitTests
             facebookData.Add("Week" + (currentWeekNumber - 1), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 1), metricData);
             facebookData.Add("Week" + (currentWeekNumber - 2), metricData);
-            twitterData.Add("Week" + +(currentWeekNumber - 2), metricData);
+            twitterData.Add("Week" + (currentWeekNumber - 2), metricData);
 
             progressData.Add("Facebook", facebookData);
             progressData.Add("Twitter", twitterData);
@@ -242,7 +242,7 @@ namespace FDM90UnitTests
             facebookData.Add("Week" + (currentWeekNumber - 2), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 2), metricData);
             facebookData.Add("Week" + (currentWeekNumber - 1), metricData);
-            twitterData.Add("Week" + +(currentWeekNumber - 1), metricData);
+            twitterData.Add("Week" + (currentWeekNumber - 1), metricData);
 
             progressData.Add("Facebook", facebookData);
             progressData.Add("Twitter", twitterData);
@@ -281,7 +281,7 @@ namespace FDM90UnitTests
             metricData.Add("Engagement", 23);
 
             _facebookReturner.Add("Week" + (currentWeekNumber - 2), metricData);
-            _facebookReturner.Add("Week" + +(currentWeekNumber - 1), metricData);
+            _facebookReturner.Add("Week" + (currentWeekNumber - 1), metricData);
             _twitterReturner.Add("Week" + (currentWeekNumber - 2), metricData);
             _twitterReturner.Add("Week" + (currentWeekNumber - 1), metricData);
 
@@ -326,7 +326,7 @@ namespace FDM90UnitTests
             facebookData.Add("Week" + (currentWeekNumber - 2), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 2), metricData);
             facebookData.Add("Week" + (currentWeekNumber - 3), metricData);
-            twitterData.Add("Week" + +(currentWeekNumber - 3), metricData);
+            twitterData.Add("Week" + (currentWeekNumber - 3), metricData);
 
             progressData.Add("Facebook", facebookData);
             progressData.Add("Twitter", twitterData);
@@ -409,7 +409,7 @@ namespace FDM90UnitTests
             _returningCampaigns.Add(new Campaign() { StartDate = DateTime.Now.AddDays(-28).Date, EndDate = DateTime.Now.AddMonths(3).Date, Progress = progressData.ToString() });
 
             _facebookReturner.Add("Week" + (currentWeekNumber - 2), metricData);
-            _facebookReturner.Add("Week" + +(currentWeekNumber - 1), metricData);
+            _facebookReturner.Add("Week" + (currentWeekNumber - 1), metricData);
 
             _returningUser.Facebook = true;
             _returningUser.Twitter = false;
