@@ -229,6 +229,7 @@ namespace FDM90.Handlers
             foreach (FacebookInsightValueData insightValue in data.PageLikes.Values.Where(like => dates.Contains(like.EndTime.Date)))
             {
                 facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Influence", insightValue.EndTime, insightValue.Value);
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Acquisition", insightValue.EndTime, insightValue.Value);
             }
 
             foreach (FacebookInsightValueData insightValue in data.PageStories.Values.Where(story => dates.Contains(story.EndTime.Date)))

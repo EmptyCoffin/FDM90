@@ -53,6 +53,7 @@ namespace FDM90.Handlers
             var twitterDetails = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
             var data = TwitterData.Parse(twitterDetails.TwitterData, new TwitterData());
+            data.Tweets = data.Tweets.OrderBy(x => x.CreatedAt).ToList();
             int screenNameFollowerCount = data.NumberOfFollowers;
             // get exposure - followers and followers of those retweeted/favorited
             foreach (var tweetDate in data.Tweets.GroupBy(x => x.CreatedAt.Date))
@@ -84,6 +85,19 @@ namespace FDM90.Handlers
                 {
                     // get engagement - replies/mentions, direct messages, retweets, hashtags mentions, favorited
                     twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Engagement", tweetDate.First().CreatedAt, (int)retweetFavoriteCount);
+                }
+
+                if(data.NumberOfFollowersByDate.ContainsKey(tweetDate.First().CreatedAt.Date))
+                {
+                    if (data.NumberOfFollowersByDate.ContainsKey(tweetDate.First().CreatedAt.AddDays(-1).Date))
+                    {
+                        twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Acquisition", tweetDate.First().CreatedAt,
+                                    (data.NumberOfFollowersByDate[tweetDate.First().CreatedAt.Date] - data.NumberOfFollowersByDate[tweetDate.First().CreatedAt.AddDays(-1).Date]));
+                    }
+                    else
+                    {
+                        twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Acquisition", tweetDate.First().CreatedAt, 0);
+                    }
                 }
             }
 

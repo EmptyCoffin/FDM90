@@ -922,12 +922,19 @@ namespace FDM90UnitTests
             });
             }
 
+            Dictionary<DateTime, int> numberOfFollowersByDate = new Dictionary<DateTime, int>();
+            numberOfFollowersByDate.Add(new DateTime(2016, 05, 01), 205);
+            numberOfFollowersByDate.Add(new DateTime(2016, 05, 02), 200);
+            numberOfFollowersByDate.Add(new DateTime(2016, 05, 03), 210);
+
+            data.NumberOfFollowersByDate = numberOfFollowersByDate;
+
             return data;
         }
 
         private string GetTwitterDataString()
         {
-            return "{\"NumberOfFollowers\":50,\"Tweets\":[{\"CreatedAt\":\"2017-07-28T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":3,\"RetweetCount\":6,\"StatusID\":1254987456,\"Text\":\"This Is Test Tweet 1\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493}]},{\"CreatedAt\":\"2017-07-24T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":16,\"StatusID\":546158431,\"Text\":\"This Is Test Tweet 2\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235},{\"NumberOfFollowers\":257},{\"NumberOfFollowers\":241},{\"NumberOfFollowers\":342},{\"NumberOfFollowers\":32},{\"NumberOfFollowers\":2},{\"NumberOfFollowers\":422},{\"NumberOfFollowers\":110},{\"NumberOfFollowers\":215}]},{\"CreatedAt\":\"2017-07-30T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":1,\"RetweetCount\":2,\"StatusID\":549845579112,\"Text\":\"This Is Test Tweet 3\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143}]},{\"CreatedAt\":\"2017-08-01T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":8,\"StatusID\":32154578612,\"Text\":\"This Is Test Tweet 4\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235}]}]}";
+            return "{\"NumberOfFollowers\":50,\"Tweets\":[{\"CreatedAt\":\"2017-07-28T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":3,\"RetweetCount\":6,\"StatusID\":1254987456,\"Text\":\"This Is Test Tweet 1\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493}]},{\"CreatedAt\":\"2017-07-29T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":16,\"StatusID\":546158431,\"Text\":\"This Is Test Tweet 2\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235},{\"NumberOfFollowers\":257},{\"NumberOfFollowers\":241},{\"NumberOfFollowers\":342},{\"NumberOfFollowers\":32},{\"NumberOfFollowers\":2},{\"NumberOfFollowers\":422},{\"NumberOfFollowers\":110},{\"NumberOfFollowers\":215}]},{\"CreatedAt\":\"2017-07-30T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":1,\"RetweetCount\":2,\"StatusID\":549845579112,\"Text\":\"This Is Test Tweet 3\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143}]},{\"CreatedAt\":\"2017-08-01T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":8,\"StatusID\":32154578612,\"Text\":\"This Is Test Tweet 4\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235}]}],\"NumberOfFollowersByDate\":{\"2017-07-28T14:42:51.9829694+01:00\":5,\"2017-07-29T14:42:51.9829694+01:00\":3,\"2017-07-30T14:42:51.9829694+01:00\":0,\"2017-08-01T14:42:51.9829694+01:00\":1}}";
         }
 
         private Task<List<Status>> GetPastTweets(bool includeOutOfRangeDates, DateTime[] dates)
@@ -1068,6 +1075,7 @@ namespace FDM90UnitTests
                 int exposureValue = 0;
                 int influenceValue = 0;
                 int engagementValue = 0;
+                int acquisitionValue = 0;
                 int weekNumber = int.Parse(resultObject.Path.Substring(4));
 
                 for (int i = 0; i < twitterData.Tweets.Where(x => calendar.GetWeekOfYear(x.CreatedAt.Date, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek) == weekNumber)
@@ -1085,9 +1093,28 @@ namespace FDM90UnitTests
                                             tweets.Where(x => x.CreatedAt.Date == date).Sum(x => x.FavoriteCount);
                 }
 
+
                 Assert.AreEqual(exposureValue, resultObject.GetValue("Exposure"));
                 Assert.AreEqual(influenceValue, resultObject.GetValue("Influence"));
                 Assert.AreEqual(engagementValue, resultObject.GetValue("Engagement"));
+
+                if (resultObject["Acquisition"] != null)
+                {
+                    for (int i = 0; i < twitterData.NumberOfFollowersByDate.Count; i++)
+                    {
+                        var date = twitterData.NumberOfFollowersByDate.Select(x => x.Key).ToList();
+                        if (i != 0)
+                        {
+                            acquisitionValue += twitterData.NumberOfFollowersByDate[date[i]] - twitterData.NumberOfFollowersByDate[date[i - 1]];
+                        }
+                        else
+                        {
+                            acquisitionValue = 0;
+                        }
+                    }
+
+                    Assert.AreEqual(acquisitionValue, resultObject.GetValue("Acquisition"));
+                }
             }
         }
     }

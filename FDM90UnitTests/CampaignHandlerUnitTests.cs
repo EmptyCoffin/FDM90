@@ -122,6 +122,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             _returningUser.Facebook = true;
             _returningUser.Twitter = true;
@@ -133,7 +134,7 @@ namespace FDM90UnitTests
 
             // act
             var resultTask =_campaignHandler.CreateCampaign(new User() { UserId = Guid.NewGuid(), Campaigns = 0 }, "TestName", 
-                DateTime.Now.AddDays(-7).Date.ToShortDateString(), DateTime.Now.AddMonths(7).Date.ToShortDateString(), "{ \"Facebook\": { \"Exposure\": \"3500\", \"Influence\": \"2100\", \"Engagement\": \"1700\" }, \"Twitter\": { \"Exposure\": \"9000\", \"Influence\": \"4500\", \"Engagement\": \"2400\" }   }");
+                DateTime.Now.AddDays(-7).Date.ToShortDateString(), DateTime.Now.AddMonths(7).Date.ToShortDateString(), "{ \"Facebook\": { \"Exposure\": \"3500\", \"Influence\": \"2100\", \"Engagement\": \"1700\", \"Acquisition\": \"25\" }, \"Twitter\": { \"Exposure\": \"9000\", \"Influence\": \"4500\", \"Engagement\": \"2400\", \"Acquisition\": \"35\" }   }");
 
             resultTask.Wait();
 
@@ -165,6 +166,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             facebookData.Add("Week" + (currentWeekNumber - 1), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 1), metricData);
@@ -190,9 +192,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(!updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(!updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 1}"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 2}"));
             _mockTwitterHandler.Verify(t => t.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()), Times.Never);
@@ -217,9 +221,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(!updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(!updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 1}"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 2}"));
             _mockTwitterHandler.Verify(x => x.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()), Times.Never);
@@ -238,6 +244,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             facebookData.Add("Week" + (currentWeekNumber - 2), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 2), metricData);
@@ -262,9 +269,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 1}"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 2}"));
             _mockTwitterHandler.Verify(x => x.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()), Times.Never);
@@ -279,6 +288,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             _facebookReturner.Add("Week" + (currentWeekNumber - 2), metricData);
             _facebookReturner.Add("Week" + (currentWeekNumber - 1), metricData);
@@ -298,9 +308,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 1}"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 2}"));
             _mockTwitterHandler.Verify(x => x.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()), Times.Once);
@@ -322,6 +334,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             facebookData.Add("Week" + (currentWeekNumber - 2), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 2), metricData);
@@ -349,9 +362,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 1}"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 2}"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 3}"));
@@ -379,9 +394,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(!updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(!updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 1}"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 2}"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 3}"));
@@ -400,6 +417,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             facebookData.Add("Week" + (currentWeekNumber - 4), metricData);
             facebookData.Add("Week" + (currentWeekNumber - 3), metricData);
@@ -424,9 +442,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 1}"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 2}"));
             Assert.IsTrue(updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 4}"));
@@ -446,6 +466,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             facebookData.Add("Week" + (currentWeekNumber - 2), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 2), metricData);
@@ -476,9 +497,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("46"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("48"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("50"));
@@ -497,6 +520,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             twitterData.Add("Week" + (currentWeekNumber - 2), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 3), metricData);
@@ -521,9 +545,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("46"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("48"));
             Assert.IsTrue(!updatedCampaign.Progress.Contains("50"));
@@ -543,6 +569,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             facebookData.Add("Week" + (currentWeekNumber - 2), metricData);
             twitterData.Add("Week" + (currentWeekNumber - 2), metricData);
@@ -570,9 +597,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("46"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("48"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("50"));
@@ -593,6 +622,7 @@ namespace FDM90UnitTests
             metricData.Add("Exposure", 25);
             metricData.Add("Influence", 24);
             metricData.Add("Engagement", 23);
+            metricData.Add("Acquisition", 15);
 
             partMetricData.Add("Influence", 24);
             partMetricData.Add("Engagement", 23);
@@ -625,9 +655,11 @@ namespace FDM90UnitTests
             Assert.IsTrue(updatedCampaign.Progress.Contains("Exposure"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Influence"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("Engagement"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("Acquisition"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("23"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("24"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("25"));
+            Assert.IsTrue(updatedCampaign.Progress.Contains("15"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("46"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("48"));
             Assert.IsTrue(updatedCampaign.Progress.Contains("50"));

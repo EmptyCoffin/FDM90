@@ -848,6 +848,11 @@ namespace FDM90UnitTests
                                 {
                                     Value = 3,
                                     EndTime = new DateTime(2016, 05, 03)
+                                },
+                                new FacebookInsightValueData()
+                                {
+                                    Value = 1,
+                                    EndTime = new DateTime(2016, 05, 02)
                                 }
                             }
                 },
@@ -888,6 +893,9 @@ namespace FDM90UnitTests
                 Assert.AreEqual(data.Posts.Sum(x => x.Likes?.Count + x.Comments?.Count + x.Shares?.Count)
                                 + data.PageLikes.Values.Sum(x => x.Value) + data.PageStories.Values.Sum(x => x.Value), resultObject.GetValue("Influence"));
                 Assert.AreEqual(data.Posts.Sum(x => x.EngagedUsers.Values[0].Value), resultObject.GetValue("Engagement"));
+
+                if (resultObject["Acquisition"] != null)
+                    Assert.AreEqual(data.PageLikes.Values.Sum(x => x.Value), resultObject.GetValue("Acquisition"));
             }
         }
 
