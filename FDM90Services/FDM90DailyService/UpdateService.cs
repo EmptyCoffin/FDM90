@@ -79,8 +79,8 @@ namespace FDM90DailyService
 
         public void DailyUpdates(object sender, ElapsedEventArgs e)
         {
-            RunDailyCampaignUpdate();
             RunDailyMediaUpdate();
+            RunDailyCampaignUpdate();
         }
     }
 }
