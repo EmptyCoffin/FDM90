@@ -26,8 +26,18 @@
             <br />
             <asp:Label ID="modelMetricLabel" runat="server"></asp:Label>
             <br />
-            <asp:Label ID="modelCalculationResultLabel" runat="server"></asp:Label>
-            <asp:Label ID="modelResultMetricLabel" runat="server"></asp:Label>
+            <asp:Table runat="server" ID="marketingBreakdownTable">
+                <asp:TableRow>
+                    <asp:TableCell>
+                            Overall
+                    </asp:TableCell>
+                    <asp:TableCell>
+                        <asp:Label ID="modelCalculationResultLabel" runat="server"></asp:Label>
+                        <asp:Label ID="modelResultMetricLabel" runat="server"></asp:Label>
+                    </asp:TableCell>
+                </asp:TableRow>
+            </asp:Table>
+
             <br />
         </ContentTemplate>
     </asp:UpdatePanel>
