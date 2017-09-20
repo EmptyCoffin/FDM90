@@ -17,7 +17,7 @@ namespace FDM90.Pages.Content
     [ExcludeFromCodeCoverage]
     public partial class Home : System.Web.UI.Page
     {
-        private string[] metrics = { "Exposure", "Influence", "Engagement" };
+        private string[] metrics = { "Exposure", "Influence", "Engagement", "Acquisition" };
         private ICampaignHandler _campaignHandler;
         private List<string> tableIds = new List<string>();
 

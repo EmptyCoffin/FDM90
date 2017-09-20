@@ -16,10 +16,10 @@
     <asp:UpdatePanel ID="campaignPanel" runat="server" UpdateMode="Always">
         <ContentTemplate>
             <asp:Label runat="server">Total Cost of Marketing Campaign</asp:Label>
-            <asp:TextBox ID="CampaignCostTextBox" OnTextChanged="marketingModels_SelectedIndexChanged" runat="server">0</asp:TextBox>
+            <asp:TextBox ID="CampaignCostTextBox" AutoPostBack="true" OnTextChanged="ModelVariabesChanged" runat="server">0</asp:TextBox>
             <br />
             <asp:Label runat="server">Average Cost of Products</asp:Label>
-            <asp:TextBox ID="AverageCostOfProductsTextBox" OnTextChanged="marketingModels_SelectedIndexChanged" runat="server">0</asp:TextBox>
+            <asp:TextBox ID="AverageCostOfProductsTextBox" AutoPostBack="true" OnTextChanged="ModelVariabesChanged" runat="server">0</asp:TextBox>
             <br />
             <asp:DropDownList runat="server" ID="marketingModelsDropDown" AutoPostBack="true" OnSelectedIndexChanged="marketingModels_SelectedIndexChanged"></asp:DropDownList>
             <asp:Label ID="modelDescriptionLabel" runat="server"></asp:Label>
@@ -27,15 +27,6 @@
             <asp:Label ID="modelMetricLabel" runat="server"></asp:Label>
             <br />
             <asp:Table runat="server" ID="marketingBreakdownTable">
-                <asp:TableRow>
-                    <asp:TableCell>
-                            Overall
-                    </asp:TableCell>
-                    <asp:TableCell>
-                        <asp:Label ID="modelCalculationResultLabel" runat="server"></asp:Label>
-                        <asp:Label ID="modelResultMetricLabel" runat="server"></asp:Label>
-                    </asp:TableCell>
-                </asp:TableRow>
             </asp:Table>
 
             <br />

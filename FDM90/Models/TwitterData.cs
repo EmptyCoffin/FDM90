@@ -34,7 +34,7 @@ namespace FDM90.Models
 
         public List<Tweet> Tweets { get; set; }
 
-        public Dictionary<DateTime, int> NumberOfFollowersByDate { get; set; }
+        public Dictionary<DateTime, int> NumberOfFollowersByDate = new Dictionary<DateTime, int>();
 
         public static T Parse<T>(dynamic json, T data)
         {

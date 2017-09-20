@@ -42,6 +42,9 @@
                         <asp:TableHeaderCell>
                         Engagement
                         </asp:TableHeaderCell>
+                        <asp:TableHeaderCell>
+                        Acquisition
+                        </asp:TableHeaderCell>
                     </asp:TableHeaderRow>
                     <asp:TableRow>
                         <asp:TableCell>
@@ -55,6 +58,9 @@
                         </asp:TableCell>
                         <asp:TableCell>
                             <asp:Label runat="server" ID="overallEngagement" Text="0"></asp:Label>
+                        </asp:TableCell>
+                        <asp:TableCell>
+                            <asp:Label runat="server" ID="overallAcquisition" Text="0"></asp:Label>
                         </asp:TableCell>
                     </asp:TableRow>
                 </asp:Table>
