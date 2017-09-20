@@ -60,7 +60,8 @@
                 <div class="row">
                     <asp:Button runat="server" ID="postsButton" class="btn btn-primary column-content" Text="Your Posts: " AutoPostBack="false" OnClick="postsButton_Click" />
                     <div runat="server" id="posts" visible="false" class="column-content">
-                        <asp:ListView ID="postList" runat="server">
+                        <asp:ListView ID="postList" runat="server" OnItemEditing="postList_ItemEditing" OnItemCanceling="postList_ItemCanceling"
+                            OnItemUpdating="postList_ItemUpdating" OnItemDeleting="postList_ItemDeleting" >
                             <LayoutTemplate>
                                 <table cellpadding="2" width="640px" border="1" id="tbl1" runat="server">
                                     <tr runat="server" id="itemPlaceholder" />
@@ -69,6 +70,7 @@
                             <ItemTemplate>
                                 <tr runat="server">
                                     <td colspan="2" style="text-align: center">
+                                        <asp:Label ID="PostIdLabel" runat="server" Visible="false" Text='<%#Eval("Id") %>' />
                                         <asp:Label ID="CreatedTimeLabel" runat="server"
                                             Text='<%#Eval("CreatedTime") %>' />
                                         <br />
@@ -80,6 +82,14 @@
                                         <br />
                                         <asp:Image runat="server" ID="PostImage" Visible='<%#Eval("PictureUrl") != null %>'
                                             ImageUrl='<%#Eval("PictureUrl") %>' />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <asp:Button ID="EditButton" runat="server" CommandName="Edit" Text="Edit" />
+                                    </td>
+                                    <td>
+                                        <asp:Button ID="DeleteButton" runat="server" CommandName="Delete" Text="Delete" />
                                     </td>
                                 </tr>
                                 <tr runat="server">
@@ -94,13 +104,53 @@
                                     <td>Total Fan Reach:
                                 <asp:Label ID="TotalFanReachLabel" runat="server"
                                     Text='<%#Eval("TotalReach.Values[0].Value") %>' />
-                                        <%--                                <br />
-                                Negative Feedback: <asp:Label ID="NegativeFeedback" runat="server"
-                                    Text='<%#Eval("NegativeFeedback.Values[0].Value") %>' />--%>
                                     </td>
-
                                 </tr>
                             </ItemTemplate>
+                            <EditItemTemplate>
+                                <tr runat="server">
+                                    <td colspan="2" style="text-align: center">
+                                        <asp:Label ID="PostIdLabel" runat="server" Visible="false" Text='<%#Eval("Id") %>' />
+                                        <asp:Label ID="CreatedTimeLabel" runat="server"
+                                            Text='<%#Eval("CreatedTime") %>' />
+                                        <br />
+                                        <asp:TextBox ID="MessagePostTextBox" runat="server" Visible='<%#Eval("Message") != null %>'
+                                            Text='<%#Eval("Message") %>' />
+                                        <br />
+                                        <asp:Label ID="Label1" runat="server" Visible='<%#Eval("Story") != null %>'
+                                            Text='<%#Eval("Story") %>' />
+                                        <br />
+                                        <asp:Image runat="server" ID="PostImage" Visible='<%#Eval("PictureUrl") != null %>'
+                                            ImageUrl='<%#Eval("PictureUrl") %>' />
+                                    </td>
+                                    <td>
+                                    <asp:UpdatePanel ID="UpdateButtonPanel" runat="server" UpdateMode="Conditional">
+                                        <ContentTemplate>
+                                            <asp:Button ID="UpdateButton" runat="server" CommandName="Update" Text="Update" />
+                                        </ContentTemplate>
+                                        <Triggers>
+                                            <asp:PostBackTrigger ControlID="UpdateButton" />
+                                        </Triggers>
+                                        </asp:UpdatePanel>
+                                        <asp:Button ID="CancelButton" runat="server" CommandName="Cancel" Text="Cancel" />
+                                        <asp:Label ID="EditingErrorLabel" runat="server"></asp:Label>
+                                    </td>
+                                </tr>
+                                <tr runat="server">
+                                    <td>Likes:
+                                <asp:Label ID="PostLikeLabel" runat="server"
+                                    Text='<%#Eval("Likes.Count") %>' />
+                                        <br />
+                                        Number of Comments:
+                                <asp:Label ID="PostCommentLabel" runat="server"
+                                    Text='<%#Eval("Comments.Count") %>' />
+                                    </td>
+                                    <td>Total Fan Reach:
+                                <asp:Label ID="TotalFanReachLabel" runat="server"
+                                    Text='<%#Eval("TotalReach.Values[0].Value") %>' />
+                                    </td>
+                                </tr>
+                            </EditItemTemplate>
                         </asp:ListView>
                     </div>
                 </div>

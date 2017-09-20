@@ -149,5 +149,46 @@ namespace FDM90.Pages.Content
 
             _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
         }
+
+        protected void postList_ItemEditing(object sender, ListViewEditEventArgs e)
+        {
+            postList.EditIndex = e.NewEditIndex;
+            FacebookPostData edittingPost = null;
+            var label = (postList.Items[e.NewEditIndex].FindControl("PostIdLabel")) as Label;
+            if (label != null && _facebookData.Posts.Any(x => x.Id.Equals(label.Text)))
+                edittingPost = _facebookData.Posts.First(x => x.Id.Equals(label.Text));
+
+            postList.DataSource = _facebookData.Posts;
+            postList.DataBind();
+
+            (postList.Items[postList.EditIndex].FindControl("MessagePostTextBox") as TextBox).Text = edittingPost.Message.ToString();
+        }
+
+        protected void postList_ItemCanceling(object sender, ListViewCancelEventArgs e)
+        {
+            postList.EditIndex = -1;
+            postList.DataSource = _facebookData.Posts;
+            postList.DataBind();
+        }
+
+        protected void postList_ItemUpdating(object sender, ListViewUpdateEventArgs e)
+        {
+            Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
+            facebookParameters.Add("id", (postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text);
+            facebookParameters.Add("message", (postList.Items[postList.EditIndex].FindControl("MessagePostTextBox") as TextBox).Text);
+
+            _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
+            postList.EditIndex = -1;
+            GetFacebookData(true);
+        }
+
+        protected void postList_ItemDeleting(object sender, ListViewDeleteEventArgs e)
+        {
+            Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
+            facebookParameters.Add("id", (postList.Items[e.ItemIndex].FindControl("PostIdLabel") as Label).Text);
+
+            _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
+            GetFacebookData(true);
+        }
     }
 }
