@@ -115,6 +115,17 @@ namespace FDM90.Pages.Content
             }
 
             _twitterHandler.PostData(twitterParameters, UserSingleton.Instance.CurrentUser.UserId);
+
+            GetTwitterData(true);
+        }
+
+        protected void tweetList_ItemDeleting(object sender, ListViewDeleteEventArgs e)
+        {
+            Dictionary<string, string> twitterParameters = new Dictionary<string, string>();
+            twitterParameters.Add("id", (tweetList.Items[e.ItemIndex].FindControl("StatusIdLabel") as Label).Text);
+
+            _twitterHandler.PostData(twitterParameters, UserSingleton.Instance.CurrentUser.UserId);
+            GetTwitterData(true);
         }
     }
 }

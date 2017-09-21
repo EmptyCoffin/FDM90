@@ -44,6 +44,10 @@ namespace FDM90.Models.Helpers
 
                         return context.TweetAsync(postParameters["message"], new ulong[] { media.MediaID }).Result;
                     }
+                    else if(postParameters.ContainsKey("id"))
+                    {
+                        return context.DeleteTweetAsync(ulong.Parse(postParameters["id"])).Result;
+                    }
                     else
                     {
                         return context.TweetAsync(postParameters["message"]).Result;

@@ -11,7 +11,7 @@
             <asp:Timer ID="twitterUpdateTimer" runat="server" Interval="10000" OnTick="twitterUpdateTimer_Tick" />
             <div class="row">
                 <div class="col-md-7">
-                    <asp:ListView ID="tweetList" runat="server">
+                    <asp:ListView ID="tweetList" runat="server" OnItemDeleting="tweetList_ItemDeleting">
                         <LayoutTemplate>
                             <table cellpadding="2" width="640px" border="1" id="tbl1" runat="server">
                                 <tr runat="server" id="itemPlaceholder" />
@@ -20,12 +20,14 @@
                         <ItemTemplate>
                             <tr runat="server">
                                 <td colspan="2" style="text-align: center">
+                                    <asp:Label ID="StatusIdLabel" runat="server" Visible="false" Text='<%#Eval("StatusID") %>' />
                                     <asp:Label ID="CreatedTimeLabel" runat="server"
                                         Text='<%#Eval("CreatedAt") %>' />
                                     <br />
                                     <asp:Label ID="MessageLabel" runat="server" Visible='<%#Eval("Text") != null %>'
                                         Text='<%#Eval("Text") %>' />
                                     <br />
+                                    <asp:Button ID="DeleteButton" runat="server" CommandName="Delete" Text="Delete" />
                                     <%--                                <asp:Image runat="server" ID="PostImage" Visible='<%#Eval("ProfileImageUrl") != null %>'
                                     ImageUrl='<%#Eval("ProfileImageUrl") %>' />--%>
                                 </td>
