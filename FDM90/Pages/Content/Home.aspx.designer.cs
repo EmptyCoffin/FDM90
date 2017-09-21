@@ -13,6 +13,24 @@ namespace FDM90.Pages.Content {
     public partial class Home {
         
         /// <summary>
+        /// notUserArea control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl notUserArea;
+        
+        /// <summary>
+        /// userArea control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl userArea;
+        
+        /// <summary>
         /// campaignArea control.
         /// </summary>
         /// <remarks>
@@ -155,6 +173,15 @@ namespace FDM90.Pages.Content {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button newCampaignButton;
+        
+        /// <summary>
+        /// CancelCampaignButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button CancelCampaignButton;
         
         /// <summary>
         /// facebookSetUpButton control.

@@ -35,6 +35,9 @@ namespace FDM90.Pages.Content
         {
             if (UserSingleton.Instance.CurrentUser != null)
             {
+                notUserArea.Visible = false;
+                userArea.Visible = true;
+
                 if (!Page.IsPostBack)
                 {
                     facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
@@ -198,6 +201,12 @@ namespace FDM90.Pages.Content
             setupCampaignButton.Visible = true;
 
             Response.Redirect("Campaigns.aspx?CampaignName=" + campaignName.Text);
+        }
+
+        protected void CancelCampaignButton_Click(object sender, EventArgs e)
+        {
+            newCampaignArea.Visible = false;
+            setupCampaignButton.Visible = true;
         }
     }
 }
