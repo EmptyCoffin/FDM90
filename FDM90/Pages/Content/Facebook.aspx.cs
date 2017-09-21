@@ -130,6 +130,8 @@ namespace FDM90.Pages.Content
                 likesButton.Text = _likeDefault + _facebookData.FanCount;
                 peopleTalkingLabel.Text = _talkingDefault + _facebookData.TalkingAboutCount.ToString();
                 postsButton.Text = _postDefault + string.Format("({0})", _facebookData.Posts.Count);
+                postList.DataSource = _facebookData.Posts;
+                postList.DataBind();
             }
         }
 
@@ -148,6 +150,8 @@ namespace FDM90.Pages.Content
             }
 
             _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
+
+            GetFacebookData(true);
         }
 
         protected void postList_ItemEditing(object sender, ListViewEditEventArgs e)
