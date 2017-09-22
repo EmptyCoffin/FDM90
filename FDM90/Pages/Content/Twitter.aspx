@@ -57,6 +57,7 @@
                     <asp:FileUpload ID="TwitterPostAttachement" runat="server" />--%>
                     <br />
                     <asp:Button ID="PostButton" runat="server" class="btn btn-primary" Text="Post" OnClick="PostButton_Click" />
+                    <asp:Label ID="PostTwitterError" runat="server" Visible="false" />
                     <br />
                     <br />
                     <strong>--------------------------------------</strong>

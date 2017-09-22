@@ -101,13 +101,25 @@ namespace FDM90.Pages.Content
             if(DateTime.TryParse(PostDateButton.Text, out postDate))
                 newPost.PostTime = new DateTime(postDate.Year, postDate.Month, postDate.Day, int.Parse(HoursDropDown.SelectedValue), int.Parse(QuarterDropDowns.SelectedValue), 00);
 
+            string returningError = string.Empty;
             if (PostNowCheckbox.Checked)
             {
-                _schedulerHandler.PostNow(newPost);
+                returningError = _schedulerHandler.PostNow(newPost);
             }
             else
-            {                
-                _schedulerHandler.CreateScheduledPost(newPost);
+            {
+                returningError = _schedulerHandler.CreateScheduledPost(newPost);
+            }
+
+            if(!string.IsNullOrWhiteSpace(returningError))
+            {
+                SchedulerError.Visible = true;
+                SchedulerError.Text = returningError;
+            }
+            else
+            {
+                SchedulerError.Visible = false;
+                SchedulerError.Text = string.Empty;
                 GetUserSchedule();
             }
         }
@@ -218,9 +230,17 @@ namespace FDM90.Pages.Content
 
             if (string.IsNullOrEmpty(errorMessage))
             {
-                _schedulerHandler.UpdateScheduledPost(editedPost);
-                ScheduledPostsList.EditIndex = -1;
-                GetUserSchedule();
+                errorMessage = _schedulerHandler.UpdateScheduledPost(editedPost);
+
+                if (string.IsNullOrEmpty(errorMessage))
+                {
+                    ScheduledPostsList.EditIndex = -1;
+                    GetUserSchedule();
+                }
+                else
+                {
+                    (ScheduledPostsList.Items[e.ItemIndex].FindControl("EditingErrorLabel") as Label).Text = errorMessage;
+                }
             }
             else
             {

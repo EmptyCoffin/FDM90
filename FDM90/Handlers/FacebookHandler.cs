@@ -30,6 +30,14 @@ namespace FDM90.Handlers
             }
         }
 
+        public int MessageCharacterLimit
+        {
+            get
+            {
+                return 63206;
+            }
+        }
+
         public FacebookHandler() : this(new FacebookRepository(), new UserHandler(), new FacebookClientWrapper())
         {
 

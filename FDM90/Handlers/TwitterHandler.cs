@@ -45,6 +45,14 @@ namespace FDM90.Handlers
             }
         }
 
+        public int MessageCharacterLimit
+        {
+            get
+            {
+                return 140;
+            }
+        }
+
         public IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates)
         {
             JObject twitterTargets = new JObject();

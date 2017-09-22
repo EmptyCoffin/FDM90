@@ -120,6 +120,18 @@ namespace FDM90.Pages.Content
 
         protected void PostButton_Click(object sender, EventArgs e)
         {
+            if (FacebookPostText.Text.Count() > _facebookHandler.MessageCharacterLimit)
+            {
+                PostFacebookError.Visible = true;
+                PostFacebookError.Text = "Max characters exceeded" + _facebookHandler.MessageCharacterLimit;
+                return;
+            }
+            else
+            {
+                PostFacebookError.Visible = false;
+                PostFacebookError.Text = string.Empty;
+            }
+
             Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
             facebookParameters.Add("message", FacebookPostText.Text);
 
@@ -162,6 +174,13 @@ namespace FDM90.Pages.Content
 
         protected void postList_ItemUpdating(object sender, ListViewUpdateEventArgs e)
         {
+            if((postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text.Count() > _facebookHandler.MessageCharacterLimit)
+            {
+                PostFacebookError.Visible = true;
+                PostFacebookError.Text = "Max characters exceeded" + _facebookHandler.MessageCharacterLimit;
+                return;
+            }
+
             Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
             facebookParameters.Add("id", (postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text);
             facebookParameters.Add("message", (postList.Items[postList.EditIndex].FindControl("MessagePostTextBox") as TextBox).Text);

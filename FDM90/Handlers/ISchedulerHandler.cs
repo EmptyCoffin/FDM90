@@ -9,9 +9,9 @@ namespace FDM90.Handlers
 {
     public interface ISchedulerHandler
     {
-        void PostNow(ScheduledPost newPost);
-        void CreateScheduledPost(ScheduledPost newPost);
-        void UpdateScheduledPost(ScheduledPost updatedPost);
+        string PostNow(ScheduledPost newPost);
+        string CreateScheduledPost(ScheduledPost newPost);
+        string UpdateScheduledPost(ScheduledPost updatedPost);
         IEnumerable<ScheduledPost> GetSchedulerPostsForUser(Guid userId);
         void SchedulerPostsForTime(DateTime currentTime);
         void DeleteScheduledPost(Guid postId);

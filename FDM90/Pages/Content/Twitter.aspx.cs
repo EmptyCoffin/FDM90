@@ -118,6 +118,18 @@ namespace FDM90.Pages.Content
 
         protected void PostButton_Click(object sender, EventArgs e)
         {
+            if (TwitterPostText.Text.Count() > _twitterHandler.MessageCharacterLimit)
+            {
+                PostTwitterError.Visible = true;
+                PostTwitterError.Text = "Max characters exceeded" + _twitterHandler.MessageCharacterLimit;
+                return;
+            }
+            else
+            {
+                PostTwitterError.Visible = false;
+                PostTwitterError.Text = string.Empty;
+            }
+
             Dictionary<string, string> twitterParameters = new Dictionary<string, string>();
             twitterParameters.Add("message", TwitterPostText.Text);
 

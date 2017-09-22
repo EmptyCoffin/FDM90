@@ -11,6 +11,7 @@ namespace FDM90.Handlers
     public interface IMediaHandler
     {
         string MediaName { get; }
+        int MessageCharacterLimit { get; }
         IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates);
         void GetMediaData(Guid userId, DateTime[] dates);
         void PostData(Dictionary<string, string> postParameters, Guid userId);
