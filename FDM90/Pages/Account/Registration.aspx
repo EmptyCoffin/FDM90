@@ -18,4 +18,7 @@
             <asp:Button ID="registerButton" runat="server" class="btn btn-primary" Text="Register" OnClick="registerButton_Click" />
         </div>
     </form>
+    <p>
+        By registering with this site you are agreeing that application will be able to read information and write to the Social Networking sites that you implement. The application will also analyse user interaction and make estimations on said interactions.
+    </p>
 </asp:Content>
