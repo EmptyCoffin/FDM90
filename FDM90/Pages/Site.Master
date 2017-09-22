@@ -38,9 +38,9 @@
                             <a class="btn btn-lg" href="~/Pages/Account/Registration.aspx" id="SignUp" runat="server">Register</a>
                             <a class="btn btn-lg" href="~/Pages/Account/Logout.aspx" visible="false" id="LogOut" runat="server">Log Out</a>
                         </li>
-                        <li role="presentation" class="pull-right" id="LogInWelcomeMessageTab" runat="server">
+                        <li role="presentation" class="pull-right" id="LogInUserProfileTab" runat="server">
                             <a class="btn btn-lg" href="~/Pages/Account/Login.aspx" id="LogIn" runat="server">Log In</a>
-                            <asp:Label runat="server" ID="welcomeMessage" class="btn btn-lg" Visible="false"></asp:Label>
+                            <asp:Button class="btn btn-lg btn-default" runat="server" ID="UserProfile" Visible="false" OnClick="UserProfile_Click"></asp:Button>
                         </li>
                     </ul>
                 </div>

@@ -20,7 +20,7 @@ namespace FDM90.Pages
                 (HtmlGenericControl)Page.Master.FindControl("HomeTab"),
                 (HtmlGenericControl)Page.Master.FindControl("FacebookTab"),
                 (HtmlGenericControl)Page.Master.FindControl("TwitterTab"),
-                (HtmlGenericControl)Page.Master.FindControl("LogInWelcomeMessageTab"),
+                (HtmlGenericControl)Page.Master.FindControl("LogInUserProfileTab"),
                 (HtmlGenericControl)Page.Master.FindControl("RegistrationLogoutTab"),
                 (HtmlGenericControl)Page.Master.FindControl("CampaignsTab"),
                 (HtmlGenericControl)Page.Master.FindControl("SchedulerTab")
@@ -48,9 +48,9 @@ namespace FDM90.Pages
                 Page.Master.FindControl("Campaigns").Visible = UserSingleton.Instance.CurrentUser.Campaigns > 0;
                 Page.Master.FindControl("Scheduler").Visible = UserSingleton.Instance.CurrentUser.Facebook || UserSingleton.Instance.CurrentUser.Twitter;
 
-                Label welcomeLabel = (Label)Page.Master.FindControl("welcomeMessage");
-                welcomeLabel.Visible = true;
-                welcomeLabel.Text = "Welcome " + UserSingleton.Instance.CurrentUser.UserName;
+                Button UserProfile = (Button)Page.Master.FindControl("UserProfile");
+                UserProfile.Visible = true;
+                UserProfile.Text = "Welcome " + UserSingleton.Instance.CurrentUser.UserName;
                 Page.Master.FindControl("LogOut").Visible = true;
                 Page.Master.FindControl("LogIn").Visible = false;
                 Page.Master.FindControl("SignUp").Visible = false;
@@ -65,6 +65,11 @@ namespace FDM90.Pages
                 Page.Master.FindControl("LogIn").Visible = true;
                 Page.Master.FindControl("SignUp").Visible = true;
             }
+        }
+
+        protected void UserProfile_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("~/Pages/Account/UserProfile.aspx");
         }
     }
 }

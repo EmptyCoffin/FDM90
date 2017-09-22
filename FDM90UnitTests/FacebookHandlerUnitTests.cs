@@ -74,8 +74,8 @@ namespace FDM90UnitTests
                 .Verifiable();
             _mockUserHandler = new Mock<IUserHandler>();
             _mockUserHandler.Setup(handler => handler.GetUser(It.IsAny<string>())).Returns((string id) => new User(Guid.Parse(id)));
-            _mockUserHandler.Setup(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()))
-                .Callback<User, string>((user, media) =>
+            _mockUserHandler.Setup(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Callback<User, string, bool>((user, media, active) =>
                 {
                     callBackUser = user;
                     callBackMedia = media;
@@ -194,7 +194,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -243,7 +243,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Once);
         }
 
@@ -314,7 +314,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -375,7 +375,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Once);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -430,7 +430,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -473,7 +473,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -570,7 +570,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -668,7 +668,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Once);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -939,7 +939,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -1015,7 +1015,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -1057,7 +1057,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -1137,7 +1137,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -1192,7 +1192,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Never);
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -1238,7 +1238,7 @@ namespace FDM90UnitTests
             _mockFacebookCredsRepo.Verify(specific => specific.Update(It.IsAny<FacebookCredentials>()), Times.Exactly(3));
             _mockFacebookCredsRepo.Verify(specific => specific.Delete(It.IsAny<FacebookCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 

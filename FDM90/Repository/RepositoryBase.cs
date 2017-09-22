@@ -37,24 +37,18 @@ namespace FDM90.Repository
         {
             lock (_lockableObject)
             {
-                try
+                using (IDbConnection connection = Connection)
                 {
-                    using (IDbConnection connection = Connection)
+                    IDbCommand command = connection.CreateCommand();
+                    command.CommandText = sqlText;
+
+                    foreach (SqlParameter parameter in parameters)
                     {
-                        IDbCommand command = connection.CreateCommand();
-                        command.CommandText = sqlText;
-
-                        foreach (SqlParameter parameter in parameters)
-                        {
-                            command.Parameters.Add(parameter);
-                        }
-                        connection.Open();
-
-                        command.ExecuteNonQuery();
+                        command.Parameters.Add(parameter);
                     }
-                }
-                catch (Exception ex)
-                {
+                    connection.Open();
+
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -63,35 +57,28 @@ namespace FDM90.Repository
         {
             lock (_lockableObject)
             {
-                try
+                using (IDbConnection connection = Connection)
                 {
-                    using (IDbConnection connection = Connection)
+
+                    IDbCommand command = connection.CreateCommand();
+                    command.CommandText = sqlText;
+
+                    foreach (SqlParameter parameter in parameters)
                     {
-
-                        IDbCommand command = connection.CreateCommand();
-                        command.CommandText = sqlText;
-
-                        foreach (SqlParameter parameter in parameters)
-                        {
-                            command.Parameters.Add(parameter);
-                        }
-                        var instanceList = Activator.CreateInstance<List<T>>();
-                        connection.Open();
-
-                        using (var result = command.ExecuteReader(CommandBehavior.CloseConnection))
-                        {
-                            while (result.Read())
-                            {
-                                instanceList.Add(SetProperties(result));
-                            }
-                        }
-
-                        return instanceList;
+                        command.Parameters.Add(parameter);
                     }
-                }
-                catch (Exception ex)
-                {
-                    return null;
+                    var instanceList = Activator.CreateInstance<List<T>>();
+                    connection.Open();
+
+                    using (var result = command.ExecuteReader(CommandBehavior.CloseConnection))
+                    {
+                        while (result.Read())
+                        {
+                            instanceList.Add(SetProperties(result));
+                        }
+                    }
+
+                    return instanceList;
                 }
             }
         }

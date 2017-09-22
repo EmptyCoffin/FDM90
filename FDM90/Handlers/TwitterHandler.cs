@@ -170,7 +170,7 @@ namespace FDM90.Handlers
 
             _twitterRepo.Create(creds);
 
-            _userHandler.UpdateUserMediaActivation(new Models.User(Guid.Parse(userId)), MediaName);
+            _userHandler.UpdateUserMediaActivation(new Models.User(Guid.Parse(userId)), MediaName, true);
 
             return Task.Factory.StartNew(() => GetMediaData(creds.UserId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date)));
         }
@@ -214,6 +214,12 @@ namespace FDM90.Handlers
                        GetMediaData(twitterCreds.UserId, new[] { DateTime.Now.AddDays(-8) })));
             }
             return tasks;
+        }
+
+        public Models.User DeleteMedia(Guid userId)
+        {
+            _twitterRepo.Delete(new TwitterCredentials() { UserId = userId });
+            return _userHandler.UpdateUserMediaActivation(new Models.User(userId), MediaName, false);
         }
     }
 }

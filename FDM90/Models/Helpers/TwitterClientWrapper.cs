@@ -35,27 +35,20 @@ namespace FDM90.Models.Helpers
 
             while (true)
             {
-                try
+                if (postParameters.ContainsKey("picture"))
                 {
-                    if (postParameters.ContainsKey("picture"))
-                    {
-                        var media = await context.UploadMediaAsync(File.ReadAllBytes(postParameters["picture"]),
-                                        "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1));
+                    var media = await context.UploadMediaAsync(File.ReadAllBytes(postParameters["picture"]),
+                                    "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1));
 
-                        return context.TweetAsync(postParameters["message"], new ulong[] { media.MediaID }).Result;
-                    }
-                    else if(postParameters.ContainsKey("id"))
-                    {
-                        return context.DeleteTweetAsync(ulong.Parse(postParameters["id"])).Result;
-                    }
-                    else
-                    {
-                        return context.TweetAsync(postParameters["message"]).Result;
-                    }
+                    return context.TweetAsync(postParameters["message"], new ulong[] { media.MediaID }).Result;
                 }
-                catch (Exception ex)
+                else if (postParameters.ContainsKey("id"))
                 {
-                    Thread.Sleep((int)TimeSpan.FromMinutes(5).TotalMilliseconds);
+                    return context.DeleteTweetAsync(ulong.Parse(postParameters["id"])).Result;
+                }
+                else
+                {
+                    return context.TweetAsync(postParameters["message"]).Result;
                 }
             }
         }

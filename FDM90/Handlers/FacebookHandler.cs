@@ -56,7 +56,7 @@ namespace FDM90.Handlers
 
             _facebookRepo.Create(credentials);
 
-            _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), MediaName);
+            _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), MediaName, true);
 
             credentials.PermanentAccessToken = _facebookClientWrapper.GetLoginUrl();
 
@@ -264,6 +264,12 @@ namespace FDM90.Handlers
                         GetMediaData(facebookCreds.UserId, new[] { DateTime.Now.AddDays(-8) })));
             }
             return tasks;
+        }
+
+        public User DeleteMedia(Guid userId)
+        {
+            _facebookRepo.Delete(new FacebookCredentials() { UserId = userId });
+            return _userHandler.UpdateUserMediaActivation(new User(userId), MediaName, false);
         }
     }
 }

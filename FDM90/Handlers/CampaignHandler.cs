@@ -335,5 +335,28 @@ namespace FDM90.Handlers
 
             return campaignDataTable;
         }
+
+        public void DeleteForUser(Guid userId)
+        {
+            _campaignRepo.Delete(new Campaign() { UserId = userId });
         }
+
+        public void RemoveMediaAfterDelete(Guid userId, string mediaName)
+        {
+            var userCampaigns = GetUserCampaigns(userId);
+
+            foreach(Campaign campaign in userCampaigns)
+            {
+                var alterTargets = JObject.Parse(campaign.Targets);
+                alterTargets.Remove(mediaName);
+                campaign.Targets = alterTargets.ToString();
+
+                var alterProgress = JObject.Parse(campaign.Progress);
+                alterProgress.Remove(mediaName);
+                campaign.Progress = alterProgress.ToString();
+
+                _campaignRepo.Update(campaign);
+            }
+        }
+    }
 }

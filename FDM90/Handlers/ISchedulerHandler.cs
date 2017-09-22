@@ -16,5 +16,6 @@ namespace FDM90.Handlers
         void SchedulerPostsForTime(DateTime currentTime);
         void DeleteScheduledPost(Guid postId);
         void DeletePostImage(Guid postId, string imagePath);
+        void DeleteScheduledPostForUser(Guid userId);
     }
 }

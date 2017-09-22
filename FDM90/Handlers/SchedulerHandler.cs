@@ -89,5 +89,13 @@ namespace FDM90.Handlers
                 mediaHandler.PostData(postParameters, newPost.UserId);
             }
         }
+
+        public void DeleteScheduledPostForUser(Guid userId)
+        {
+            foreach(ScheduledPost post in GetSchedulerPostsForUser(userId))
+            {
+                DeleteScheduledPost(post.PostId);
+            }
+        }
     }
 }

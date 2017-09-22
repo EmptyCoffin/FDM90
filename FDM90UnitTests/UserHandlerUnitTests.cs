@@ -197,7 +197,7 @@ namespace FDM90UnitTests
             User specificUser = new User() { UserId = returningUser.UserId };
 
             //act
-            var result = _userHandler.UpdateUserMediaActivation(specificUser, "TestSocialMedia");
+            var result = _userHandler.UpdateUserMediaActivation(specificUser, "TestSocialMedia", true);
 
             //assert
             Assert.AreEqual(returningUser.UserId, result.UserId);
@@ -214,7 +214,7 @@ namespace FDM90UnitTests
         }
 
         [TestMethod]
-        public void UpdateUserMediaActivation_GivenCorrectCred_ReturnsTrueIfUserUpdated()
+        public void UpdateUserMediaActivation_GivenCorrectCredAndTrue_ReturnsTrueIfUserUpdated()
         {
             //arrange
             User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
@@ -223,7 +223,7 @@ namespace FDM90UnitTests
             User specificUser = new User() { UserId = returningUser.UserId };
 
             //act
-            var result = _userHandler.UpdateUserMediaActivation(specificUser, "Facebook");
+            var result = _userHandler.UpdateUserMediaActivation(specificUser, "Facebook", true);
 
             //assert
             Assert.AreEqual(returningUser.UserId, result.UserId);
@@ -236,7 +236,7 @@ namespace FDM90UnitTests
         }
 
         [TestMethod]
-        public void UpdateUserMediaActivation_GivenCorrectCred_ReturnsTrueIfUpdateCalledCorrectly()
+        public void UpdateUserMediaActivation_GivenCorrectCredAndTrue_ReturnsTrueIfUpdateCalledCorrectly()
         {
             //arrange
             User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = false, Twitter = true };
@@ -245,7 +245,48 @@ namespace FDM90UnitTests
             User specificUser = new User() { UserId = returningUser.UserId };
 
             //act
-            var result = _userHandler.UpdateUserMediaActivation(specificUser, "Facebook");
+            var result = _userHandler.UpdateUserMediaActivation(specificUser, "Facebook", true);
+
+            //assert
+            _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);
+            _mockUserRepo.Verify(repository => repository.Update(It.IsAny<User>()), Times.Once);
+            _mockUserRepo.Verify(repository => repository.Delete(It.IsAny<User>()), Times.Never);
+            _mockUserRepo.As<IReadSpecific<User>>().Verify(specific => specific.ReadSpecific(It.IsAny<User>()), Times.Once);
+        }
+
+        [TestMethod]
+        public void UpdateUserMediaActivation_GivenCorrectCredAndFalse_ReturnsTrueIfUserUpdated()
+        {
+            //arrange
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = true, Twitter = true };
+            _mockUserRepo.As<IReadSpecific<User>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
+            User specificUser = new User() { UserId = returningUser.UserId };
+
+            //act
+            var result = _userHandler.UpdateUserMediaActivation(specificUser, "Facebook", false);
+
+            //assert
+            Assert.AreEqual(returningUser.UserId, result.UserId);
+            Assert.AreEqual(returningUser.Password, result.Password);
+            Assert.AreEqual(returningUser.UserName, result.UserName);
+            Assert.AreEqual(returningUser.EmailAddress, result.EmailAddress);
+            Assert.AreEqual(returningUser.Twitter, result.Twitter);
+            Assert.AreEqual(returningUser.Facebook, result.Facebook);
+            Assert.IsFalse(result.Facebook);
+        }
+
+        [TestMethod]
+        public void UpdateUserMediaActivation_GivenCorrectCredAndFalse_ReturnsTrueIfUpdateCalledCorrectly()
+        {
+            //arrange
+            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid(), Facebook = true, Twitter = true };
+            _mockUserRepo.As<IReadSpecific<User>>()
+                .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
+            User specificUser = new User() { UserId = returningUser.UserId };
+
+            //act
+            var result = _userHandler.UpdateUserMediaActivation(specificUser, "Facebook", false);
 
             //assert
             _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Never);

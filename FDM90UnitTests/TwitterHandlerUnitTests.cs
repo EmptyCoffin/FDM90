@@ -80,8 +80,8 @@ namespace FDM90UnitTests
                 .Returns((TwitterCredentials twitterCreds) => _twitterCredentialsList.First(x => x.UserId == twitterCreds.UserId)).Verifiable();
 
             _mockUserHandler = new Mock<IUserHandler>();
-            _mockUserHandler.Setup(x => x.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), "Twitter"))
-                .Callback((FDM90.Models.User updatingUser, string media) => _pastUser = updatingUser).Returns(() => null).Verifiable();
+            _mockUserHandler.Setup(x => x.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), "Twitter", It.IsAny<bool>()))
+                .Callback((FDM90.Models.User updatingUser, string media, bool active) => _pastUser = updatingUser).Returns(() => null).Verifiable();
 
             _mockTwitterClientWrapper = new Mock<ITwitterClientWrapper>();
 
@@ -157,7 +157,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(x => x.Create(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.As<IReadSpecific<TwitterCredentials>>().Verify(x => x.ReadSpecific(It.IsAny<TwitterCredentials>()), Times.Once);
 
-            _mockUserHandler.Verify(x => x.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), "Twitter"), Times.Once);
+            _mockUserHandler.Verify(x => x.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), "Twitter", It.IsAny<bool>()), Times.Once);
         }
 
         [TestMethod]
@@ -193,7 +193,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -266,7 +266,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -340,7 +340,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -426,7 +426,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -561,7 +561,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Never);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -628,7 +628,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Never);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -689,7 +689,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Never);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -750,7 +750,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Exactly(_twitterCredentialsList.Count()));
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 

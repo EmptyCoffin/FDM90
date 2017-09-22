@@ -121,13 +121,13 @@ namespace FDM90.Pages {
         protected global::System.Web.UI.HtmlControls.HtmlAnchor LogOut;
         
         /// <summary>
-        /// LogInWelcomeMessageTab control.
+        /// LogInUserProfileTab control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl LogInWelcomeMessageTab;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl LogInUserProfileTab;
         
         /// <summary>
         /// LogIn control.
@@ -139,13 +139,13 @@ namespace FDM90.Pages {
         protected global::System.Web.UI.HtmlControls.HtmlAnchor LogIn;
         
         /// <summary>
-        /// welcomeMessage control.
+        /// UserProfile control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label welcomeMessage;
+        protected global::System.Web.UI.WebControls.Button UserProfile;
         
         /// <summary>
         /// MainContent control.

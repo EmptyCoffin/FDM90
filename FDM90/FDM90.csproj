@@ -207,6 +207,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Pages\Account\UserProfile.aspx" />
     <Content Include="Pages\Account\Login.aspx" />
     <Content Include="Pages\Account\Logout.aspx" />
     <Content Include="Pages\Account\Registration.aspx" />
@@ -280,6 +281,13 @@
     <Compile Include="Models\TwitterCredentials.cs" />
     <Compile Include="Models\TwitterData.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Pages\Account\UserProfile.aspx.cs">
+      <DependentUpon>UserProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Account\UserProfile.aspx.designer.cs">
+      <DependentUpon>UserProfile.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Account\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
