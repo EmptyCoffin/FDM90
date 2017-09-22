@@ -63,7 +63,7 @@ namespace FDM90.Handlers
             return user;
         }
 
-        public User UpdateUserMediaActivation(User user, string socialMedia)
+        public User UpdateUserMediaActivation(User user, string socialMedia, bool active)
         {
             User currentUser = new User();
             currentUser = _userReadSpecific.ReadSpecific(user);
@@ -73,7 +73,7 @@ namespace FDM90.Handlers
             {
                 if (property.Name.Contains(socialMedia))
                 {
-                    property.SetValue(currentUser, true);
+                    property.SetValue(currentUser, active);
                     updated = true;
                 }
             }
@@ -92,6 +92,11 @@ namespace FDM90.Handlers
         public void UpdateUser(User user)
         {
             _userRepo.Update(user);
+        }
+
+        public void DeleteUser(Guid userId)
+        {
+            _userRepo.Delete(new User(userId));
         }
     }
 }

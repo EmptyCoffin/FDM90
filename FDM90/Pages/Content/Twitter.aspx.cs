@@ -23,9 +23,6 @@ namespace FDM90.Pages.Content
         ITwitterHandler _twitterHandler;
         private AspNetAuthorizer _auth;
         private static TwitterData _data;
-        private string _numberOfFollowersDefault = "Number of Followers: ";
-        private string _numberOfRetweetsDefault = "Number of Retweets: ";
-        private string _numberOfFavoriteDefault = "Number of Favorited: ";
         private string[] imageSuffixes = new string[] { "jpg", "png" };
 
         private static readonly HttpClient client = new HttpClient();
@@ -44,6 +41,8 @@ namespace FDM90.Pages.Content
         {
             if (!Page.IsPostBack)
             {
+                if (UserSingleton.Instance.CurrentUser == null) Response.Redirect("~/Pages/Content/Home.aspx");
+
                 if (!UserSingleton.Instance.CurrentUser.Twitter)
                 {
                     _auth = new AspNetAuthorizer
@@ -92,29 +91,72 @@ namespace FDM90.Pages.Content
 
         protected void twitterUpdateTimer_Tick(object sender, EventArgs e)
         {
-            numberOfFollowers.Text = _numberOfFollowersDefault + _data.NumberOfFollowers.ToString();
-            numberOfRetweets.Text = _numberOfRetweetsDefault + _data.NumberOfRetweets.ToString();
-            numberOfFavorite.Text = _numberOfFavoriteDefault + _data.NumberOfFavorited.ToString();
+            numberOfFollowers.Text = _data.NumberOfFollowers.ToString();
+            numberOfRetweets.Text = _data.NumberOfRetweets.ToString();
+            numberOfFavorite.Text =  _data.NumberOfFavorited.ToString();
 
-            tweetList.DataSource = _data.Tweets;
+            int? y = null;
+            var numberOfFollowersValues = _data.NumberOfFollowersByDate.Where(x => x.Key.Date >= DateTime.Now.AddDays(-7).Date && x.Key.Date <= DateTime.Now.Date).OrderBy(x => x.Key).ToList();
+
+            for (int i = 0; i < numberOfFollowersValues.Count; i++)
+            {
+                if (y == null)
+                {
+                    y = 0;
+                }
+                else
+                {
+                    y = numberOfFollowersValues[i].Value - numberOfFollowersValues[i - 1].Value;
+                }
+
+            }
+
+            numberOfNewFollowers.Text = y.ToString();
+            tweetList.DataSource = _data.Tweets.OrderByDescending(x => x.CreatedAt);
             tweetList.DataBind();
         }
 
         protected void PostButton_Click(object sender, EventArgs e)
         {
+            string errorMessage = _twitterHandler.CheckPostText(TwitterPostText.Text, _twitterHandler.MediaName);
+
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                PostTwitterError.Visible = true;
+                PostTwitterError.Text = errorMessage;
+                return;
+            }
+            else
+            {
+                PostTwitterError.Visible = false;
+                PostTwitterError.Text = string.Empty;
+            }
+
+
             Dictionary<string, string> twitterParameters = new Dictionary<string, string>();
             twitterParameters.Add("message", TwitterPostText.Text);
 
-            if (TwitterPostAttachement.HasFile)
-            {
-                if (imageSuffixes.Contains(TwitterPostAttachement.FileName.Substring(TwitterPostAttachement.FileName.LastIndexOf('.') + 1)))
-                {
-                    TwitterPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
-                    twitterParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
-                }
-            }
+            //if (TwitterPostAttachement.HasFile)
+            //{
+            //    if (imageSuffixes.Contains(TwitterPostAttachement.FileName.Substring(TwitterPostAttachement.FileName.LastIndexOf('.') + 1)))
+            //    {
+            //        TwitterPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
+            //        twitterParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
+            //    }
+            //}
 
             _twitterHandler.PostData(twitterParameters, UserSingleton.Instance.CurrentUser.UserId);
+            TwitterPostText.Text = string.Empty;
+            GetTwitterData(true);
+        }
+
+        protected void tweetList_ItemDeleting(object sender, ListViewDeleteEventArgs e)
+        {
+            Dictionary<string, string> twitterParameters = new Dictionary<string, string>();
+            twitterParameters.Add("id", (tweetList.Items[e.ItemIndex].FindControl("StatusIdLabel") as Label).Text);
+
+            _twitterHandler.PostData(twitterParameters, UserSingleton.Instance.CurrentUser.UserId);
+            GetTwitterData(true);
         }
     }
 }

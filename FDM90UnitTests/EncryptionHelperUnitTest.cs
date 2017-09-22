@@ -14,7 +14,7 @@ namespace FDM90UnitTests
         public void StartUp()
         {
             testString = "TestString";
-            encryptedString = "VGVzdFN0cmluZw==";
+            encryptedString = "VkdWemRGTjBjbWx1Wnc9PQ==";
         }
 
         [TestCleanup]

@@ -18,10 +18,6 @@ namespace FDM90.Pages.Content
         IFacebookHandler _facebookHandler;
         static FacebookCredentials facebookCreds;
         static FacebookData _facebookData;
-        private string _likeDefault = "Likes: ";
-        private string _postDefault = "Your Posts: ";
-        private string _talkingDefault = "People Talking: ";
-        private string _newLikesDefault = "Number of new likes: ";
         private string[] imageSuffixes = new string[] { "jpg", "png" };
 
         public Facebook() : this(new FacebookHandler())
@@ -38,6 +34,8 @@ namespace FDM90.Pages.Content
         {
             if (!Page.IsPostBack)
             {
+                if (UserSingleton.Instance.CurrentUser == null) Response.Redirect("~/Pages/Content/Home.aspx");
+
                 if (!UserSingleton.Instance.CurrentUser.Facebook)
                 {
                     if (!string.IsNullOrWhiteSpace(Request.QueryString["code"]))
@@ -70,6 +68,7 @@ namespace FDM90.Pages.Content
 
                     if (!string.IsNullOrWhiteSpace(facebookCreds.PermanentAccessToken) && !facebookCreds.PermanentAccessToken.StartsWith("https://www."))
                     {
+                        signInArea.Visible = false;
                         GetFacebookData(true);
                     }
                 }
@@ -97,28 +96,10 @@ namespace FDM90.Pages.Content
             detailsPanel.Visible = !detailsPanel.Visible;
         }
 
-        protected void likesButton_Click(object sender, EventArgs e)
-        {
-            likesDetails.Visible = !likesDetails.Visible;
-
-            if (likesDetails.Visible)
-            {
-                newLikeLabel.Text = _newLikesDefault + _facebookData.NewLikeCount.ToString();
-                likeListView.DataSource = _facebookData.PageLikes.Values;
-                likeListView.DataBind();
-                likesDetails.Visible = true;
-            }
-        }
-
         protected void postsButton_Click(object sender, EventArgs e)
         {
-            posts.Visible = !posts.Visible;
-
-            if (posts.Visible)
-            {
-                postList.DataSource = _facebookData.Posts;
-                postList.DataBind();
-            }
+            postList.DataSource = _facebookData.Posts;
+            postList.DataBind();
         }
 
         protected void facebookUpdateTimer_Tick(object sender, EventArgs e)
@@ -127,14 +108,32 @@ namespace FDM90.Pages.Content
 
             if (_facebookData != null)
             {
-                likesButton.Text = _likeDefault + _facebookData.FanCount;
-                peopleTalkingLabel.Text = _talkingDefault + _facebookData.TalkingAboutCount.ToString();
-                postsButton.Text = _postDefault + string.Format("({0})", _facebookData.Posts.Count);
+                numberOfPageLikes.Text = _facebookData.FanCount.ToString();
+                numberOfNewLikes.Text = _facebookData.PageLikes.Values.Where(x => x.EndTime.Date >= DateTime.Now.AddDays(-7).Date && x.EndTime.Date <= DateTime.Now.Date).Sum(s => s.Value).ToString();
+                numberOfTalkingAbout.Text = _facebookData.PageStories.Values.Where(x => x.EndTime.Date >= DateTime.Now.AddDays(-7).Date && x.EndTime.Date <= DateTime.Now.Date).Sum(s => s.Value).ToString();
+                numberOfPostLikes.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Likes?.Count).ToString();
+                numberOfPostComments.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Comments?.Count).ToString();
+                postList.DataSource = _facebookData.Posts.OrderByDescending(x => x.CreatedTime);
+                postList.DataBind();
             }
         }
 
         protected void PostButton_Click(object sender, EventArgs e)
         {
+            string errorMessage = _facebookHandler.CheckPostText(FacebookPostText.Text, _facebookHandler.MediaName);
+
+            if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                PostFacebookError.Visible = true;
+                PostFacebookError.Text = errorMessage;
+                return;
+            }
+            else
+            {
+                PostFacebookError.Visible = false;
+                PostFacebookError.Text = string.Empty;
+            }
+
             Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
             facebookParameters.Add("message", FacebookPostText.Text);
 
@@ -142,12 +141,73 @@ namespace FDM90.Pages.Content
             {
                 if (imageSuffixes.Contains(FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
-                    FacebookPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + FacebookPostAttachement.FileName);
-                    facebookParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + FacebookPostAttachement.FileName);
+                    string fileName = UserSingleton.Instance.CurrentUser.UserId.ToString() + "_" + DateTime.Now.ToString() 
+                                                + FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.'));
+                    FacebookPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + fileName);
+                    facebookParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + fileName);
                 }
             }
 
             _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
+            FacebookPostText.Text = string.Empty;
+            GetFacebookData(true);
+        }
+
+        protected void postList_ItemEditing(object sender, ListViewEditEventArgs e)
+        {
+            postList.EditIndex = e.NewEditIndex;
+            FacebookPostData edittingPost = null;
+            var label = (postList.Items[e.NewEditIndex].FindControl("PostIdLabel")) as Label;
+            if (label != null && _facebookData.Posts.Any(x => x.Id.Equals(label.Text)))
+                edittingPost = _facebookData.Posts.First(x => x.Id.Equals(label.Text));
+
+            postList.DataSource = _facebookData.Posts;
+            postList.DataBind();
+
+            (postList.Items[postList.EditIndex].FindControl("MessagePostTextBox") as TextBox).Text = edittingPost.Message.ToString();
+        }
+
+        protected void postList_ItemCanceling(object sender, ListViewCancelEventArgs e)
+        {
+            postList.EditIndex = -1;
+            postList.DataSource = _facebookData.Posts;
+            postList.DataBind();
+        }
+
+        protected void postList_ItemUpdating(object sender, ListViewUpdateEventArgs e)
+        {
+            string errorMessage = 
+                    _facebookHandler.CheckPostText((postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text, _facebookHandler.MediaName);
+
+            if (string.IsNullOrWhiteSpace(errorMessage))
+            {
+                (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Visible = true;
+                (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Text = errorMessage;
+                return;
+            }
+            else
+            {
+                (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Visible = false;
+                (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Text = string.Empty;
+            }
+
+
+            Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
+            facebookParameters.Add("id", (postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text);
+            facebookParameters.Add("message", (postList.Items[postList.EditIndex].FindControl("MessagePostTextBox") as TextBox).Text);
+
+            _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
+            postList.EditIndex = -1;
+            GetFacebookData(true);
+        }
+
+        protected void postList_ItemDeleting(object sender, ListViewDeleteEventArgs e)
+        {
+            Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
+            facebookParameters.Add("id", (postList.Items[e.ItemIndex].FindControl("PostIdLabel") as Label).Text);
+
+            _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
+            GetFacebookData(true);
         }
     }
 }

@@ -11,8 +11,9 @@ namespace FDM90.Handlers
     {
         User RegisterUser(string userName, string emailAddress, string password);
         User LoginUser(User newUser);
-        User UpdateUserMediaActivation(User user, string socialMedia);
+        User UpdateUserMediaActivation(User user, string socialMedia, bool active);
         User GetUser(string userId);
         void UpdateUser(User user);
+        void DeleteUser(Guid userId);
     }
 }

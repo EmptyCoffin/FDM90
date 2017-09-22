@@ -17,5 +17,9 @@ namespace FDM90.Handlers
         DataTable GenerateCampaignDataTable(Campaign campaign);
 
         Task<bool> DailyUpdate();
+
+        void DeleteForUser(Guid userId);
+
+        void RemoveMediaAfterDelete(Guid userId, string mediaName);
     }
 }

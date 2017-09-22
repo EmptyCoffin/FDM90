@@ -21,17 +21,20 @@ namespace FDM90.Models
         {
             Tweets = ConvertedTweets(tweets);
             NumberOfFollowers = numberOfFollowers;
+            SetNumberOfFollowersForDate();
         }
 
         public int NumberOfFollowers { get; set; }
 
         [JsonIgnore()]
-        public int NumberOfRetweets { get { return Tweets.Sum(x => x.RetweetCount);  } }
+        public int NumberOfRetweets { get { return Tweets.Where(x => x.CreatedAt.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedAt.Date <= DateTime.Now.Date).Sum(x => x.RetweetCount);  } }
 
         [JsonIgnore()]
-        public int NumberOfFavorited { get { return Tweets.Sum(x => x.FavoriteCount); } }
+        public int NumberOfFavorited { get { return Tweets.Where(x => x.CreatedAt.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedAt.Date <= DateTime.Now.Date).Sum(x => x.FavoriteCount); } }
 
         public List<Tweet> Tweets { get; set; }
+
+        public Dictionary<DateTime, int> NumberOfFollowersByDate { get; set; }
 
         public static T Parse<T>(dynamic json, T data)
         {
@@ -43,22 +46,37 @@ namespace FDM90.Models
                 {
                     JsonIgnoreAttribute jsonIgnore = (JsonIgnoreAttribute)property.GetCustomAttribute(typeof(JsonIgnoreAttribute));
 
-                    if(jsonIgnore == null)
+                    if(jsonIgnore == null && jsonObject[property.Name] != null)
                     {
-                        if(property.PropertyType.Namespace.Contains("Collection"))
+                        if (property.PropertyType.Namespace.Contains("Collection"))
                         {
-                            IList listInstance = (IList)Activator.CreateInstance(property.PropertyType);
-
-                            foreach(var value in jsonObject[property.Name])
+                            if (property.PropertyType.FullName.Contains("Dictionary"))
                             {
-                                listInstance.Add(Parse(value, Activator.CreateInstance(property.PropertyType.GetGenericArguments().Single())));
-                            }
+                                IDictionary dictionaryInstance = (IDictionary)Activator.CreateInstance(property.PropertyType);
 
-                            property.SetValue(data, listInstance);
+                                foreach (JProperty proper in jsonObject[property.Name].Children())
+                                {
+                                    dictionaryInstance.Add(Convert.ChangeType(proper.Name, property.PropertyType.GetGenericArguments().First()),
+                                                                    Convert.ChangeType(proper.Value, property.PropertyType.GetGenericArguments().Last()));
+                                }
+
+                                property.SetValue(data, dictionaryInstance);
+                            }
+                            else
+                            {
+                                IList listInstance = (IList)Activator.CreateInstance(property.PropertyType);
+
+                                foreach (var value in jsonObject[property.Name])
+                                {
+                                    listInstance.Add(Parse(value, Activator.CreateInstance(property.PropertyType.GetGenericArguments().Single())));
+                                }
+
+                                property.SetValue(data, listInstance);
+                            }
                         }
                         else
                         {
-                            if(jsonObject[property.Name] != null)
+                            if (jsonObject[property.Name] != null)
                                 property.SetValue(data, Convert.ChangeType((jsonObject[property.Name]), property.PropertyType));
                         }
                     }
@@ -71,6 +89,8 @@ namespace FDM90.Models
         {
             if (newTweets.NumberOfFollowers != 0 && newTweets.NumberOfFollowers != NumberOfFollowers)
                 NumberOfFollowers = newTweets.NumberOfFollowers;
+
+            SetNumberOfFollowersForDate();
 
             if (newTweets.Tweets != null)
             {
@@ -90,6 +110,20 @@ namespace FDM90.Models
             return this;
         }
 
+        private void SetNumberOfFollowersForDate()
+        {
+            if (NumberOfFollowersByDate == null) NumberOfFollowersByDate = new Dictionary<DateTime, int>();
+
+            if (NumberOfFollowersByDate.ContainsKey(DateTime.Now.Date))
+            {
+                NumberOfFollowersByDate[DateTime.Now.Date] = NumberOfFollowers;
+            }
+            else
+            {
+                NumberOfFollowersByDate.Add(DateTime.Now.Date, NumberOfFollowers);
+            }
+        }
+
         private List<Tweet> ConvertedTweets(List<Status> tweets)
         {
             List<Tweet> convertedTweets = new List<Tweet>();
@@ -106,6 +140,7 @@ namespace FDM90.Models
                     Text = tweet.Text,
                     Retweeted = tweet.RetweetCount > 0,
                     Favorited = tweet.FavoriteCount > 0,
+                    ImageUrl = tweet.Entities?.MediaEntities?.FirstOrDefault()?.MediaUrl,
                     RetweetedUsers = new List<TwitterUser>()
                 });
             }
@@ -124,6 +159,7 @@ namespace FDM90.Models
         public string Text { get; set; }
         public bool Retweeted { get; set; }
         public bool Favorited { get; set; }
+        public string ImageUrl { get; set; }
         public List<TwitterUser> RetweetedUsers {get;set;}
     }
 

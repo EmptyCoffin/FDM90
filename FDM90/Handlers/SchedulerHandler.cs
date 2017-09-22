@@ -1,4 +1,5 @@
 ﻿using FDM90.Models;
+using FDM90.Models.Helpers;
 using FDM90.Repository;
 using System;
 using System.Collections.Generic;
@@ -67,6 +68,27 @@ namespace FDM90.Handlers
             File.Delete(imagePath);
         }
 
+        public string CheckPostText(string textToPost, string medias, Guid userId)
+        {
+            string errorMessage = string.Empty;
+
+            errorMessage = PostEthicalHelper.CheckTextForIssues(textToPost);
+
+            User postingUser = _userHandler.GetUser(userId.ToString());
+            foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(w =>
+                                            postingUser.GetIntegratedMediaChannels().Contains(w.MediaName)
+                                                    && medias.Split(',').Contains(w.MediaName)))
+            {
+                if (textToPost.Count() > mediaHandler.MessageCharacterLimit)
+                {
+                    errorMessage += string.Format("Max characters exceeded for {0} ({1})", mediaHandler.MediaName, mediaHandler.MessageCharacterLimit);
+                }
+
+            }
+
+            return errorMessage;
+        }
+
         public void PostNow(ScheduledPost newPost)
         {
             User postingUser = _userHandler.GetUser(newPost.UserId.ToString());
@@ -87,6 +109,14 @@ namespace FDM90.Handlers
                 }
 
                 mediaHandler.PostData(postParameters, newPost.UserId);
+            }
+        }
+
+        public void DeleteScheduledPostForUser(Guid userId)
+        {
+            foreach(ScheduledPost post in GetSchedulerPostsForUser(userId))
+            {
+                DeleteScheduledPost(post.PostId);
             }
         }
     }

@@ -53,12 +53,12 @@
       <HintPath>..\packages\Facebook.7.0.6\lib\net45\Facebook.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LinqToTwitter.AspNet, Version=3.2.0.30483, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\linqtotwitter.4.1.0\lib\net45\LinqToTwitter.AspNet.dll</HintPath>
+    <Reference Include="LinqToTwitter.AspNet, Version=3.2.0.40326, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\linqtotwitter.4.2.0-beta2\lib\net45\LinqToTwitter.AspNet.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="LinqToTwitter.net, Version=4.0.0.0, Culture=neutral, PublicKeyToken=957107be965c25d9, processorArchitecture=MSIL">
-      <HintPath>..\packages\linqtotwitter.4.1.0\lib\net45\LinqToTwitter.net.dll</HintPath>
+      <HintPath>..\packages\linqtotwitter.4.2.0-beta2\lib\net45\LinqToTwitter.net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -207,6 +207,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Pages\Account\UserProfile.aspx" />
     <Content Include="Pages\Account\Login.aspx" />
     <Content Include="Pages\Account\Logout.aspx" />
     <Content Include="Pages\Account\Registration.aspx" />
@@ -253,6 +254,7 @@
     <Compile Include="Handlers\ICampaignHandler.cs" />
     <Compile Include="Handlers\IMarketingModelHandler.cs" />
     <Compile Include="Handlers\IMediaHandler.cs" />
+    <Compile Include="Handlers\IPostingData.cs" />
     <Compile Include="Handlers\ISchedulerHandler.cs" />
     <Compile Include="Handlers\ITwitterHandler.cs" />
     <Compile Include="Handlers\IUserHandler.cs" />
@@ -271,6 +273,7 @@
     <Compile Include="Models\Helpers\IFacebookClientWrapper.cs" />
     <Compile Include="Models\Helpers\ITwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\JsonHelper.cs" />
+    <Compile Include="Models\Helpers\PostEthicalHelper.cs" />
     <Compile Include="Models\Helpers\SQLHelper.cs" />
     <Compile Include="Models\Helpers\TwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\TwitterHelper.cs" />
@@ -280,6 +283,13 @@
     <Compile Include="Models\TwitterCredentials.cs" />
     <Compile Include="Models\TwitterData.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Pages\Account\UserProfile.aspx.cs">
+      <DependentUpon>UserProfile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Pages\Account\UserProfile.aspx.designer.cs">
+      <DependentUpon>UserProfile.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Account\Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -352,11 +362,13 @@
     <Compile Include="Repository\IReadSpecific.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Repository\MarketingModelRepository.cs" />
+    <Compile Include="Repository\ProfanityRepository.cs" />
     <Compile Include="Repository\RepositoryBase.cs" />
     <Compile Include="Repository\SchedulerRepository.cs" />
     <Compile Include="Repository\TwitterRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Singleton\ConfigSingleton.cs" />
+    <Compile Include="Singleton\EthicalSingleton.cs" />
     <Compile Include="Singleton\TaskListSingleton.cs" />
     <Compile Include="Singleton\UserSingleton.cs" />
   </ItemGroup>

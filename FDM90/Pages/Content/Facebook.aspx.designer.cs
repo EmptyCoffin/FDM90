@@ -13,6 +13,15 @@ namespace FDM90.Pages.Content {
     public partial class Facebook {
         
         /// <summary>
+        /// signInArea control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl signInArea;
+        
+        /// <summary>
         /// DetailsButton control.
         /// </summary>
         /// <remarks>
@@ -58,6 +67,33 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.Label facebookDetailsErrorLabel;
         
         /// <summary>
+        /// facebookPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel facebookPanel;
+        
+        /// <summary>
+        /// facebookUpdateTimer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.Timer facebookUpdateTimer;
+        
+        /// <summary>
+        /// postList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ListView postList;
+        
+        /// <summary>
         /// facebookData control.
         /// </summary>
         /// <remarks>
@@ -94,93 +130,57 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.Button PostButton;
         
         /// <summary>
-        /// facebookPanel control.
+        /// PostFacebookError control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel facebookPanel;
+        protected global::System.Web.UI.WebControls.Label PostFacebookError;
         
         /// <summary>
-        /// facebookUpdateTimer control.
+        /// numberOfPageLikes control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.Timer facebookUpdateTimer;
+        protected global::System.Web.UI.WebControls.Label numberOfPageLikes;
         
         /// <summary>
-        /// likesButton control.
+        /// numberOfNewLikes control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button likesButton;
+        protected global::System.Web.UI.WebControls.Label numberOfNewLikes;
         
         /// <summary>
-        /// likesDetails control.
+        /// numberOfTalkingAbout control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl likesDetails;
+        protected global::System.Web.UI.WebControls.Label numberOfTalkingAbout;
         
         /// <summary>
-        /// newLikeLabel control.
+        /// numberOfPostLikes control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label newLikeLabel;
+        protected global::System.Web.UI.WebControls.Label numberOfPostLikes;
         
         /// <summary>
-        /// likeListView control.
+        /// numberOfPostComments control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView likeListView;
-        
-        /// <summary>
-        /// peopleTalkingLabel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label peopleTalkingLabel;
-        
-        /// <summary>
-        /// postsButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button postsButton;
-        
-        /// <summary>
-        /// posts control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl posts;
-        
-        /// <summary>
-        /// postList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView postList;
+        protected global::System.Web.UI.WebControls.Label numberOfPostComments;
     }
 }

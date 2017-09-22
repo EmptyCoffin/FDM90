@@ -21,7 +21,7 @@ namespace FDM90.Pages.Content
         static List<string> channels = new List<string>();
         static int[] hoursInTheDay = new int[24];
 
-        public Scheduler():this(new SchedulerHandler())
+        public Scheduler() : this(new SchedulerHandler())
         {
 
         }
@@ -33,11 +33,13 @@ namespace FDM90.Pages.Content
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(!Page.IsPostBack)
+            if (!Page.IsPostBack)
             {
+                if (UserSingleton.Instance.CurrentUser == null) Response.Redirect("~/Pages/Content/Home.aspx");
+
                 channels.Clear();
                 hoursInTheDay.ToList().Clear();
-                
+
                 for (int i = 0; i < hoursInTheDay.Length; i++)
                 {
                     hoursInTheDay[i] = i;
@@ -45,7 +47,7 @@ namespace FDM90.Pages.Content
 
                 HoursDropDown.DataSource = hoursInTheDay;
                 HoursDropDown.DataBind();
-                QuarterDropDowns.DataSource = new int[] { 00, 15, 30, 45 };
+                QuarterDropDowns.DataSource = new string[] { "00", "15", "30", "45" };
                 QuarterDropDowns.DataBind();
 
                 foreach (var prop in UserSingleton.Instance.CurrentUser.GetType().GetProperties())
@@ -70,7 +72,7 @@ namespace FDM90.Pages.Content
 
         private void GetUserSchedule()
         {
-            _scheduledPosts = _schedulerHandler.GetSchedulerPostsForUser(UserSingleton.Instance.CurrentUser.UserId).ToList();
+            _scheduledPosts = _schedulerHandler.GetSchedulerPostsForUser(UserSingleton.Instance.CurrentUser.UserId).OrderBy(x => x.PostTime).ToList();
 
             SchedulerPanel.Visible = true;
             ScheduledPostsList.DataSource = _scheduledPosts;
@@ -96,15 +98,29 @@ namespace FDM90.Pages.Content
             };
 
             DateTime postDate;
-            if(DateTime.TryParse(PostDateButton.Text, out postDate))
+            if (DateTime.TryParse(PostDateButton.Text, out postDate))
                 newPost.PostTime = new DateTime(postDate.Year, postDate.Month, postDate.Day, int.Parse(HoursDropDown.SelectedValue), int.Parse(QuarterDropDowns.SelectedValue), 00);
+
+            string returningError = _schedulerHandler.CheckPostText(newPost.PostText, newPost.MediaChannels, newPost.UserId);
+
+            if (!string.IsNullOrWhiteSpace(returningError))
+            {
+                SchedulerError.Visible = true;
+                SchedulerError.Text = returningError;
+                return;
+            }
+            else
+            {
+                SchedulerError.Visible = false;
+                SchedulerError.Text = string.Empty;
+            }
 
             if (PostNowCheckbox.Checked)
             {
                 _schedulerHandler.PostNow(newPost);
             }
             else
-            {                
+            {
                 _schedulerHandler.CreateScheduledPost(newPost);
                 GetUserSchedule();
             }
@@ -129,7 +145,7 @@ namespace FDM90.Pages.Content
             edittingHourDropDown.SelectedIndex = edittingPost.PostTime.Hour;
 
             var edittingQuarterDropDown = (ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditQuarterDropDowns") as DropDownList);
-            edittingQuarterDropDown.DataSource = new int[] { 00, 15, 30, 45 };
+            edittingQuarterDropDown.DataSource = new string[] { "00", "15", "30", "45" };
             edittingQuarterDropDown.DataBind();
             edittingQuarterDropDown.SelectedValue = edittingPost.PostTime.Minute.ToString();
         }
@@ -209,13 +225,21 @@ namespace FDM90.Pages.Content
                         && !textBox.Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Except(channels).Any())
                 editedPost.MediaChannels = textBox.Text;
 
-            if(string.IsNullOrEmpty(editedPost.PostText) && string.IsNullOrEmpty(editedPost.AttachmentPath))
+            if (string.IsNullOrEmpty(editedPost.PostText) && string.IsNullOrEmpty(editedPost.AttachmentPath))
             {
                 errorMessage += " Post doesn't have Post Text or an Attachment!";
             }
 
             if (string.IsNullOrEmpty(errorMessage))
             {
+                string returningError = _schedulerHandler.CheckPostText(editedPost.PostText, editedPost.MediaChannels, editedPost.UserId);
+
+                if (!string.IsNullOrWhiteSpace(returningError))
+                {
+                    (ScheduledPostsList.Items[e.ItemIndex].FindControl("EditingErrorLabel") as Label).Text = returningError;
+                    return;
+                }
+
                 _schedulerHandler.UpdateScheduledPost(editedPost);
                 ScheduledPostsList.EditIndex = -1;
                 GetUserSchedule();
@@ -297,15 +321,15 @@ namespace FDM90.Pages.Content
 
         protected void EditPostDateButton_Click(object sender, EventArgs e)
         {
-            DateButtonEvent(sender, ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditCalendar") as Calendar, 
+            DateButtonEvent(sender, ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditCalendar") as Calendar,
                                 ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditCalendarArea") as HtmlGenericControl);
         }
 
         protected void EditSetCalendarDate_Click(object sender, EventArgs e)
         {
-            SetCalendar(ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditCalendar") as Calendar, 
-                            ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditCalendarArea") as HtmlGenericControl, 
-                                ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditPostDateButton") as Button, 
+            SetCalendar(ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditCalendar") as Calendar,
+                            ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditCalendarArea") as HtmlGenericControl,
+                                ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditPostDateButton") as Button,
                                     ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditCalendarErrorLabel") as Label);
         }
     }

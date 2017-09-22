@@ -17,7 +17,7 @@ namespace FDM90.Pages.Content
     [ExcludeFromCodeCoverage]
     public partial class Home : System.Web.UI.Page
     {
-        private string[] metrics = { "Exposure", "Influence", "Engagement" };
+        private string[] metrics = { "Exposure", "Influence", "Engagement", "Acquisition" };
         private ICampaignHandler _campaignHandler;
         private List<string> tableIds = new List<string>();
 
@@ -35,6 +35,9 @@ namespace FDM90.Pages.Content
         {
             if (UserSingleton.Instance.CurrentUser != null)
             {
+                notUserArea.Visible = false;
+                userArea.Visible = true;
+
                 if (!Page.IsPostBack)
                 {
                     facebookSetUpButton.Visible = !UserSingleton.Instance.CurrentUser.Facebook;
@@ -198,6 +201,12 @@ namespace FDM90.Pages.Content
             setupCampaignButton.Visible = true;
 
             Response.Redirect("Campaigns.aspx?CampaignName=" + campaignName.Text);
+        }
+
+        protected void CancelCampaignButton_Click(object sender, EventArgs e)
+        {
+            newCampaignArea.Visible = false;
+            setupCampaignButton.Visible = true;
         }
     }
 }

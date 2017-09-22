@@ -30,6 +30,14 @@ namespace FDM90.Handlers
             }
         }
 
+        public int MessageCharacterLimit
+        {
+            get
+            {
+                return 63206;
+            }
+        }
+
         public FacebookHandler() : this(new FacebookRepository(), new UserHandler(), new FacebookClientWrapper())
         {
 
@@ -45,6 +53,20 @@ namespace FDM90.Handlers
             _facebookClientWrapper = facebookClientWrapper;
         }
 
+        public string CheckPostText(string textToPost, string medias, Guid userId)
+        {
+            string errorMessage = string.Empty;
+
+            errorMessage = PostEthicalHelper.CheckTextForIssues(textToPost);
+
+            if (textToPost.Count() > MessageCharacterLimit)
+            {
+                errorMessage += string.Format("Max characters exceeded for {0} ({1})", MediaName, MessageCharacterLimit);
+            }
+
+            return errorMessage;
+        }
+
         public FacebookCredentials GetLogInDetails(Guid userId)
         {
             return _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId });
@@ -56,7 +78,7 @@ namespace FDM90.Handlers
 
             _facebookRepo.Create(credentials);
 
-            _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), MediaName);
+            _userHandler.UpdateUserMediaActivation(new User(credentials.UserId), MediaName, true);
 
             credentials.PermanentAccessToken = _facebookClientWrapper.GetLoginUrl();
 
@@ -78,7 +100,7 @@ namespace FDM90.Handlers
             _facebookRepo.Update(new FacebookCredentials()
             {
                 UserId = userId,
-                PermanentAccessToken = permanentTokenString
+                PermanentAccessToken = EncryptionHelper.EncryptString(permanentTokenString)
             });
 
             // trigger get info
@@ -95,11 +117,11 @@ namespace FDM90.Handlers
                 _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
                 {
                     FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount, FacebookHelper.TalkingAboutCount,
-                }), currentData.PermanentAccessToken);
+                }), EncryptionHelper.DecryptString(currentData.PermanentAccessToken));
 
             FacebookData data = JsonHelper.Parse(basicData, new FacebookData());
 
-            data = GetMetricData(dates, currentData.PermanentAccessToken, data);
+            data = GetMetricData(dates, EncryptionHelper.DecryptString(currentData.PermanentAccessToken), data);
 
             if (!string.IsNullOrWhiteSpace(currentData.FacebookData))
             {
@@ -229,6 +251,7 @@ namespace FDM90.Handlers
             foreach (FacebookInsightValueData insightValue in data.PageLikes.Values.Where(like => dates.Contains(like.EndTime.Date)))
             {
                 facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Influence", insightValue.EndTime, insightValue.Value);
+                facebookTargets = JsonHelper.AddWeekValue(facebookTargets, "Acquisition", insightValue.EndTime, insightValue.Value);
             }
 
             foreach (FacebookInsightValueData insightValue in data.PageStories.Values.Where(story => dates.Contains(story.EndTime.Date)))
@@ -244,14 +267,15 @@ namespace FDM90.Handlers
             FacebookCredentials creds = _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId });
 
             FacebookData todaysData = creds == null || string.IsNullOrWhiteSpace(creds.PermanentAccessToken) ? null :
-                                        GetMetricData(new DateTime[] { DateTime.Now.Date }, creds.PermanentAccessToken, new FacebookData());
+                                        GetMetricData(new DateTime[] { DateTime.Now.Date }, EncryptionHelper.DecryptString(creds.PermanentAccessToken), new FacebookData());
 
             return creds == null || string.IsNullOrWhiteSpace(creds.FacebookData) ? todaysData : JsonConvert.DeserializeObject<FacebookData>(creds.FacebookData).Update(todaysData);
         }
 
         public void PostData(Dictionary<string, string> postParameters, Guid userId)
         {
-            _facebookClientWrapper.PostData(postParameters, _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId }).PermanentAccessToken);
+            _facebookClientWrapper.PostData(postParameters, 
+                                EncryptionHelper.DecryptString(_facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId }).PermanentAccessToken));
         }
 
         public List<Task> DailyUpdate()
@@ -263,6 +287,12 @@ namespace FDM90.Handlers
                         GetMediaData(facebookCreds.UserId, new[] { DateTime.Now.AddDays(-8) })));
             }
             return tasks;
+        }
+
+        public User DeleteMedia(Guid userId)
+        {
+            _facebookRepo.Delete(new FacebookCredentials() { UserId = userId });
+            return _userHandler.UpdateUserMediaActivation(new User(userId), MediaName, false);
         }
     }
 }

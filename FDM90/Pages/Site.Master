@@ -11,43 +11,39 @@
 <body>
     <form runat="server">
         <div class="container">
-            <div class="header">
-                <div class="title">
-                    <h1>Social Media Analytics
-                    </h1>
+                <div class="header">
+                    <div class="title">
+                        <h1>Social Media Analytics
+                        </h1>
+                    </div>
                 </div>
-                <div class="pull-right">
+                <div>
                     <ul class="nav nav-tabs">
-                        <li role="presentation" id="LogInwelcomeMessageTab" runat="server">
-                            <a class="btn btn-lg" href="~/Pages/Account/Login.aspx" id="LogIn" runat="server">Log In</a>
-                            <asp:Label runat="server" ID="welcomeMessage" class="btn btn-lg" Visible="false"></asp:Label>
+                        <li role="presentation" id="HomeTab" runat="server">
+                            <a class="btn btn-lg" href="~/Pages/Content/Home.aspx" title="Home" runat="server">Home</a>
                         </li>
-                        <li role="presentation" id="RegistrationLogoutTab" runat="server">
-                            <a class="btn btn-lg" href="~/Pages/Account/Registration.aspx" id="SignUp" runat="server">Sign Up</a>
+                        <li role="presentation" id="CampaignsTab" runat="server">
+                            <a class="btn btn-lg" href="~/Pages/Content/Campaigns.aspx" id="Campaigns" visible="false" runat="server">Campaigns</a>
+                        </li>
+                        <li role="presentation" id="SchedulerTab" runat="server">
+                            <a class="btn btn-lg" href="~/Pages/Content/Scheduler.aspx" id="Scheduler" visible="false" runat="server">Scheduler</a>
+                        </li>
+                        <li role="presentation" id="FacebookTab" runat="server">
+                            <a class="btn btn-lg" href="~/Pages/Content/Facebook.aspx" id="Facebook" visible="false" runat="server">Facebook</a>
+                        </li>
+                        <li role="presentation" id="TwitterTab" runat="server">
+                            <a class="btn btn-lg" href="~/Pages/Content/Twitter.aspx" id="Twitter" visible="false" runat="server">Twitter</a>
+                        </li>
+                        <li role="presentation" class="pull-right" id="RegistrationLogoutTab" runat="server">
+                            <a class="btn btn-lg" href="~/Pages/Account/Registration.aspx" id="SignUp" runat="server">Register</a>
                             <a class="btn btn-lg" href="~/Pages/Account/Logout.aspx" visible="false" id="LogOut" runat="server">Log Out</a>
+                        </li>
+                        <li role="presentation" class="pull-right" id="LogInUserProfileTab" runat="server">
+                            <a class="btn btn-lg" href="~/Pages/Account/Login.aspx" id="LogIn" runat="server">Log In</a>
+                            <asp:Button class="btn btn-lg btn-default" runat="server" ID="UserProfile" Visible="false" OnClick="UserProfile_Click"></asp:Button>
                         </li>
                     </ul>
                 </div>
-            </div>
-            <div>
-                <ul class="nav nav-tabs">
-                    <li role="presentation" id="HomeTab" runat="server">
-                        <a class="btn btn-lg" href="~/Pages/Content/Home.aspx" title="Home" runat="server">Home</a>
-                    </li>
-                    <li role="presentation" id="CampaignsTab" runat="server">
-                        <a class="btn btn-lg" href="~/Pages/Content/Campaigns.aspx" id="Campaigns" visible="false" runat="server">Campaigns</a>
-                    </li>
-                    <li role="presentation" id="SchedulerTab" runat="server">
-                        <a class="btn btn-lg" href="~/Pages/Content/Scheduler.aspx" id="Scheduler" visible="false" runat="server">Scheduler</a>
-                    </li>
-                    <li role="presentation" id="FacebookTab" runat="server">
-                        <a class="btn btn-lg" href="~/Pages/Content/Facebook.aspx" id="Facebook" visible="false" runat="server">Facebook</a>
-                    </li>
-                    <li role="presentation" id="TwitterTab" runat="server">
-                        <a class="btn btn-lg" href="~/Pages/Content/Twitter.aspx" id="Twitter" visible="false" runat="server">Twitter</a>
-                    </li>
-                </ul>
-            </div>
             <br />
             <div class="container">
                 <asp:ContentPlaceHolder ID="MainContent" runat="server" />

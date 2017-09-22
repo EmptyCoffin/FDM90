@@ -29,7 +29,7 @@ namespace FDM90.Pages.Account
         protected void registerButton_Click(object sender, EventArgs e)
         {
             _userHandler.RegisterUser(userNameTextBox.Text, inputEmailAddress.Text, passwordTextBox.Text);
-            Response.Redirect("~/Pages/Content/Home.aspx");
+            Response.Redirect("~/Pages/Account/Login.aspx");
         }
     }
 }

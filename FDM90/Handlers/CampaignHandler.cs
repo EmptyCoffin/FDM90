@@ -68,48 +68,58 @@ namespace FDM90.Handlers
             int currentWeekNumber = calendar.GetWeekOfYear(DateTime.Now, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek);
 
             JObject newProgress = new JObject();
-            foreach (Campaign campaign in existingCampaigns.Where(x => x.StartDate <= newCampaign.StartDate && !string.IsNullOrEmpty(x.Progress)))
-            {
-                // get weeks for new campaign
-                JObject progress = JObject.Parse(campaign.Progress);
-                
-                foreach(JProperty media in progress.Properties())
-                {
-                    JObject newMediaProgress = new JObject();
-                    
-                    foreach (JProperty week in media.Values())
-                    {
-                        if (int.Parse(week.Name.Substring(4)) >= firstWeekNumber && int.Parse(week.Name.Substring(4)) <= lastWeekNumber)
-                        {
-                            newMediaProgress.Add(week.Name, week.Value);
-                        }
-                    }
-                    newProgress.Add(media.Name, newMediaProgress);
-                }
-            }
-
             List<Task> tasks = new List<Task>();
 
-            // here when first week only less than current week, but not if we have info
-            if (firstWeekNumber < currentWeekNumber && newProgress.First?.Children().Values().Count() != currentWeekNumber - firstWeekNumber)
+            // here when first week only less than current week
+            if (firstWeekNumber < currentWeekNumber)
             {
-                DateTime[] dates = DateHelper.GetDates(newCampaign.StartDate.AddDays(newProgress.First != null ? newProgress.First.Children().Values().Count() * 7 : 0), newCampaign.EndDate, false);
+
+                foreach (Campaign campaign in existingCampaigns.Where(x => x.StartDate <= newCampaign.StartDate && !string.IsNullOrEmpty(x.Progress)))
+                {
+                    // get weeks for new campaign
+                    JObject progress = JObject.Parse(campaign.Progress);
+
+                    foreach (JProperty media in progress.Properties())
+                    {
+                        JObject newMediaProgress = new JObject();
+
+                        foreach (JProperty week in media.Values())
+                        {
+                            if (int.Parse(week.Name.Substring(4)) >= firstWeekNumber && int.Parse(week.Name.Substring(4)) <= lastWeekNumber)
+                            {
+                                newMediaProgress.Add(week.Name, week.Value);
+                            }
+                        }
+                        newProgress.Add(media.Name, newMediaProgress);
+                    }
+                }
 
                 foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(x =>
                                              bool.Parse(user.GetType().GetProperties().Where(y => y.Name == x.MediaName).First().GetValue(user).ToString())))
                 {
                     tasks.Add(Task.Factory.StartNew(() =>
                     {
+                        List<DateTime> dates = new List<DateTime>();
+
                         if ((JObject)newProgress[mediaHandler.MediaName] == null)
                         {
                             newProgress.Add(mediaHandler.MediaName, new JObject());
                         }
 
+                        for (int i = firstWeekNumber; i < currentWeekNumber; i++)
+                        {
+                            if ((JObject)newProgress[mediaHandler.MediaName]["Week" + i] == null)
+                            {
+                                dates.AddRange(DateHelper.GetDatesFromWeekNumber(i));
+                            }
+                        }
+
                         if (dates.Count() > 0)
                         {
-                            foreach (JObject newWeek in mediaHandler.GetCampaignInfo(userId, dates))
+                            foreach (JObject newWeek in mediaHandler.GetCampaignInfo(userId, dates.ToArray()))
                             {
-                                ((JObject)newProgress[mediaHandler.MediaName]).Add(newWeek.Path, newWeek);
+                                if ((JObject)newProgress[mediaHandler.MediaName][newWeek.Path] == null)
+                                    ((JObject)newProgress[mediaHandler.MediaName]).Add(newWeek.Path, newWeek);
                             }
                         }
                     }));
@@ -128,7 +138,6 @@ namespace FDM90.Handlers
                     _campaignRepo.Update(newCampaign);
                 }
             });
-
         }
 
         public Task<bool> DailyUpdate()
@@ -326,5 +335,28 @@ namespace FDM90.Handlers
 
             return campaignDataTable;
         }
+
+        public void DeleteForUser(Guid userId)
+        {
+            _campaignRepo.Delete(new Campaign() { UserId = userId });
         }
+
+        public void RemoveMediaAfterDelete(Guid userId, string mediaName)
+        {
+            var userCampaigns = GetUserCampaigns(userId);
+
+            foreach(Campaign campaign in userCampaigns)
+            {
+                var alterTargets = JObject.Parse(campaign.Targets);
+                alterTargets.Remove(mediaName);
+                campaign.Targets = alterTargets.ToString();
+
+                var alterProgress = JObject.Parse(campaign.Progress);
+                alterProgress.Remove(mediaName);
+                campaign.Progress = alterProgress.ToString();
+
+                _campaignRepo.Update(campaign);
+            }
+        }
+    }
 }

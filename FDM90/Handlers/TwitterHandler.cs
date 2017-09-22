@@ -45,6 +45,28 @@ namespace FDM90.Handlers
             }
         }
 
+        public int MessageCharacterLimit
+        {
+            get
+            {
+                return 140;
+            }
+        }
+
+        public string CheckPostText(string textToPost, string medias, Guid userId)
+        {
+            string errorMessage = string.Empty;
+
+            errorMessage = PostEthicalHelper.CheckTextForIssues(textToPost);
+
+            if (textToPost.Count() > MessageCharacterLimit)
+            {
+                errorMessage += string.Format("Max characters exceeded for {0} ({1})", MediaName, MessageCharacterLimit);
+            }
+
+            return errorMessage;
+        }
+
         public IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates)
         {
             JObject twitterTargets = new JObject();
@@ -53,6 +75,7 @@ namespace FDM90.Handlers
             var twitterDetails = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
             var data = TwitterData.Parse(twitterDetails.TwitterData, new TwitterData());
+            data.Tweets = data.Tweets.OrderBy(x => x.CreatedAt).ToList();
             int screenNameFollowerCount = data.NumberOfFollowers;
             // get exposure - followers and followers of those retweeted/favorited
             foreach (var tweetDate in data.Tweets.GroupBy(x => x.CreatedAt.Date))
@@ -85,6 +108,19 @@ namespace FDM90.Handlers
                     // get engagement - replies/mentions, direct messages, retweets, hashtags mentions, favorited
                     twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Engagement", tweetDate.First().CreatedAt, (int)retweetFavoriteCount);
                 }
+
+                if(data.NumberOfFollowersByDate.ContainsKey(tweetDate.First().CreatedAt.Date))
+                {
+                    if (data.NumberOfFollowersByDate.ContainsKey(tweetDate.First().CreatedAt.AddDays(-1).Date))
+                    {
+                        twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Acquisition", tweetDate.First().CreatedAt,
+                                    (data.NumberOfFollowersByDate[tweetDate.First().CreatedAt.Date] - data.NumberOfFollowersByDate[tweetDate.First().CreatedAt.AddDays(-1).Date]));
+                    }
+                    else
+                    {
+                        twitterTargets = JsonHelper.AddWeekValue(twitterTargets, "Acquisition", tweetDate.First().CreatedAt, 0);
+                    }
+                }
             }
 
             return twitterTargets.Values();
@@ -114,7 +150,11 @@ namespace FDM90.Handlers
         private TwitterData GetTwitterData(TwitterCredentials twitterDetails, DateTime[] dates)
         {
             TwitterData data = null;
-            var tweets = _twitterClientWrapper.GetTweets(twitterDetails).Result;
+            var tweets = _twitterClientWrapper.GetTweets(new TwitterCredentials() {
+                ScreenName = twitterDetails.ScreenName,
+                AccessToken = EncryptionHelper.DecryptString(twitterDetails.AccessToken),
+                AccessTokenSecret = EncryptionHelper.DecryptString(twitterDetails.AccessTokenSecret)
+            }).Result;
 
             if (tweets.Count(tweet => dates.Select(x => x.Date).Contains(tweet.CreatedAt.Date)) > 0)
             {
@@ -126,7 +166,12 @@ namespace FDM90.Handlers
                 {
                     if (tweet.RetweetCount > 0)
                     {
-                        tweet.RetweetedUsers = GetRetweeterFollowers(tweet.StatusID, twitterDetails);
+                        tweet.RetweetedUsers = GetRetweeterFollowers(tweet.StatusID, new TwitterCredentials()
+                        {
+                            ScreenName = twitterDetails.ScreenName,
+                            AccessToken = EncryptionHelper.DecryptString(twitterDetails.AccessToken),
+                            AccessTokenSecret = EncryptionHelper.DecryptString(twitterDetails.AccessTokenSecret)
+                        });
                     }
                 }
             }
@@ -156,7 +201,7 @@ namespace FDM90.Handlers
 
             _twitterRepo.Create(creds);
 
-            _userHandler.UpdateUserMediaActivation(new Models.User(Guid.Parse(userId)), MediaName);
+            _userHandler.UpdateUserMediaActivation(new Models.User(Guid.Parse(userId)), MediaName, true);
 
             return Task.Factory.StartNew(() => GetMediaData(creds.UserId, DateHelper.GetDates(DateTime.Now.AddMonths(-1).Date, DateTime.Now.Date)));
         }
@@ -187,7 +232,12 @@ namespace FDM90.Handlers
         {
             TwitterCredentials creds = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
-            _twitterClientWrapper.PostTweet(creds, postParameters);
+            _twitterClientWrapper.PostTweet(new TwitterCredentials()
+            {
+                ScreenName = creds.ScreenName,
+                AccessToken = EncryptionHelper.DecryptString(creds.AccessToken),
+                AccessTokenSecret = EncryptionHelper.DecryptString(creds.AccessTokenSecret)
+            }, postParameters);
         }
 
         public List<Task> DailyUpdate()
@@ -200,6 +250,12 @@ namespace FDM90.Handlers
                        GetMediaData(twitterCreds.UserId, new[] { DateTime.Now.AddDays(-8) })));
             }
             return tasks;
+        }
+
+        public Models.User DeleteMedia(Guid userId)
+        {
+            _twitterRepo.Delete(new TwitterCredentials() { UserId = userId });
+            return _userHandler.UpdateUserMediaActivation(new Models.User(userId), MediaName, false);
         }
     }
 }

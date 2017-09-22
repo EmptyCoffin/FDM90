@@ -43,29 +43,29 @@ namespace FDM90UnitTests
                 {
                     UserId = Guid.NewGuid(),
                     ScreenName = "ScreenName1",
-                    AccessToken = "AccessToken1",
-                    AccessTokenSecret = "AccessTokenSecret1"
+                    AccessToken = "UVdOalpYTnpWRzlyWlc0eA==",
+                    AccessTokenSecret = "UVdOalpYTnpWRzlyWlc1VFpXTnlaWFF4"
                 },
                 new TwitterCredentials()
                 {
                     UserId = _specificGuid,
                     ScreenName = "ScreenName2",
-                    AccessToken = "AccessToken2",
-                    AccessTokenSecret = "AccessTokenSecret2"
+                    AccessToken = "UVdOalpYTnpWRzlyWlc0eQ==",
+                    AccessTokenSecret = "UVdOalpYTnpWRzlyWlc1VFpXTnlaWFF5"
                 },
                 new TwitterCredentials()
                 {
                     UserId = Guid.NewGuid(),
                     ScreenName = "ScreenName3",
-                    AccessToken = "AccessToken3",
-                    AccessTokenSecret = "AccessTokenSecret3"
+                    AccessToken = "UVdOalpYTnpWRzlyWlc0eg==",
+                    AccessTokenSecret = "UVdOalpYTnpWRzlyWlc1VFpXTnlaWFF6"
                 },
                 new TwitterCredentials()
                 {
                     UserId = Guid.NewGuid(),
                     ScreenName = "ScreenName4",
-                    AccessToken = "AccessToken4",
-                    AccessTokenSecret = "AccessTokenSecret4"
+                    AccessToken = "UVdOalpYTnpWRzlyWlc0MA==",
+                    AccessTokenSecret = "UVdOalpYTnpWRzlyWlc1VFpXTnlaWFEw"
                 }
             };
 
@@ -80,8 +80,8 @@ namespace FDM90UnitTests
                 .Returns((TwitterCredentials twitterCreds) => _twitterCredentialsList.First(x => x.UserId == twitterCreds.UserId)).Verifiable();
 
             _mockUserHandler = new Mock<IUserHandler>();
-            _mockUserHandler.Setup(x => x.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), "Twitter"))
-                .Callback((FDM90.Models.User updatingUser, string media) => _pastUser = updatingUser).Returns(() => null).Verifiable();
+            _mockUserHandler.Setup(x => x.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), "Twitter", It.IsAny<bool>()))
+                .Callback((FDM90.Models.User updatingUser, string media, bool active) => _pastUser = updatingUser).Returns(() => null).Verifiable();
 
             _mockTwitterClientWrapper = new Mock<ITwitterClientWrapper>();
 
@@ -157,7 +157,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(x => x.Create(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.As<IReadSpecific<TwitterCredentials>>().Verify(x => x.ReadSpecific(It.IsAny<TwitterCredentials>()), Times.Once);
 
-            _mockUserHandler.Verify(x => x.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), "Twitter"), Times.Once);
+            _mockUserHandler.Verify(x => x.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), "Twitter", It.IsAny<bool>()), Times.Once);
         }
 
         [TestMethod]
@@ -193,7 +193,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -266,7 +266,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -340,7 +340,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -426,7 +426,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Once);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -561,7 +561,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Never);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -628,7 +628,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Never);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -689,7 +689,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Never);
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -712,7 +712,8 @@ namespace FDM90UnitTests
 
             //assert
             Assert.AreEqual(parameters, _pastDictionary);
-            Assert.AreEqual(_pastPostCreds, _twitterCredentialsList.First(x => x.UserId == _specificGuid));
+            Assert.AreNotEqual(_pastPostCreds.AccessToken, _twitterCredentialsList.First(x => x.UserId == _specificGuid).AccessToken);
+            Assert.AreNotEqual(_pastPostCreds.AccessTokenSecret, _twitterCredentialsList.First(x => x.UserId == _specificGuid).AccessTokenSecret);
         }
 
         [TestMethod]
@@ -750,7 +751,7 @@ namespace FDM90UnitTests
             _mockTwitterCredsRepo.Verify(specific => specific.Update(It.IsAny<TwitterCredentials>()), Times.Exactly(_twitterCredentialsList.Count()));
             _mockTwitterCredsRepo.Verify(specific => specific.Delete(It.IsAny<TwitterCredentials>()), Times.Never);
 
-            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>()),
+            _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<FDM90.Models.User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -922,12 +923,19 @@ namespace FDM90UnitTests
             });
             }
 
+            Dictionary<DateTime, int> numberOfFollowersByDate = new Dictionary<DateTime, int>();
+            numberOfFollowersByDate.Add(new DateTime(2016, 05, 01), 205);
+            numberOfFollowersByDate.Add(new DateTime(2016, 05, 02), 200);
+            numberOfFollowersByDate.Add(new DateTime(2016, 05, 03), 210);
+
+            data.NumberOfFollowersByDate = numberOfFollowersByDate;
+
             return data;
         }
 
         private string GetTwitterDataString()
         {
-            return "{\"NumberOfFollowers\":50,\"Tweets\":[{\"CreatedAt\":\"2017-07-28T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":3,\"RetweetCount\":6,\"StatusID\":1254987456,\"Text\":\"This Is Test Tweet 1\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493}]},{\"CreatedAt\":\"2017-07-24T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":16,\"StatusID\":546158431,\"Text\":\"This Is Test Tweet 2\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235},{\"NumberOfFollowers\":257},{\"NumberOfFollowers\":241},{\"NumberOfFollowers\":342},{\"NumberOfFollowers\":32},{\"NumberOfFollowers\":2},{\"NumberOfFollowers\":422},{\"NumberOfFollowers\":110},{\"NumberOfFollowers\":215}]},{\"CreatedAt\":\"2017-07-30T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":1,\"RetweetCount\":2,\"StatusID\":549845579112,\"Text\":\"This Is Test Tweet 3\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143}]},{\"CreatedAt\":\"2017-08-01T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":8,\"StatusID\":32154578612,\"Text\":\"This Is Test Tweet 4\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235}]}]}";
+            return "{\"NumberOfFollowers\":50,\"Tweets\":[{\"CreatedAt\":\"2017-07-28T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":3,\"RetweetCount\":6,\"StatusID\":1254987456,\"Text\":\"This Is Test Tweet 1\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493}]},{\"CreatedAt\":\"2017-07-29T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":16,\"StatusID\":546158431,\"Text\":\"This Is Test Tweet 2\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235},{\"NumberOfFollowers\":257},{\"NumberOfFollowers\":241},{\"NumberOfFollowers\":342},{\"NumberOfFollowers\":32},{\"NumberOfFollowers\":2},{\"NumberOfFollowers\":422},{\"NumberOfFollowers\":110},{\"NumberOfFollowers\":215}]},{\"CreatedAt\":\"2017-07-30T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":1,\"RetweetCount\":2,\"StatusID\":549845579112,\"Text\":\"This Is Test Tweet 3\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143}]},{\"CreatedAt\":\"2017-08-01T14:42:51.9829694+01:00\",\"ScreenName\":null,\"FavoriteCount\":8,\"RetweetCount\":8,\"StatusID\":32154578612,\"Text\":\"This Is Test Tweet 4\",\"Retweeted\":true,\"Favorited\":true,\"RetweetedUsers\":[{\"NumberOfFollowers\":181},{\"NumberOfFollowers\":143},{\"NumberOfFollowers\":405},{\"NumberOfFollowers\":166},{\"NumberOfFollowers\":448},{\"NumberOfFollowers\":493},{\"NumberOfFollowers\":25},{\"NumberOfFollowers\":235}]}],\"NumberOfFollowersByDate\":{\"2017-07-28T14:42:51.9829694+01:00\":5,\"2017-07-29T14:42:51.9829694+01:00\":3,\"2017-07-30T14:42:51.9829694+01:00\":0,\"2017-08-01T14:42:51.9829694+01:00\":1}}";
         }
 
         private Task<List<Status>> GetPastTweets(bool includeOutOfRangeDates, DateTime[] dates)
@@ -1068,6 +1076,7 @@ namespace FDM90UnitTests
                 int exposureValue = 0;
                 int influenceValue = 0;
                 int engagementValue = 0;
+                int acquisitionValue = 0;
                 int weekNumber = int.Parse(resultObject.Path.Substring(4));
 
                 for (int i = 0; i < twitterData.Tweets.Where(x => calendar.GetWeekOfYear(x.CreatedAt.Date, dateInfo.CalendarWeekRule, dateInfo.FirstDayOfWeek) == weekNumber)
@@ -1085,9 +1094,28 @@ namespace FDM90UnitTests
                                             tweets.Where(x => x.CreatedAt.Date == date).Sum(x => x.FavoriteCount);
                 }
 
+
                 Assert.AreEqual(exposureValue, resultObject.GetValue("Exposure"));
                 Assert.AreEqual(influenceValue, resultObject.GetValue("Influence"));
                 Assert.AreEqual(engagementValue, resultObject.GetValue("Engagement"));
+
+                if (resultObject["Acquisition"] != null)
+                {
+                    for (int i = 0; i < twitterData.NumberOfFollowersByDate.Count; i++)
+                    {
+                        var date = twitterData.NumberOfFollowersByDate.Select(x => x.Key).ToList();
+                        if (i != 0)
+                        {
+                            acquisitionValue += twitterData.NumberOfFollowersByDate[date[i]] - twitterData.NumberOfFollowersByDate[date[i - 1]];
+                        }
+                        else
+                        {
+                            acquisitionValue = 0;
+                        }
+                    }
+
+                    Assert.AreEqual(acquisitionValue, resultObject.GetValue("Acquisition"));
+                }
             }
         }
     }

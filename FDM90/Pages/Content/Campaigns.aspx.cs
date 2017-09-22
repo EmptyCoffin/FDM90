@@ -22,34 +22,13 @@ namespace FDM90.Pages.Content
         private List<Campaign> _userCampaigns;
         private ICampaignHandler _campaignHandler;
         private IMarketingModelHandler _marketingModelHandler;
-        private string[] metrics = { "Exposure", "Influence", "Engagement" };
+        private string[] metrics = { "Exposure", "Influence", "Engagement", "Acquisition" };
         private static DataTable campaignDataTable;
         private static MarketingModel[] marketingModels;
-        private int Exposure
+        private int GetDataTableSumValue(string source, string metric)
         {
-            get
-            {
-                return campaignDataTable == null ? 0
-                    : campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Exposure").Sum(s => int.Parse(s[4].ToString()));
-            }
-        }
-
-        private int Influence
-        {
-            get
-            {
-                return campaignDataTable == null ? 0
-                    : campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Influence").Sum(s => int.Parse(s[4].ToString()));
-            }
-        }
-
-        private int Engagement
-        {
-            get
-            {
-                return campaignDataTable == null ? 0
-                    : campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == "Overall" && w[2].ToString() == "Engagement").Sum(s => int.Parse(s[4].ToString()));
-            }
+            return campaignDataTable == null ? 0
+                : campaignDataTable.AsEnumerable().Where(w => w[0].ToString() == source && w[2].ToString() == metric).Sum(s => int.Parse(s[4].ToString()));
         }
 
         public Campaigns() : this(new CampaignHandler(), new MarketingModelHandler())
@@ -67,11 +46,43 @@ namespace FDM90.Pages.Content
         {
             if (!Page.IsPostBack)
             {
+                if(UserSingleton.Instance.CurrentUser == null) Response.Redirect("~/Pages/Content/Home.aspx");
+
                 if (TaskListSingleton.Instance.CurrentTasks.Count() > 0)
                     TaskListSingleton.Instance.CurrentTasks.First().Wait();
 
                 LoadData();
             }
+            SetUpMarketingBreakdown();
+        }
+
+        private void SetUpMarketingBreakdown()
+        {
+            foreach (string media in UserSingleton.Instance.CurrentUser.GetType().GetProperties().Where(x =>
+                    x.PropertyType == typeof(bool) && bool.Parse(x.GetValue(UserSingleton.Instance.CurrentUser).ToString()))
+                        .Select(s => s.Name))
+            {
+                AddNewTableRow(media);
+            }
+            AddNewTableRow("Overall");
+        }
+
+        private void AddNewTableRow(string media)
+        {
+            TableRow tableRow = new TableRow();
+            TableCell metricCell = new TableCell();
+            metricCell.Text = media + ": ";
+            tableRow.Cells.Add(metricCell);
+
+            TableCell mediaCell = new TableCell();
+            Label contentLabel = new Label();
+            contentLabel.ID = media + "MarketingModel";
+            contentLabel.Text = "";
+            mediaCell.Controls.Add(contentLabel);
+
+            tableRow.Cells.Add(mediaCell);
+
+            marketingBreakdownTable.Rows.Add(tableRow);
         }
 
         private void LoadData()
@@ -185,38 +196,51 @@ namespace FDM90.Pages.Content
         protected void marketingModels_SelectedIndexChanged(object sender, EventArgs e)
         {
             MarketingModel newModel = marketingModels.FirstOrDefault(x => x.Name == marketingModelsDropDown.SelectedValue);
-            if (newModel == null) return;
-
-            modelDescriptionLabel.Text = newModel.Description;
-            modelMetricLabel.Text = newModel.MetricsUsed;
-            modelResultMetricLabel.Text = newModel.ResultMetric;
+            if (newModel == null || string.IsNullOrWhiteSpace(CampaignCostTextBox.Text) || string.IsNullOrWhiteSpace(AverageCostOfProductsTextBox.Text)) return;
 
             var calculationExpression =
-                System.Linq.Dynamic.DynamicExpression.ParseLambda(new[]
-                {
+            System.Linq.Dynamic.DynamicExpression.ParseLambda(new[]
+            {
                     Expression.Parameter(typeof(double), "exposure"),
                     Expression.Parameter(typeof(double), "influence"),
                     Expression.Parameter(typeof(double), "engagement"),
+                    Expression.Parameter(typeof(double), "acquisition"),
                     Expression.Parameter(typeof(double), "totalCost"),
-                    Expression.Parameter(typeof(double), "price") },
-                    null, newModel.CalculationExpression);
+                    Expression.Parameter(typeof(double), "price")
+            }, null, newModel.CalculationExpression);
 
-            modelCalculationResultLabel.Text = calculationExpression.Compile()
-                                    .DynamicInvoke(Exposure, Influence, Engagement,
-                                                    double.Parse(CampaignCostTextBox.Text), double.Parse(AverageCostOfProductsTextBox.Text)).ToString();
+            foreach (string media in UserSingleton.Instance.CurrentUser.GetType().GetProperties().Where(x =>
+                                            x.PropertyType == typeof(bool) && bool.Parse(x.GetValue(UserSingleton.Instance.CurrentUser).ToString()))
+                                                .Select(s => s.Name).Concat(new[] { "Overall" }))
+            {
+                ((Label)marketingBreakdownTable.FindControl(media + "MarketingModel")).Text = ((double)calculationExpression.Compile()
+                                    .DynamicInvoke(GetDataTableSumValue(media, "Exposure"), GetDataTableSumValue(media, "Influence"), GetDataTableSumValue(media, "Engagement"), GetDataTableSumValue(media, "Acquisition"),
+                                                    double.Parse(CampaignCostTextBox.Text), double.Parse(AverageCostOfProductsTextBox.Text))).ToString("0.##") + " " + newModel.ResultMetric;
+            }
+
+            modelDescriptionLabel.Text = newModel.Description;
+            modelMetricLabel.Text = newModel.MetricsUsed;
         }
 
         protected void DownloadChart_Click(object sender, EventArgs e)
         {
             Response.ContentType = "image/png";
 
-            Response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}_{1}_{2}.png", 
+            Response.AddHeader("Content-Disposition", string.Format("attachment; filename={0}_{1}_{2}.png",
                                         currentCampaignDropDown.SelectedValue, metricDropDown.SelectedValue.ToString(), DateTime.Now.ToString()));
 
             campaignChart.SaveImage(Response.OutputStream, ChartImageFormat.Png);
 
             Response.Flush();
             Response.End();
+        }
+
+        protected void ModelVariabesChanged(object sender, EventArgs e)
+        {
+            if(marketingModels.FirstOrDefault(x => x.Name == marketingModelsDropDown.SelectedValue) != null)
+            {
+                marketingModels_SelectedIndexChanged(sender, e);
+            }
         }
     }
 }

@@ -1,17 +1,16 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FDM90.Repository;
-using System.Data;
 using Moq;
+using System.Data;
 using System.Collections.Generic;
-using System.Linq;
+using FDM90.Repository;
 using System.Data.SqlClient;
-using FDM90.Models;
+using System.Linq;
 
 namespace FDM90UnitTests
 {
     [TestClass]
-    public class ConfigRepositoryUnitTests
+    public class ProfanityRepositoryUnitTests
     {
         private Mock<IDbConnection> _mockIDbConnection;
         private Mock<IDbCommand> _mockIDbCommand;
@@ -20,26 +19,14 @@ namespace FDM90UnitTests
         private IList<object> _parameterObjects = new List<object>();
         private string setSqlString = String.Empty;
         private int count = -1;
-        private List<ConfigItem> _returningConfig = new List<ConfigItem>()
+        private List<string> _returningConfig = new List<string>()
         {
-            new ConfigItem()
-            {
-                Name = "Name1",
-                Value = "VUdGblpURT0="
-            },
-            new ConfigItem()
-            {
-                Name = "Name2",
-                Value = "VUdGblpUST0="
-            },
-            new ConfigItem()
-            {
-                Name = "Name3",
-                Value = "VUdGblpUTT0="
-            }
+            "BadWord1",
+            "BadWord2",
+            "BadWord3",
         };
 
-        private ConfigRepository _configRepo;
+        private ProfanityRepository _profanityRepo;
 
         [TestInitialize]
         public void StartUp()
@@ -65,7 +52,7 @@ namespace FDM90UnitTests
             _mockIDbConnection.Setup(connection => connection.CreateCommand()).Returns(_mockIDbCommand.Object);
             _mockIDbConnection.Setup(connection => connection.Dispose());
 
-            _configRepo = new ConfigRepository(_mockIDbConnection.Object);
+            _profanityRepo = new ProfanityRepository(_mockIDbConnection.Object);
         }
 
         [TestCleanup]
@@ -77,7 +64,7 @@ namespace FDM90UnitTests
             _mockIDataParameters = null;
             _mockIDbCommand = null;
             _mockIDbConnection = null;
-            _configRepo = null;
+            _profanityRepo = null;
             count = -1;
             _returningConfig = null;
         }
@@ -86,22 +73,21 @@ namespace FDM90UnitTests
         public void ConstructorTest_CallToParameterlessConstructor_ReturnsTrueIfObjectIsNotNull()
         {
             //act
-            _configRepo = new ConfigRepository();
+            _profanityRepo = new ProfanityRepository();
 
             //arrange
-            Assert.IsNotNull(_configRepo);
+            Assert.IsNotNull(_profanityRepo);
         }
 
         [TestMethod]
-        public void ReadAllCreds_GivenMethodCall_CorrectValuesSentToConnection()
+        public void ReadAll_GivenMethodCall_CorrectValuesSentToConnection()
         {
             //arrange
             _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < _returningConfig.Count - 1).Callback(() => count++);
-            _mockIDataReader.Setup(reader => reader["Name"]).Returns(() => _returningConfig[count].Name);
-            _mockIDataReader.Setup(reader => reader["Value"]).Returns(() => _returningConfig[count].Value);
+            _mockIDataReader.Setup(reader => reader["Value"]).Returns(() => _returningConfig[count]);
 
             //act
-            var result = _configRepo.ReadAll();
+            var result = _profanityRepo.ReadAll();
 
             //assert
             Assert.AreEqual(0, _parameterObjects.Count);
@@ -109,29 +95,27 @@ namespace FDM90UnitTests
             Assert.IsTrue(
                 TestHelper.CheckSqlStatementString(
                     StatementType.Select,
-                    "[FDM90].[dbo].[Configuration]",
+                    "[FDM90].[dbo].[Profanity]",
                     new string[0],
                     _parameterObjects.Cast<SqlParameter>().Select(x => x.ParameterName).ToArray(), setSqlString));
         }
 
         [TestMethod]
-        public void ReadAllCreds_GivenUserId_CorrectValueReturned()
+        public void ReadAll_GivenMethodCall_CorrectValueReturned()
         {
             //arrange
             _mockIDataReader.Setup(reader => reader.Read()).Returns(() => count < _returningConfig.Count - 1).Callback(() => count++);
-            _mockIDataReader.Setup(reader => reader["Name"]).Returns(() => _returningConfig[count].Name);
-            _mockIDataReader.Setup(reader => reader["Value"]).Returns(() => _returningConfig[count].Value);
+            _mockIDataReader.Setup(reader => reader["Value"]).Returns(() => _returningConfig[count]);
 
             //act
-            var result = _configRepo.ReadAll().ToList();
+            var result = _profanityRepo.ReadAll().ToList();
 
             //assert
             Assert.AreEqual(_returningConfig.Count, result.Count);
 
             for (int i = 0; i < _returningConfig.Count; i++)
             {
-                Assert.AreEqual(_returningConfig[i].Name, result[i].Name);
-                Assert.AreNotEqual(_returningConfig[i].Value, result[i].Value);
+                Assert.AreEqual(_returningConfig[i], result[i]);
             }
         }
     }

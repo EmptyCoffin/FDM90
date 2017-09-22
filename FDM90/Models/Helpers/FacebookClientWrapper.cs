@@ -26,7 +26,7 @@ namespace FDM90.Models.Helpers
 
                 response_type = "code",
 
-                scope = "manage_pages,publish_pages,read_insights"
+                scope = "manage_pages,publish_pages,read_insights,publish_actions,publish_pages"
             });
 
             return login.AbsoluteUri;
@@ -63,7 +63,6 @@ namespace FDM90.Models.Helpers
             dynamic pageId = _fbClient.Get(FacebookHelper.UrlBuilder(FacebookParameters.Id, "", new string[] { FacebookHelper.Id }));
             string postPath = "feed";
             dynamic parameters = new ExpandoObject();
-            parameters.message = postParameters["message"];
 
             if(postParameters.ContainsKey("picture"))
             {
@@ -75,7 +74,31 @@ namespace FDM90.Models.Helpers
                 parameters.source = mediaObject;
             }
 
-            return _fbClient.Post(pageId.id + "/" + postPath, parameters);
+            if (postParameters.ContainsKey("id"))
+            {
+                parameters.id = postParameters["id"];
+            }
+
+            if(postParameters.ContainsKey("message"))
+            {
+                parameters.message = postParameters["message"];
+            }
+
+            if(postParameters.ContainsKey("id"))
+            {
+                if(postParameters.ContainsKey("message"))
+                {
+                    return _fbClient.Post(parameters.id, parameters);
+                }
+                else
+                {
+                    return _fbClient.Delete(parameters.id);
+                }
+            }
+            else
+            {
+                return _fbClient.Post(pageId.id + "/" + postPath, parameters);
+            }
         }
 
         public dynamic GetData(string url, string accessToken)
