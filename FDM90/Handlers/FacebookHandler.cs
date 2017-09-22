@@ -53,6 +53,20 @@ namespace FDM90.Handlers
             _facebookClientWrapper = facebookClientWrapper;
         }
 
+        public string CheckPostText(string textToPost, string medias, Guid userId)
+        {
+            string errorMessage = string.Empty;
+
+            errorMessage = PostEthicalHelper.CheckTextForIssues(textToPost);
+
+            if (textToPost.Count() > MessageCharacterLimit)
+            {
+                errorMessage += string.Format("Max characters exceeded for {0} ({1})", MediaName, MessageCharacterLimit);
+            }
+
+            return errorMessage;
+        }
+
         public FacebookCredentials GetLogInDetails(Guid userId)
         {
             return _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId });

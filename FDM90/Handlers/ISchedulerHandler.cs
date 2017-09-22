@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace FDM90.Handlers
 {
-    public interface ISchedulerHandler
+    public interface ISchedulerHandler : IPostingData
     {
-        string PostNow(ScheduledPost newPost);
-        string CreateScheduledPost(ScheduledPost newPost);
-        string UpdateScheduledPost(ScheduledPost updatedPost);
+        void PostNow(ScheduledPost newPost);
+        void CreateScheduledPost(ScheduledPost newPost);
+        void UpdateScheduledPost(ScheduledPost updatedPost);
         IEnumerable<ScheduledPost> GetSchedulerPostsForUser(Guid userId);
         void SchedulerPostsForTime(DateTime currentTime);
         void DeleteScheduledPost(Guid postId);

@@ -1,4 +1,5 @@
 ﻿using FDM90.Models;
+using FDM90.Models.Helpers;
 using FDM90.Repository;
 using System;
 using System.Collections.Generic;
@@ -32,39 +33,15 @@ namespace FDM90.Handlers
 
         }
 
-        public string CreateScheduledPost(ScheduledPost newPost)
+        public void CreateScheduledPost(ScheduledPost newPost)
         {
-            User postingUser = _userHandler.GetUser(newPost.UserId.ToString());
-            foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(w =>
-                                            postingUser.GetIntegratedMediaChannels().Contains(w.MediaName)
-                                                    && newPost.MediaChannels.Split(',').Contains(w.MediaName)))
-            {
-                if (newPost.PostText.Count() > mediaHandler.MessageCharacterLimit)
-                {
-                    return string.Format("Max characters exceeded for {0} ({1})", mediaHandler.MediaName, mediaHandler.MessageCharacterLimit);
-                }
-
-            }
             newPost.PostId = Guid.NewGuid();
             _schedulerRepo.Create(newPost);
-            return null;
         }
 
-        public string UpdateScheduledPost(ScheduledPost updatedPost)
+        public void UpdateScheduledPost(ScheduledPost updatedPost)
         {
-            User postingUser = _userHandler.GetUser(updatedPost.UserId.ToString());
-            foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(w =>
-                                            postingUser.GetIntegratedMediaChannels().Contains(w.MediaName)
-                                                    && updatedPost.MediaChannels.Split(',').Contains(w.MediaName)))
-            {
-                if (updatedPost.PostText.Count() > mediaHandler.MessageCharacterLimit)
-                {
-                    return string.Format("Max characters exceeded for {0} ({1})", mediaHandler.MediaName, mediaHandler.MessageCharacterLimit);
-                }
-
-            }
             _schedulerRepo.Update(updatedPost);
-            return null;
         }
 
         public IEnumerable<ScheduledPost> GetSchedulerPostsForUser(Guid userId)
@@ -91,18 +68,34 @@ namespace FDM90.Handlers
             File.Delete(imagePath);
         }
 
-        public string PostNow(ScheduledPost newPost)
+        public string CheckPostText(string textToPost, string medias, Guid userId)
+        {
+            string errorMessage = string.Empty;
+
+            errorMessage = PostEthicalHelper.CheckTextForIssues(textToPost);
+
+            User postingUser = _userHandler.GetUser(userId.ToString());
+            foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(w =>
+                                            postingUser.GetIntegratedMediaChannels().Contains(w.MediaName)
+                                                    && medias.Split(',').Contains(w.MediaName)))
+            {
+                if (textToPost.Count() > mediaHandler.MessageCharacterLimit)
+                {
+                    errorMessage += string.Format("Max characters exceeded for {0} ({1})", mediaHandler.MediaName, mediaHandler.MessageCharacterLimit);
+                }
+
+            }
+
+            return errorMessage;
+        }
+
+        public void PostNow(ScheduledPost newPost)
         {
             User postingUser = _userHandler.GetUser(newPost.UserId.ToString());
             foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(w =>
                                                         postingUser.GetIntegratedMediaChannels().Contains(w.MediaName)
                                                                 && newPost.MediaChannels.Split(',').Contains(w.MediaName)))
             {
-                if (newPost.PostText.Count() > mediaHandler.MessageCharacterLimit)
-                {
-                    return string.Format("Max characters exceeded for {0} ({1})", mediaHandler.MediaName, mediaHandler.MessageCharacterLimit);
-                }
-
                 Dictionary<string, string> postParameters = new Dictionary<string, string>();
 
                 if (!string.IsNullOrEmpty(newPost.PostText))
@@ -116,9 +109,7 @@ namespace FDM90.Handlers
                 }
 
                 mediaHandler.PostData(postParameters, newPost.UserId);
-                return null;
             }
-            return null;
         }
 
         public void DeleteScheduledPostForUser(Guid userId)

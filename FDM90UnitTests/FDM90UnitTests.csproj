@@ -120,6 +120,7 @@
     <Compile Include="DateHelperUnitTests.cs" />
     <Compile Include="EncryptionHelperUnitTest.cs" />
     <Compile Include="FacebookHelperUnitTests.cs" />
+    <Compile Include="ProfanityRepositoryUnitTests.cs" />
     <Compile Include="UserSingletonUnitTest.cs" />
     <Compile Include="UserModelUnitTests.cs" />
     <Compile Include="UserHandlerUnitTests.cs" />

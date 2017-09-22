@@ -254,6 +254,7 @@
     <Compile Include="Handlers\ICampaignHandler.cs" />
     <Compile Include="Handlers\IMarketingModelHandler.cs" />
     <Compile Include="Handlers\IMediaHandler.cs" />
+    <Compile Include="Handlers\IPostingData.cs" />
     <Compile Include="Handlers\ISchedulerHandler.cs" />
     <Compile Include="Handlers\ITwitterHandler.cs" />
     <Compile Include="Handlers\IUserHandler.cs" />
@@ -272,6 +273,7 @@
     <Compile Include="Models\Helpers\IFacebookClientWrapper.cs" />
     <Compile Include="Models\Helpers\ITwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\JsonHelper.cs" />
+    <Compile Include="Models\Helpers\PostEthicalHelper.cs" />
     <Compile Include="Models\Helpers\SQLHelper.cs" />
     <Compile Include="Models\Helpers\TwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\TwitterHelper.cs" />
@@ -360,11 +362,13 @@
     <Compile Include="Repository\IReadSpecific.cs" />
     <Compile Include="Repository\IRepository.cs" />
     <Compile Include="Repository\MarketingModelRepository.cs" />
+    <Compile Include="Repository\ProfanityRepository.cs" />
     <Compile Include="Repository\RepositoryBase.cs" />
     <Compile Include="Repository\SchedulerRepository.cs" />
     <Compile Include="Repository\TwitterRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
     <Compile Include="Singleton\ConfigSingleton.cs" />
+    <Compile Include="Singleton\EthicalSingleton.cs" />
     <Compile Include="Singleton\TaskListSingleton.cs" />
     <Compile Include="Singleton\UserSingleton.cs" />
   </ItemGroup>

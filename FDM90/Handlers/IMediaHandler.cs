@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FDM90.Handlers
 {
-    public interface IMediaHandler
+    public interface IMediaHandler : IPostingData
     {
         string MediaName { get; }
         int MessageCharacterLimit { get; }

@@ -4,7 +4,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <div id="notUserArea" runat="server" visible="true">
-        This site is designed for a company can link their Social Media accounts in one place, where they can manage their accounts and create and evaluate marketing campaigns
+        This site is designed for a company can link their Social Media accounts in one place, where they can manage their accounts and create and evaluate marketing campaigns. We have a duty of care to the end consumer, this means that all messages that are wished to be posted will be tested for ethical and social breaches.
     </div>
     <div id="userArea" runat="server" visible="false">
         <p>

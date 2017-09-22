@@ -53,6 +53,20 @@ namespace FDM90.Handlers
             }
         }
 
+        public string CheckPostText(string textToPost, string medias, Guid userId)
+        {
+            string errorMessage = string.Empty;
+
+            errorMessage = PostEthicalHelper.CheckTextForIssues(textToPost);
+
+            if (textToPost.Count() > MessageCharacterLimit)
+            {
+                errorMessage += string.Format("Max characters exceeded for {0} ({1})", MediaName, MessageCharacterLimit);
+            }
+
+            return errorMessage;
+        }
+
         public IJEnumerable<JToken> GetCampaignInfo(Guid userId, DateTime[] dates)
         {
             JObject twitterTargets = new JObject();

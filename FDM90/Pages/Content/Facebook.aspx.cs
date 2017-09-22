@@ -120,10 +120,12 @@ namespace FDM90.Pages.Content
 
         protected void PostButton_Click(object sender, EventArgs e)
         {
-            if (FacebookPostText.Text.Count() > _facebookHandler.MessageCharacterLimit)
+            string errorMessage = _facebookHandler.CheckPostText(FacebookPostText.Text, _facebookHandler.MediaName);
+
+            if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 PostFacebookError.Visible = true;
-                PostFacebookError.Text = "Max characters exceeded" + _facebookHandler.MessageCharacterLimit;
+                PostFacebookError.Text = errorMessage;
                 return;
             }
             else
@@ -174,12 +176,21 @@ namespace FDM90.Pages.Content
 
         protected void postList_ItemUpdating(object sender, ListViewUpdateEventArgs e)
         {
-            if((postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text.Count() > _facebookHandler.MessageCharacterLimit)
+            string errorMessage = 
+                    _facebookHandler.CheckPostText((postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text, _facebookHandler.MediaName);
+
+            if (string.IsNullOrWhiteSpace(errorMessage))
             {
-                PostFacebookError.Visible = true;
-                PostFacebookError.Text = "Max characters exceeded" + _facebookHandler.MessageCharacterLimit;
+                (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Visible = true;
+                (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Text = errorMessage;
                 return;
             }
+            else
+            {
+                (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Visible = false;
+                (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Text = string.Empty;
+            }
+
 
             Dictionary<string, string> facebookParameters = new Dictionary<string, string>();
             facebookParameters.Add("id", (postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text);
