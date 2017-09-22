@@ -111,8 +111,8 @@ namespace FDM90.Pages.Content
                 numberOfPageLikes.Text = _facebookData.FanCount.ToString();
                 numberOfNewLikes.Text = _facebookData.PageLikes.Values.Where(x => x.EndTime.Date >= DateTime.Now.AddDays(-7).Date && x.EndTime.Date <= DateTime.Now.Date).Sum(s => s.Value).ToString();
                 numberOfTalkingAbout.Text = _facebookData.PageStories.Values.Where(x => x.EndTime.Date >= DateTime.Now.AddDays(-7).Date && x.EndTime.Date <= DateTime.Now.Date).Sum(s => s.Value).ToString();
-                numberOfPostLikes.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Likes.Count).ToString();
-                numberOfPostComments.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Comments.Count).ToString();
+                numberOfPostLikes.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Likes?.Count).ToString();
+                numberOfPostComments.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Comments?.Count).ToString();
                 postList.DataSource = _facebookData.Posts.OrderByDescending(x => x.CreatedTime);
                 postList.DataBind();
             }
@@ -127,13 +127,15 @@ namespace FDM90.Pages.Content
             {
                 if (imageSuffixes.Contains(FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
-                    FacebookPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + FacebookPostAttachement.FileName);
-                    facebookParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + FacebookPostAttachement.FileName);
+                    string fileName = UserSingleton.Instance.CurrentUser.UserId.ToString() + "_" + DateTime.Now.ToString() 
+                                                + FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.'));
+                    FacebookPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + fileName);
+                    facebookParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + fileName);
                 }
             }
 
             _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
-
+            FacebookPostText.Text = string.Empty;
             GetFacebookData(true);
         }
 

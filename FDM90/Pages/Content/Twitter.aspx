@@ -1,12 +1,12 @@
 ﻿<%@ Page Async="true" Title="" MaintainScrollPositionOnPostback="true" Language="C#" MasterPageFile="~/Pages/Site.Master" AutoEventWireup="true" CodeBehind="Twitter.aspx.cs" Inherits="FDM90.Pages.Content.Twitter" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+                <div class="row">
+                <div class="col-md-7">
     <asp:ScriptManager runat="server" />
     <asp:UpdatePanel ID="twitterPanel" runat="server" UpdateMode="Always">
         <ContentTemplate>
             <asp:Timer ID="twitterUpdateTimer" runat="server" Interval="10000" OnTick="twitterUpdateTimer_Tick" />
-            <div class="row">
-                <div class="col-md-7">
                     <h4>Twitter Timeline</h4>
                     <asp:ListView ID="tweetList" runat="server" OnItemDeleting="tweetList_ItemDeleting">
                         <LayoutTemplate>
@@ -27,7 +27,7 @@
                                         Text='<%#Eval("Text") %>' />
                                     <br />
                                     <strong>Picture: </strong><asp:Image runat="server" ID="PostImage" Height="150px" Width="250px"
-                                         Visible='<%#(!string.IsNullOrEmpty(Eval("ImageUrl").ToString()))%>' ImageUrl='<%#Eval("ImageUrl") %>' />
+                                         Visible='<%#(Eval("ImageUrl") != null && !string.IsNullOrEmpty(Eval("ImageUrl").ToString()))%>' ImageUrl='<%#Eval("ImageUrl") %>' />
                                     <br />
                                     <asp:Button ID="DeleteButton" class="btn btn-danger" runat="server" CommandName="Delete" Text="Delete" />
                                 </td>
@@ -43,15 +43,18 @@
                             </tr>
                         </ItemTemplate>
                     </asp:ListView>
-                </div>
+
+        </ContentTemplate>
+    </asp:UpdatePanel>
+                                    </div>
                 <div class="col-md-4" style="position: sticky; position: -webkit-sticky; top: 127px; padding: 5px;">
                     <h4>Twiter Update</h4>
                     <br />
                     Message:
                     <asp:TextBox ID="TwitterPostText" TextMode="MultiLine" Height="100px" Width="250px" runat="server"></asp:TextBox>
-                    <br />
+<%--                    <br />
                     Picture:
-                    <asp:FileUpload ID="TwitterPostAttachement" runat="server" />
+                    <asp:FileUpload ID="TwitterPostAttachement" runat="server" />--%>
                     <br />
                     <asp:Button ID="PostButton" runat="server" class="btn btn-primary" Text="Post" OnClick="PostButton_Click" />
                     <br />
@@ -72,7 +75,4 @@
                     <asp:Label ID="numberOfFavorite" runat="server"></asp:Label>
                 </div>
             </div>
-            </div>
-        </ContentTemplate>
-    </asp:UpdatePanel>
 </asp:Content>

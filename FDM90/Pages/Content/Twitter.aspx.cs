@@ -121,17 +121,17 @@ namespace FDM90.Pages.Content
             Dictionary<string, string> twitterParameters = new Dictionary<string, string>();
             twitterParameters.Add("message", TwitterPostText.Text);
 
-            if (TwitterPostAttachement.HasFile)
-            {
-                if (imageSuffixes.Contains(TwitterPostAttachement.FileName.Substring(TwitterPostAttachement.FileName.LastIndexOf('.') + 1)))
-                {
-                    TwitterPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
-                    twitterParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
-                }
-            }
+            //if (TwitterPostAttachement.HasFile)
+            //{
+            //    if (imageSuffixes.Contains(TwitterPostAttachement.FileName.Substring(TwitterPostAttachement.FileName.LastIndexOf('.') + 1)))
+            //    {
+            //        TwitterPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
+            //        twitterParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + TwitterPostAttachement.FileName);
+            //    }
+            //}
 
             _twitterHandler.PostData(twitterParameters, UserSingleton.Instance.CurrentUser.UserId);
-
+            TwitterPostText.Text = string.Empty;
             GetTwitterData(true);
         }
 

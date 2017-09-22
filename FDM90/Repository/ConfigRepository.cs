@@ -40,7 +40,7 @@ namespace FDM90.Repository
         {
             ConfigItem item = new ConfigItem();
             item.Name = reader["Name"].ToString();
-            item.Value = reader["Value"].ToString();
+            item.Value = EncryptionHelper.DecryptString(reader["Value"].ToString());
             return item;
         }
     }

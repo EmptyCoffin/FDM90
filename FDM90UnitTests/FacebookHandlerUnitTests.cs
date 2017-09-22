@@ -23,7 +23,7 @@ namespace FDM90UnitTests
         private Mock<IUserHandler> _mockUserHandler;
         private Mock<IFacebookClientWrapper> _mockFacebookClientWrapper;
         private FacebookHandler _facebookHandler;
-        private string permanentAccessToken = "PermanentAccessToken";
+        private string permanentAccessToken = "VUdWeWJXRnVaVzUwUVdOalpYTnpWRzlyWlc0PQ==";
         private FacebookCredentials callBackCreds = null;
         private FacebookCredentials returningCreds = null;
         private User callBackUser = null;
@@ -43,17 +43,17 @@ namespace FDM90UnitTests
                 new FacebookCredentials()
                 {
                     UserId = Guid.NewGuid(),
-                    PermanentAccessToken = "ThisIsAccessToken1"
+                    PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiakU9"
                 },
                 new FacebookCredentials()
                 {
                     UserId = Guid.NewGuid(),
-                    PermanentAccessToken = "ThisIsAccessToken2"
+                    PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiakk9"
                 },
                 new FacebookCredentials()
                 {
                     UserId = Guid.NewGuid(),
-                    PermanentAccessToken = "ThisIsAccessToken3"
+                    PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiak09"
                 }
             };
 
@@ -147,7 +147,7 @@ namespace FDM90UnitTests
                 .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() =>
                 {
-                    creds.PermanentAccessToken = "PermanentAccessToken";
+                    creds.PermanentAccessToken = "VUdWeWJXRnVaVzUwUVdOalpYTnpWRzlyWlc0PQ==";
                     return creds;
                 });
 
@@ -171,7 +171,7 @@ namespace FDM90UnitTests
                 .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() =>
                 {
-                    creds.PermanentAccessToken = "PermanentAccessToken";
+                    creds.PermanentAccessToken = "VUdWeWJXRnVaVzUwUVdOalpYTnpWRzlyWlc0PQ==";
                     return creds;
                 });
 
@@ -332,7 +332,7 @@ namespace FDM90UnitTests
 
             //assert
             Assert.AreEqual(newCredGuid, callBackCreds.UserId);
-            Assert.AreEqual(permanentAccessToken, callBackCreds.PermanentAccessToken);
+            Assert.AreNotEqual(permanentAccessToken, callBackCreds.PermanentAccessToken);
 
             Assert.AreEqual(newCredPageName, callBackPageName);
             Assert.AreEqual(shortTermToken, callBackShortTermToken);
@@ -439,7 +439,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
                         .Returns(GetBasicFacebookData());
@@ -482,7 +482,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
                         .Returns(GetBasicFacebookData());
@@ -524,7 +524,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
                         .Returns(GetBasicFacebookData());
@@ -579,7 +579,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
                         .Returns(GetBasicFacebookData());
@@ -633,7 +633,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
             returningCreds.FacebookData = "{\"access_token\":null,\"id\":\"1233456789\",\"name\":\"Test Name\",\"fan_count\":951,\"new_like_count\":0,\"talking_about_count\":159,\"posts\":[{\"id\":\"123456789_987564321\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-30T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":72433}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":115433}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null},{\"id\":\"987654321_987564321\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-29T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":72433}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":115433}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null},{\"id\":\"123456789_132456798\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-08T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":908813}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":516712}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null}],\"page_fan_adds\":{\"name\":\"page_fan_adds\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"2017-09-01T17:52:08+01:00\",\"value\":108},{\"end_time\":\"2017-08-31T17:52:08+01:00\",\"value\":131}]},\"page_stories\":{\"name\":\"page_stories\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"2017-09-01T17:52:08+01:00\",\"value\":108},{\"end_time\":\"2017-08-31T17:52:08+01:00\",\"value\":131},{\"end_time\":\"2017-08-30T17:52:08+01:00\",\"value\":17},{\"end_time\":\"2017-08-29T17:52:08+01:00\",\"value\":117},{\"end_time\":\"2017-08-28T17:52:08+01:00\",\"value\":126}]}}";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
@@ -677,7 +677,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
             returningCreds.FacebookData = "{\"access_token\":null,\"id\":\"1233456789\",\"name\":\"Test Name\",\"fan_count\":951,\"new_like_count\":0,\"talking_about_count\":159,\"posts\":[{\"id\":\"123456789_987564321\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-30T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":72433}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":115433}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null},{\"id\":\"987654321_987564321\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-29T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":72433}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":115433}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null},{\"id\":\"123456789_132456798\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-08T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":908813}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":516712}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null}],\"page_fan_adds\":{\"name\":\"page_fan_adds\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"2017-09-01T17:52:08+01:00\",\"value\":108},{\"end_time\":\"2017-08-31T17:52:08+01:00\",\"value\":131}]},\"page_stories\":{\"name\":\"page_stories\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"2017-09-01T17:52:08+01:00\",\"value\":108},{\"end_time\":\"2017-08-31T17:52:08+01:00\",\"value\":131},{\"end_time\":\"2017-08-30T17:52:08+01:00\",\"value\":17},{\"end_time\":\"2017-08-29T17:52:08+01:00\",\"value\":117},{\"end_time\":\"2017-08-28T17:52:08+01:00\",\"value\":126}]}}";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
@@ -877,7 +877,7 @@ namespace FDM90UnitTests
                 .Setup(specific => specific.ReadSpecific(It.IsAny<FacebookCredentials>()))
                 .Returns(() =>
                 {
-                    creds.PermanentAccessToken = "PermanentAccessToken";
+                    creds.PermanentAccessToken = "VUdWeWJXRnVaVzUwUVdOalpYTnpWRzlyWlc0PQ==";
                     creds.FacebookData = JsonConvert.SerializeObject(data);
                     return creds;
                 });
@@ -904,7 +904,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
             returningCreds.FacebookData = "{\"access_token\":null,\"id\":\"1233456789\",\"name\":\"Test Name\",\"fan_count\":951,\"new_like_count\":0,\"talking_about_count\":159,\"posts\":[{\"id\":\"123456789_987564321\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-30T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":72433}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":115433}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null},{\"id\":\"987654321_987564321\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-29T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":72433}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":115433}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null},{\"id\":\"123456789_132456798\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-08T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":908813}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":516712}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null}],\"page_fan_adds\":{\"name\":\"page_fan_adds\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"2017-09-01T17:52:08+01:00\",\"value\":108},{\"end_time\":\"2017-08-31T17:52:08+01:00\",\"value\":131}]},\"page_stories\":{\"name\":\"page_stories\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"2017-09-01T17:52:08+01:00\",\"value\":108},{\"end_time\":\"2017-08-31T17:52:08+01:00\",\"value\":131},{\"end_time\":\"2017-08-30T17:52:08+01:00\",\"value\":17},{\"end_time\":\"2017-08-29T17:52:08+01:00\",\"value\":117},{\"end_time\":\"2017-08-28T17:52:08+01:00\",\"value\":126}]}}";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
@@ -948,7 +948,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
             returningCreds.FacebookData = "{\"access_token\":null,\"id\":\"1233456789\",\"name\":\"Test Name\",\"fan_count\":951,\"new_like_count\":0,\"talking_about_count\":159,\"posts\":[{\"id\":\"123456789_987564321\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-17T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":72433}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":115433}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null},{\"id\":\"987654321_987564321\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-16T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":72433}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":115433}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null},{\"id\":\"123456789_132456798\",\"message\":\"This Is A Test Message\",\"story\":null,\"created_time\":\"2017-08-14T00:00:00+01:00\",\"post_impressions_organic_unique\":{\"name\":\"post_impressions_organic_unique\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":908813}]},\"post_engaged_users\":{\"name\":\"post_engaged_users\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"0001-01-01T00:00:00\",\"value\":516712}]},\"post_negative_feedback\":null,\"picture\":null,\"likes\":null,\"comments\":null,\"shares\":null}],\"page_fan_adds\":{\"name\":\"page_fan_adds\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"2017-09-01T17:52:08+01:00\",\"value\":108},{\"end_time\":\"2017-08-31T17:52:08+01:00\",\"value\":131}]},\"page_stories\":{\"name\":\"page_stories\",\"period\":\"lifetime\",\"values\":[{\"end_time\":\"2017-09-01T17:52:08+01:00\",\"value\":108},{\"end_time\":\"2017-08-31T17:52:08+01:00\",\"value\":131},{\"end_time\":\"2017-08-30T17:52:08+01:00\",\"value\":17},{\"end_time\":\"2017-08-29T17:52:08+01:00\",\"value\":117},{\"end_time\":\"2017-08-28T17:52:08+01:00\",\"value\":126}]}}";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
@@ -1066,7 +1066,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
                         .Returns(GetBasicFacebookData());
@@ -1099,7 +1099,7 @@ namespace FDM90UnitTests
         {
             //arrange
             returningCreds.UserId = Guid.NewGuid();
-            returningCreds.PermanentAccessToken = "ThisIsATestToken";
+            returningCreds.PermanentAccessToken = "VkdocGMwbHpRVlJsYzNSVWIydGxiZz09";
 
             _mockFacebookClientWrapper.Setup(wrapper => wrapper.GetData("https://graph.facebook.com/v2.8/me?fields=id,name,fan_count,talking_about_count", It.IsAny<string>()))
                         .Returns(GetBasicFacebookData());
@@ -1147,7 +1147,7 @@ namespace FDM90UnitTests
             // arrange
             Guid specificGuid = Guid.NewGuid();
             returningCreds.UserId = specificGuid;
-            returningCreds.PermanentAccessToken = "This is a permanent access token";
+            returningCreds.PermanentAccessToken = permanentAccessToken;
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("message", "This is the message to send");
@@ -1158,7 +1158,7 @@ namespace FDM90UnitTests
 
             // assert
             Assert.AreEqual(parameters, pastDictionary);
-            Assert.AreEqual(returningCreds.PermanentAccessToken, pastAccessToken);
+            Assert.AreNotEqual(returningCreds.PermanentAccessToken, pastAccessToken);
         }
 
         [TestMethod]
@@ -1167,7 +1167,7 @@ namespace FDM90UnitTests
             // arrange
             Guid specificGuid = Guid.NewGuid();
             returningCreds.UserId = specificGuid;
-            returningCreds.PermanentAccessToken = "This is a permanent access token";
+            returningCreds.PermanentAccessToken = permanentAccessToken;
 
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             parameters.Add("message", "This is the message to send");

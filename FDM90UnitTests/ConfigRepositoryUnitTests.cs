@@ -25,17 +25,17 @@ namespace FDM90UnitTests
             new ConfigItem()
             {
                 Name = "Name1",
-                Value = "Page1"
+                Value = "VUdGblpURT0="
             },
             new ConfigItem()
             {
                 Name = "Name2",
-                Value = "Page2"
+                Value = "VUdGblpUST0="
             },
             new ConfigItem()
             {
                 Name = "Name3",
-                Value = "Page3"
+                Value = "VUdGblpUTT0="
             }
         };
 
@@ -131,7 +131,7 @@ namespace FDM90UnitTests
             for (int i = 0; i < _returningConfig.Count; i++)
             {
                 Assert.AreEqual(_returningConfig[i].Name, result[i].Name);
-                Assert.AreEqual(_returningConfig[i].Value, result[i].Value);
+                Assert.AreNotEqual(_returningConfig[i].Value, result[i].Value);
             }
         }
     }

@@ -35,14 +35,14 @@ namespace FDM90.Models.Helpers
 
             while (true)
             {
-                if (postParameters.ContainsKey("picture"))
-                {
-                    var media = await context.UploadMediaAsync(File.ReadAllBytes(postParameters["picture"]),
-                                    "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1));
+                //if (postParameters.ContainsKey("picture"))
+                //{
+                //    var media = await context.UploadMediaAsync(File.ReadAllBytes(postParameters["picture"]),
+                //                    "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1), "tweet_image");
 
-                    return context.TweetAsync(postParameters["message"], new ulong[] { media.MediaID }).Result;
-                }
-                else if (postParameters.ContainsKey("id"))
+                //    return context.TweetAsync(postParameters["message"], new ulong[] { media.MediaID }).Result;
+                //}
+                if (postParameters.ContainsKey("id"))
                 {
                     return context.DeleteTweetAsync(ulong.Parse(postParameters["id"])).Result;
                 }

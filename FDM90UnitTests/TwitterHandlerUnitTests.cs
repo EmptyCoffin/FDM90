@@ -43,29 +43,29 @@ namespace FDM90UnitTests
                 {
                     UserId = Guid.NewGuid(),
                     ScreenName = "ScreenName1",
-                    AccessToken = "AccessToken1",
-                    AccessTokenSecret = "AccessTokenSecret1"
+                    AccessToken = "UVdOalpYTnpWRzlyWlc0eA==",
+                    AccessTokenSecret = "UVdOalpYTnpWRzlyWlc1VFpXTnlaWFF4"
                 },
                 new TwitterCredentials()
                 {
                     UserId = _specificGuid,
                     ScreenName = "ScreenName2",
-                    AccessToken = "AccessToken2",
-                    AccessTokenSecret = "AccessTokenSecret2"
+                    AccessToken = "UVdOalpYTnpWRzlyWlc0eQ==",
+                    AccessTokenSecret = "UVdOalpYTnpWRzlyWlc1VFpXTnlaWFF5"
                 },
                 new TwitterCredentials()
                 {
                     UserId = Guid.NewGuid(),
                     ScreenName = "ScreenName3",
-                    AccessToken = "AccessToken3",
-                    AccessTokenSecret = "AccessTokenSecret3"
+                    AccessToken = "UVdOalpYTnpWRzlyWlc0eg==",
+                    AccessTokenSecret = "UVdOalpYTnpWRzlyWlc1VFpXTnlaWFF6"
                 },
                 new TwitterCredentials()
                 {
                     UserId = Guid.NewGuid(),
                     ScreenName = "ScreenName4",
-                    AccessToken = "AccessToken4",
-                    AccessTokenSecret = "AccessTokenSecret4"
+                    AccessToken = "UVdOalpYTnpWRzlyWlc0MA==",
+                    AccessTokenSecret = "UVdOalpYTnpWRzlyWlc1VFpXTnlaWFEw"
                 }
             };
 
@@ -712,7 +712,8 @@ namespace FDM90UnitTests
 
             //assert
             Assert.AreEqual(parameters, _pastDictionary);
-            Assert.AreEqual(_pastPostCreds, _twitterCredentialsList.First(x => x.UserId == _specificGuid));
+            Assert.AreNotEqual(_pastPostCreds.AccessToken, _twitterCredentialsList.First(x => x.UserId == _specificGuid).AccessToken);
+            Assert.AreNotEqual(_pastPostCreds.AccessTokenSecret, _twitterCredentialsList.First(x => x.UserId == _specificGuid).AccessTokenSecret);
         }
 
         [TestMethod]

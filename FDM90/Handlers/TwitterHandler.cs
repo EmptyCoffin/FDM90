@@ -128,7 +128,11 @@ namespace FDM90.Handlers
         private TwitterData GetTwitterData(TwitterCredentials twitterDetails, DateTime[] dates)
         {
             TwitterData data = null;
-            var tweets = _twitterClientWrapper.GetTweets(twitterDetails).Result;
+            var tweets = _twitterClientWrapper.GetTweets(new TwitterCredentials() {
+                ScreenName = twitterDetails.ScreenName,
+                AccessToken = EncryptionHelper.DecryptString(twitterDetails.AccessToken),
+                AccessTokenSecret = EncryptionHelper.DecryptString(twitterDetails.AccessTokenSecret)
+            }).Result;
 
             if (tweets.Count(tweet => dates.Select(x => x.Date).Contains(tweet.CreatedAt.Date)) > 0)
             {
@@ -140,7 +144,12 @@ namespace FDM90.Handlers
                 {
                     if (tweet.RetweetCount > 0)
                     {
-                        tweet.RetweetedUsers = GetRetweeterFollowers(tweet.StatusID, twitterDetails);
+                        tweet.RetweetedUsers = GetRetweeterFollowers(tweet.StatusID, new TwitterCredentials()
+                        {
+                            ScreenName = twitterDetails.ScreenName,
+                            AccessToken = EncryptionHelper.DecryptString(twitterDetails.AccessToken),
+                            AccessTokenSecret = EncryptionHelper.DecryptString(twitterDetails.AccessTokenSecret)
+                        });
                     }
                 }
             }
@@ -201,7 +210,12 @@ namespace FDM90.Handlers
         {
             TwitterCredentials creds = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
-            _twitterClientWrapper.PostTweet(creds, postParameters);
+            _twitterClientWrapper.PostTweet(new TwitterCredentials()
+            {
+                ScreenName = creds.ScreenName,
+                AccessToken = EncryptionHelper.DecryptString(creds.AccessToken),
+                AccessTokenSecret = EncryptionHelper.DecryptString(creds.AccessTokenSecret)
+            }, postParameters);
         }
 
         public List<Task> DailyUpdate()

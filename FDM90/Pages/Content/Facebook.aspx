@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MaintainScrollPositionOnPostback="true" MasterPageFile="~/Pages/Site.Master" EnableEventValidation="false" AutoEventWireup="true" CodeBehind="Facebook.aspx.cs" Inherits="FDM90.Pages.Content.Facebook" %>
+﻿<%@ Page Title="" Language="C#" EnableViewState="true" MaintainScrollPositionOnPostback="true" MasterPageFile="~/Pages/Site.Master" EnableEventValidation="false" AutoEventWireup="true" CodeBehind="Facebook.aspx.cs" Inherits="FDM90.Pages.Content.Facebook" %>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <div runat="server" id="signInArea">
@@ -10,12 +10,12 @@
             <asp:Label ID="facebookDetailsErrorLabel" runat="server"></asp:Label>
         </div>
     </div>
-    <asp:ScriptManager runat="server" />
-    <asp:UpdatePanel ID="facebookPanel" runat="server" UpdateMode="Always">
-        <ContentTemplate>
-            <asp:Timer ID="facebookUpdateTimer" runat="server" Interval="10000" OnTick="facebookUpdateTimer_Tick" />
-            <div class="row">
-                <div class="col-md-7">
+    <div class="row">
+        <div class="col-md-7">
+            <asp:ScriptManager runat="server" />
+            <asp:UpdatePanel ID="facebookPanel" runat="server" UpdateMode="Always">
+                <ContentTemplate>
+                    <asp:Timer ID="facebookUpdateTimer" runat="server" Interval="10000" OnTick="facebookUpdateTimer_Tick" />
                     <h4>Facebook Timeline</h4>
                     <asp:ListView ID="postList" runat="server" OnItemEditing="postList_ItemEditing" OnItemCanceling="postList_ItemCanceling"
                         OnItemUpdating="postList_ItemUpdating" OnItemDeleting="postList_ItemDeleting">
@@ -107,39 +107,40 @@
                             </tr>
                         </EditItemTemplate>
                     </asp:ListView>
-                </div>
-                <div class="col-md-4" style="position: sticky; position: -webkit-sticky; top: 127px; padding: 5px;">
-                    <div runat="server" id="facebookData" visible="false" class="container">
-                        <h4>Facebook Update</h4>
-                        <br />
-                        Message:
+                </ContentTemplate>
+            </asp:UpdatePanel>
+        </div>
+        <div class="col-md-4" style="position: sticky; position: -webkit-sticky; top: 127px; padding: 5px;">
+            <div runat="server" id="facebookData" visible="false" class="container">
+                <h4>Facebook Update</h4>
+                <br />
+                Message:
                         <asp:TextBox ID="FacebookPostText" TextMode="MultiLine" Height="100px" Width="250px" runat="server"></asp:TextBox>
-                        <br />
-                        Picture:
-                        <asp:FileUpload ID="FacebookPostAttachement" runat="server" />
-                        <br />
-                        <asp:Button ID="PostButton" runat="server" class="btn btn-primary" Text="Post" OnClick="PostButton_Click" />
-                        <br />
-                        <br />
-                        <strong>--------------------------------------</strong>
-                        <br />
-                        <br />
-                        Number of Page Likes:
+                <br />
+                Picture:
+                        <asp:FileUpload EnableViewState="true" ID="FacebookPostAttachement" runat="server" />
+                <br />
+                <asp:Button ID="PostButton" runat="server" class="btn btn-primary" Text="Post" OnClick="PostButton_Click" />
+                <br />
+                <br />
+                <strong>--------------------------------------</strong>
+                <br />
+                <br />
+                Number of Page Likes:
                         <asp:Label ID="numberOfPageLikes" runat="server"></asp:Label>
-                        <br />
-                        Number of New Page Likes (Past 7 Days):
+                <br />
+                Number of New Page Likes (Past 7 Days):
                         <asp:Label ID="numberOfNewLikes" runat="server"></asp:Label>
-                        <br />
-                        Number of Page Stories (Past 7 Days):
+                <br />
+                Number of Page Stories (Past 7 Days):
                         <asp:Label ID="numberOfTalkingAbout" runat="server"></asp:Label>
-                        <br />
-                        Number of Post Likes (Past 7 Days):
+                <br />
+                Number of Post Likes (Past 7 Days):
                         <asp:Label ID="numberOfPostLikes" runat="server"></asp:Label>
-                        <br />
-                        Number of Post Comments (Past 7 Days):
+                <br />
+                Number of Post Comments (Past 7 Days):
                         <asp:Label ID="numberOfPostComments" runat="server"></asp:Label>
-                    </div>
-                </div>
-        </ContentTemplate>
-    </asp:UpdatePanel>
+            </div>
+        </div>
+    </div>
 </asp:Content>

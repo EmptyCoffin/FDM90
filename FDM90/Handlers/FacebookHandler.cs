@@ -78,7 +78,7 @@ namespace FDM90.Handlers
             _facebookRepo.Update(new FacebookCredentials()
             {
                 UserId = userId,
-                PermanentAccessToken = permanentTokenString
+                PermanentAccessToken = EncryptionHelper.EncryptString(permanentTokenString)
             });
 
             // trigger get info
@@ -95,11 +95,11 @@ namespace FDM90.Handlers
                 _facebookClientWrapper.GetData(FacebookHelper.UrlBuilder(FacebookParameters.Field, "", new string[]
                 {
                     FacebookHelper.Id, FacebookHelper.Name, FacebookHelper.FanCount, FacebookHelper.TalkingAboutCount,
-                }), currentData.PermanentAccessToken);
+                }), EncryptionHelper.DecryptString(currentData.PermanentAccessToken));
 
             FacebookData data = JsonHelper.Parse(basicData, new FacebookData());
 
-            data = GetMetricData(dates, currentData.PermanentAccessToken, data);
+            data = GetMetricData(dates, EncryptionHelper.DecryptString(currentData.PermanentAccessToken), data);
 
             if (!string.IsNullOrWhiteSpace(currentData.FacebookData))
             {
@@ -245,14 +245,15 @@ namespace FDM90.Handlers
             FacebookCredentials creds = _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId });
 
             FacebookData todaysData = creds == null || string.IsNullOrWhiteSpace(creds.PermanentAccessToken) ? null :
-                                        GetMetricData(new DateTime[] { DateTime.Now.Date }, creds.PermanentAccessToken, new FacebookData());
+                                        GetMetricData(new DateTime[] { DateTime.Now.Date }, EncryptionHelper.DecryptString(creds.PermanentAccessToken), new FacebookData());
 
             return creds == null || string.IsNullOrWhiteSpace(creds.FacebookData) ? todaysData : JsonConvert.DeserializeObject<FacebookData>(creds.FacebookData).Update(todaysData);
         }
 
         public void PostData(Dictionary<string, string> postParameters, Guid userId)
         {
-            _facebookClientWrapper.PostData(postParameters, _facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId }).PermanentAccessToken);
+            _facebookClientWrapper.PostData(postParameters, 
+                                EncryptionHelper.DecryptString(_facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId }).PermanentAccessToken));
         }
 
         public List<Task> DailyUpdate()

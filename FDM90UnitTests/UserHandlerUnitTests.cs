@@ -56,7 +56,7 @@ namespace FDM90UnitTests
             //arrange
 
             //act
-            var result = _userHandler.RegisterUser("TestUserName", "test@email.com", "TestPassword");
+            var result = _userHandler.RegisterUser("TestUserName", "test@email.com", "VkdWemRGQmhjM04zYjNKaw==");
 
             //assert
             Assert.IsNotNull(result);
@@ -65,7 +65,7 @@ namespace FDM90UnitTests
             Assert.IsInstanceOfType(result.UserId, typeof(Guid));
             Assert.AreEqual("TestUserName", result.UserName);
             Assert.AreEqual("test@email.com", result.EmailAddress);
-            Assert.AreNotEqual("TestPassword", result.Password);
+            Assert.AreNotEqual("VkdWemRGQmhjM04zYjNKaw==", result.Password);
             Assert.IsFalse(result.Facebook);
         }
 
@@ -75,7 +75,7 @@ namespace FDM90UnitTests
             //arrange
 
             //act
-            var result = _userHandler.RegisterUser("TestUserName", "test@email.com", "TestPassword");
+            var result = _userHandler.RegisterUser("TestUserName", "test@email.com", "VkdWemRGQmhjM04zYjNKaw==");
 
             //assert
             _mockUserRepo.Verify(repository => repository.Create(It.IsAny<User>()), Times.Once);
@@ -90,7 +90,7 @@ namespace FDM90UnitTests
             //arrange
 
             //act
-            var result = _userHandler.RegisterUser("TestUserName", "test@email.com", "TestPassword");
+            var result = _userHandler.RegisterUser("TestUserName", "test@email.com", "VkdWemRGQmhjM04zYjNKaw==");
 
             //assert
             Assert.IsNotNull(createUser);
@@ -109,7 +109,7 @@ namespace FDM90UnitTests
             //arrange
             _mockUserRepo.As<IReadSpecific<User>>()
                 .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => null);
-            User specificUser = new User("TestUserName", "TestPassword");
+            User specificUser = new User("TestUserName", "VkdWemRGQmhjM04zYjNKaw==");
 
             //act
             var result = _userHandler.LoginUser(specificUser);
@@ -120,7 +120,7 @@ namespace FDM90UnitTests
             Assert.AreEqual(Guid.Empty, result.UserId);
             Assert.AreEqual("User doesn't exist", result.UserName);
             Assert.IsNull(result.EmailAddress);
-            Assert.AreNotEqual("TestPassword", result.Password);
+            Assert.AreNotEqual("VkdWemRGQmhjM04zYjNKaw==", result.Password);
             Assert.IsFalse(result.Facebook);
         }
 
@@ -128,10 +128,10 @@ namespace FDM90UnitTests
         public void LoginUser_GivenIncorrectPassword_ReturnsTrueIfUserNamePasswordIncorrect()
         {
             //arrange
-            User returningUser = new User("TestUserName", "TestPassword") {UserId = Guid.NewGuid()};
+            User returningUser = new User("TestUserName", "VkdWemRGQmhjM04zYjNKaw==") {UserId = Guid.NewGuid()};
             _mockUserRepo.As<IReadSpecific<User>>()
                 .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
-            User specificUser = new User("TestUserName", "TestPassword");
+            User specificUser = new User("TestUserName", "VkdWemRGQmhjM04zYjNKaw==");
 
             //act
             var result = _userHandler.LoginUser(specificUser);
@@ -142,7 +142,7 @@ namespace FDM90UnitTests
             Assert.AreEqual(Guid.Empty, result.UserId);
             Assert.AreEqual("Password is incorrect", result.UserName);
             Assert.IsNull(result.EmailAddress);
-            Assert.AreNotEqual("TestPassword", result.Password);
+            Assert.AreNotEqual("VkdWemRGQmhjM04zYjNKaw==", result.Password);
             Assert.IsFalse(result.Facebook);
         }
 
@@ -150,7 +150,7 @@ namespace FDM90UnitTests
         public void LoginUser_GivenCorrectCredential_ReturnsTrueIfUserReturned()
         {
             //arrange
-            User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid() };
+            User returningUser = new User("TestUserName", "VkdWemRGQmhjM04zYjNKaw==") { UserId = Guid.NewGuid() };
             _mockUserRepo.As<IReadSpecific<User>>()
                 .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
             User specificUser = new User("TestUserName", "TestPassword");
@@ -175,7 +175,7 @@ namespace FDM90UnitTests
             User returningUser = new User("TestUserName", "VGVzdFBhc3N3b3Jk") { UserId = Guid.NewGuid() };
             _mockUserRepo.As<IReadSpecific<User>>()
                 .Setup(specific => specific.ReadSpecific(It.IsAny<User>())).Returns(() => returningUser);
-            User specificUser = new User("TestUserName", "TestPassword");
+            User specificUser = new User("TestUserName", "VkdWemRGQmhjM04zYjNKaw==");
 
             //act
             var result = _userHandler.LoginUser(specificUser);
