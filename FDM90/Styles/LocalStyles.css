@@ -1,3 +1,27 @@
 ﻿.column-content {
     width: 100%;
 }
+
+.feed-content {
+    overflow-y: auto;
+    height: 100vh;
+}
+
+/* Small devices (tablets, 768px and up) */
+/*@media (min-width: 768px) { 
+    .nav-tabs li {    
+        width: 100%;
+    }
+}*/
+
+/* Medium devices (desktops, 992px and up) */
+/*@media (min-width: 992px) { 
+    .nav-tabs li {    
+        width: 75%;
+    }
+}*/
+
+/* Large devices (large desktops, 1200px and up) */
+/*@media (min-width: 1200px) { 
+
+}*/

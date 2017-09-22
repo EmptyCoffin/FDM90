@@ -35,6 +35,8 @@ namespace FDM90.Pages.Content
         {
             if(!Page.IsPostBack)
             {
+                if (UserSingleton.Instance.CurrentUser == null) Response.Redirect("~/Pages/Content/Home.aspx");
+
                 channels.Clear();
                 hoursInTheDay.ToList().Clear();
                 
@@ -45,7 +47,7 @@ namespace FDM90.Pages.Content
 
                 HoursDropDown.DataSource = hoursInTheDay;
                 HoursDropDown.DataBind();
-                QuarterDropDowns.DataSource = new int[] { 00, 15, 30, 45 };
+                QuarterDropDowns.DataSource = new string[] { "00", "15", "30", "45" };
                 QuarterDropDowns.DataBind();
 
                 foreach (var prop in UserSingleton.Instance.CurrentUser.GetType().GetProperties())
@@ -70,7 +72,7 @@ namespace FDM90.Pages.Content
 
         private void GetUserSchedule()
         {
-            _scheduledPosts = _schedulerHandler.GetSchedulerPostsForUser(UserSingleton.Instance.CurrentUser.UserId).ToList();
+            _scheduledPosts = _schedulerHandler.GetSchedulerPostsForUser(UserSingleton.Instance.CurrentUser.UserId).OrderBy(x => x.PostTime).ToList();
 
             SchedulerPanel.Visible = true;
             ScheduledPostsList.DataSource = _scheduledPosts;
@@ -129,7 +131,7 @@ namespace FDM90.Pages.Content
             edittingHourDropDown.SelectedIndex = edittingPost.PostTime.Hour;
 
             var edittingQuarterDropDown = (ScheduledPostsList.Items[ScheduledPostsList.EditIndex].FindControl("EditQuarterDropDowns") as DropDownList);
-            edittingQuarterDropDown.DataSource = new int[] { 00, 15, 30, 45 };
+            edittingQuarterDropDown.DataSource = new string[] { "00", "15", "30", "45" };
             edittingQuarterDropDown.DataBind();
             edittingQuarterDropDown.SelectedValue = edittingPost.PostTime.Minute.ToString();
         }

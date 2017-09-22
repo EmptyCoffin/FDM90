@@ -27,14 +27,14 @@ namespace FDM90.Models
         public int NumberOfFollowers { get; set; }
 
         [JsonIgnore()]
-        public int NumberOfRetweets { get { return Tweets.Sum(x => x.RetweetCount);  } }
+        public int NumberOfRetweets { get { return Tweets.Where(x => x.CreatedAt.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedAt.Date <= DateTime.Now.Date).Sum(x => x.RetweetCount);  } }
 
         [JsonIgnore()]
-        public int NumberOfFavorited { get { return Tweets.Sum(x => x.FavoriteCount); } }
+        public int NumberOfFavorited { get { return Tweets.Where(x => x.CreatedAt.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedAt.Date <= DateTime.Now.Date).Sum(x => x.FavoriteCount); } }
 
         public List<Tweet> Tweets { get; set; }
 
-        public Dictionary<DateTime, int> NumberOfFollowersByDate = new Dictionary<DateTime, int>();
+        public Dictionary<DateTime, int> NumberOfFollowersByDate { get; set; }
 
         public static T Parse<T>(dynamic json, T data)
         {
@@ -140,6 +140,7 @@ namespace FDM90.Models
                     Text = tweet.Text,
                     Retweeted = tweet.RetweetCount > 0,
                     Favorited = tweet.FavoriteCount > 0,
+                    ImageUrl = tweet.Entities?.MediaEntities?.FirstOrDefault()?.MediaUrl,
                     RetweetedUsers = new List<TwitterUser>()
                 });
             }
@@ -158,6 +159,7 @@ namespace FDM90.Models
         public string Text { get; set; }
         public bool Retweeted { get; set; }
         public bool Favorited { get; set; }
+        public string ImageUrl { get; set; }
         public List<TwitterUser> RetweetedUsers {get;set;}
     }
 

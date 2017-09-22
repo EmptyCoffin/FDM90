@@ -20,7 +20,7 @@ namespace FDM90.Pages
                 (HtmlGenericControl)Page.Master.FindControl("HomeTab"),
                 (HtmlGenericControl)Page.Master.FindControl("FacebookTab"),
                 (HtmlGenericControl)Page.Master.FindControl("TwitterTab"),
-                (HtmlGenericControl)Page.Master.FindControl("LogInwelcomeMessageTab"),
+                (HtmlGenericControl)Page.Master.FindControl("LogInWelcomeMessageTab"),
                 (HtmlGenericControl)Page.Master.FindControl("RegistrationLogoutTab"),
                 (HtmlGenericControl)Page.Master.FindControl("CampaignsTab"),
                 (HtmlGenericControl)Page.Master.FindControl("SchedulerTab")
@@ -29,7 +29,16 @@ namespace FDM90.Pages
             var pageName = Page.AppRelativeVirtualPath.Substring(Page.AppRelativeVirtualPath.LastIndexOf('/') + 1, 
                             Page.AppRelativeVirtualPath.LastIndexOf('.') - (Page.AppRelativeVirtualPath.LastIndexOf('/') + 1));
 
-            tabs.First(x => x.ID.ToLower().Contains(pageName.ToLower())).Attributes.Add("class", "active");
+            if(tabs.First(x => x.ID.ToLower().Contains(pageName.ToLower())).Attributes["class"] != null)
+            {
+                tabs.First(x => x.ID.ToLower().Contains(pageName.ToLower())).Attributes.Add("class", "active " 
+                                                    + tabs.First(x => x.ID.ToLower().Contains(pageName.ToLower())).Attributes["class"].ToString());
+            }
+            else
+            {
+                tabs.First(x => x.ID.ToLower().Contains(pageName.ToLower())).Attributes.Add("class", "active");
+            }
+
             tabs.First(x => !x.ID.ToLower().Contains(pageName.ToLower())).Attributes.Remove("class");
 
             if (UserSingleton.Instance.CurrentUser != null)

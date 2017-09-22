@@ -13,6 +13,24 @@ namespace FDM90.Pages.Content {
     public partial class Scheduler {
         
         /// <summary>
+        /// SchedulerPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel SchedulerPanel;
+        
+        /// <summary>
+        /// ScheduledPostsList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.ListView ScheduledPostsList;
+        
+        /// <summary>
         /// PostText control.
         /// </summary>
         /// <remarks>
@@ -128,23 +146,5 @@ namespace FDM90.Pages.Content {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button PostButton;
-        
-        /// <summary>
-        /// SchedulerPanel control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel SchedulerPanel;
-        
-        /// <summary>
-        /// ScheduledPostsList control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ListView ScheduledPostsList;
     }
 }

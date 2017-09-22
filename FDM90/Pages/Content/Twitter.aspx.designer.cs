@@ -13,33 +13,6 @@ namespace FDM90.Pages.Content {
     public partial class Twitter {
         
         /// <summary>
-        /// TwitterPostText control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TwitterPostText;
-        
-        /// <summary>
-        /// TwitterPostAttachement control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload TwitterPostAttachement;
-        
-        /// <summary>
-        /// PostButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button PostButton;
-        
-        /// <summary>
         /// twitterPanel control.
         /// </summary>
         /// <remarks>
@@ -67,6 +40,33 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.ListView tweetList;
         
         /// <summary>
+        /// TwitterPostText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox TwitterPostText;
+        
+        /// <summary>
+        /// TwitterPostAttachement control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload TwitterPostAttachement;
+        
+        /// <summary>
+        /// PostButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button PostButton;
+        
+        /// <summary>
         /// numberOfFollowers control.
         /// </summary>
         /// <remarks>
@@ -74,6 +74,15 @@ namespace FDM90.Pages.Content {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label numberOfFollowers;
+        
+        /// <summary>
+        /// numberOfNewFollowers control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label numberOfNewFollowers;
         
         /// <summary>
         /// numberOfRetweets control.

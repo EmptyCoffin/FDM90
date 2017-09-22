@@ -1,16 +1,13 @@
-﻿<%@ Page Async="true" Title="" Language="C#" MasterPageFile="~/Pages/Site.Master" AutoEventWireup="true" CodeBehind="Twitter.aspx.cs" Inherits="FDM90.Pages.Content.Twitter" %>
+﻿<%@ Page Async="true" Title="" MaintainScrollPositionOnPostback="true" Language="C#" MasterPageFile="~/Pages/Site.Master" AutoEventWireup="true" CodeBehind="Twitter.aspx.cs" Inherits="FDM90.Pages.Content.Twitter" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    Twitter Update
-    <asp:TextBox ID="TwitterPostText" runat="server"></asp:TextBox>
-    <asp:FileUpload ID="TwitterPostAttachement" runat="server" />
-    <asp:Button ID="PostButton" runat="server" class="btn btn-primary btn-block" Text="Post" OnClick="PostButton_Click" />
     <asp:ScriptManager runat="server" />
     <asp:UpdatePanel ID="twitterPanel" runat="server" UpdateMode="Always">
         <ContentTemplate>
             <asp:Timer ID="twitterUpdateTimer" runat="server" Interval="10000" OnTick="twitterUpdateTimer_Tick" />
             <div class="row">
                 <div class="col-md-7">
+                    <h4>Twitter Timeline</h4>
                     <asp:ListView ID="tweetList" runat="server" OnItemDeleting="tweetList_ItemDeleting">
                         <LayoutTemplate>
                             <table cellpadding="2" width="640px" border="1" id="tbl1" runat="server">
@@ -21,22 +18,24 @@
                             <tr runat="server">
                                 <td colspan="2" style="text-align: center">
                                     <asp:Label ID="StatusIdLabel" runat="server" Visible="false" Text='<%#Eval("StatusID") %>' />
+                                    <strong>Posted: </strong>
                                     <asp:Label ID="CreatedTimeLabel" runat="server"
                                         Text='<%#Eval("CreatedAt") %>' />
                                     <br />
+                                    <strong>Message: </strong>
                                     <asp:Label ID="MessageLabel" runat="server" Visible='<%#Eval("Text") != null %>'
                                         Text='<%#Eval("Text") %>' />
                                     <br />
-                                    <asp:Button ID="DeleteButton" runat="server" CommandName="Delete" Text="Delete" />
-                                    <%--                                <asp:Image runat="server" ID="PostImage" Visible='<%#Eval("ProfileImageUrl") != null %>'
-                                    ImageUrl='<%#Eval("ProfileImageUrl") %>' />--%>
+                                    <strong>Picture: </strong><asp:Image runat="server" ID="PostImage" Height="150px" Width="250px"
+                                         Visible='<%#(!string.IsNullOrEmpty(Eval("ImageUrl").ToString()))%>' ImageUrl='<%#Eval("ImageUrl") %>' />
+                                    <br />
+                                    <asp:Button ID="DeleteButton" class="btn btn-danger" runat="server" CommandName="Delete" Text="Delete" />
                                 </td>
                             </tr>
-                            <tr runat="server">
+                            <tr runat="server" style="text-align: center">
                                 <td>Retweets:
                                 <asp:Label ID="TweetRetweetLabel" runat="server"
                                     Text='<%#Eval("RetweetCount") %>' />
-                                    <br />
                                     Favorited:
                                 <asp:Label ID="PostCommentLabel" runat="server"
                                     Text='<%#Eval("FavoriteCount") %>' />
@@ -45,12 +44,32 @@
                         </ItemTemplate>
                     </asp:ListView>
                 </div>
-                <div class="col-md-4">
-                    <asp:Label ID="numberOfFollowers" runat="server">Number of Followers: </asp:Label>
+                <div class="col-md-4" style="position: sticky; position: -webkit-sticky; top: 127px; padding: 5px;">
+                    <h4>Twiter Update</h4>
                     <br />
-                    <asp:Label ID="numberOfRetweets" runat="server">Number of Retweets: </asp:Label>
+                    Message:
+                    <asp:TextBox ID="TwitterPostText" TextMode="MultiLine" Height="100px" Width="250px" runat="server"></asp:TextBox>
                     <br />
-                    <asp:Label ID="numberOfFavorite" runat="server">Number of Favorited: </asp:Label>
+                    Picture:
+                    <asp:FileUpload ID="TwitterPostAttachement" runat="server" />
+                    <br />
+                    <asp:Button ID="PostButton" runat="server" class="btn btn-primary" Text="Post" OnClick="PostButton_Click" />
+                    <br />
+                    <br />
+                    <strong>--------------------------------------</strong>
+                    <br />
+                    <br />
+                    Number of Followers:
+                    <asp:Label ID="numberOfFollowers" runat="server"></asp:Label>
+                    <br />
+                    Number of New Followers (Past 7 Days):
+                    <asp:Label ID="numberOfNewFollowers" runat="server"></asp:Label>
+                    <br />
+                    Number of Retweets (Past 7 Days):
+                    <asp:Label ID="numberOfRetweets" runat="server"></asp:Label>
+                    <br />
+                    Number of Favorited (Past 7 Days): 
+                    <asp:Label ID="numberOfFavorite" runat="server"></asp:Label>
                 </div>
             </div>
             </div>

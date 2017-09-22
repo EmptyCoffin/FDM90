@@ -18,10 +18,6 @@ namespace FDM90.Pages.Content
         IFacebookHandler _facebookHandler;
         static FacebookCredentials facebookCreds;
         static FacebookData _facebookData;
-        private string _likeDefault = "Likes: ";
-        private string _postDefault = "Your Posts: ";
-        private string _talkingDefault = "People Talking: ";
-        private string _newLikesDefault = "Number of new likes: ";
         private string[] imageSuffixes = new string[] { "jpg", "png" };
 
         public Facebook() : this(new FacebookHandler())
@@ -38,6 +34,8 @@ namespace FDM90.Pages.Content
         {
             if (!Page.IsPostBack)
             {
+                if (UserSingleton.Instance.CurrentUser == null) Response.Redirect("~/Pages/Content/Home.aspx");
+
                 if (!UserSingleton.Instance.CurrentUser.Facebook)
                 {
                     if (!string.IsNullOrWhiteSpace(Request.QueryString["code"]))
@@ -70,6 +68,7 @@ namespace FDM90.Pages.Content
 
                     if (!string.IsNullOrWhiteSpace(facebookCreds.PermanentAccessToken) && !facebookCreds.PermanentAccessToken.StartsWith("https://www."))
                     {
+                        signInArea.Visible = false;
                         GetFacebookData(true);
                     }
                 }
@@ -97,28 +96,10 @@ namespace FDM90.Pages.Content
             detailsPanel.Visible = !detailsPanel.Visible;
         }
 
-        protected void likesButton_Click(object sender, EventArgs e)
-        {
-            likesDetails.Visible = !likesDetails.Visible;
-
-            if (likesDetails.Visible)
-            {
-                newLikeLabel.Text = _newLikesDefault + _facebookData.NewLikeCount.ToString();
-                likeListView.DataSource = _facebookData.PageLikes.Values;
-                likeListView.DataBind();
-                likesDetails.Visible = true;
-            }
-        }
-
         protected void postsButton_Click(object sender, EventArgs e)
         {
-            posts.Visible = !posts.Visible;
-
-            if (posts.Visible)
-            {
-                postList.DataSource = _facebookData.Posts;
-                postList.DataBind();
-            }
+            postList.DataSource = _facebookData.Posts;
+            postList.DataBind();
         }
 
         protected void facebookUpdateTimer_Tick(object sender, EventArgs e)
@@ -127,10 +108,12 @@ namespace FDM90.Pages.Content
 
             if (_facebookData != null)
             {
-                likesButton.Text = _likeDefault + _facebookData.FanCount;
-                peopleTalkingLabel.Text = _talkingDefault + _facebookData.TalkingAboutCount.ToString();
-                postsButton.Text = _postDefault + string.Format("({0})", _facebookData.Posts.Count);
-                postList.DataSource = _facebookData.Posts;
+                numberOfPageLikes.Text = _facebookData.FanCount.ToString();
+                numberOfNewLikes.Text = _facebookData.PageLikes.Values.Where(x => x.EndTime.Date >= DateTime.Now.AddDays(-7).Date && x.EndTime.Date <= DateTime.Now.Date).Sum(s => s.Value).ToString();
+                numberOfTalkingAbout.Text = _facebookData.PageStories.Values.Where(x => x.EndTime.Date >= DateTime.Now.AddDays(-7).Date && x.EndTime.Date <= DateTime.Now.Date).Sum(s => s.Value).ToString();
+                numberOfPostLikes.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Likes.Count).ToString();
+                numberOfPostComments.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Comments.Count).ToString();
+                postList.DataSource = _facebookData.Posts.OrderByDescending(x => x.CreatedTime);
                 postList.DataBind();
             }
         }

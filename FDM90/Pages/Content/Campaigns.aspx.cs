@@ -46,6 +46,8 @@ namespace FDM90.Pages.Content
         {
             if (!Page.IsPostBack)
             {
+                if(UserSingleton.Instance.CurrentUser == null) Response.Redirect("~/Pages/Content/Home.aspx");
+
                 if (TaskListSingleton.Instance.CurrentTasks.Count() > 0)
                     TaskListSingleton.Instance.CurrentTasks.First().Wait();
 
