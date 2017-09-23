@@ -6,12 +6,14 @@ using FDM90.Repository;
 using FDM90.Models;
 using System.Collections.Generic;
 using System.Linq;
+using FDM90.Models.Helpers;
 
 namespace FDM90UnitTests
 {
     [TestClass]
     public class ConfigSingletonUnitTests
     {
+        private Mock<IFileHelper> _mockFileHelper;
         private Mock<IReadAll<ConfigItem>> _mockReadAllRepo;
         private List<ConfigItem> _returningList;
 
@@ -48,12 +50,16 @@ namespace FDM90UnitTests
             };
 
             _mockReadAllRepo = new Mock<IReadAll<ConfigItem>>();
-            _mockReadAllRepo.Setup(x => x.ReadAll()).Returns(_returningList).Verifiable();          
+            _mockReadAllRepo.Setup(x => x.ReadAll()).Returns(_returningList).Verifiable();
+
+            _mockFileHelper = new Mock<IFileHelper>();
+            _mockFileHelper.Setup(x => x.CreateDirectory(It.IsAny<string>())).Verifiable();
         }
 
         [TestCleanup]
         public void CleanUp()
         {
+            _mockFileHelper = null;
             _returningList = null;
             _mockReadAllRepo = null;
         }
@@ -89,7 +95,7 @@ namespace FDM90UnitTests
             // arrange
 
             // act
-            var result = new ConfigSingleton(_mockReadAllRepo.Object);
+            var result = new ConfigSingleton(_mockReadAllRepo.Object, _mockFileHelper.Object);
 
             // assert
             Assert.IsNotNull(result);
@@ -98,6 +104,19 @@ namespace FDM90UnitTests
             Assert.AreEqual(_returningList.First(x => x.Name == "TwitterConsumerKey").Value, result.TwitterConsumerKey);
             Assert.AreEqual(_returningList.First(x => x.Name == "TwitterConsumerSecret").Value, result.TwitterConsumerSecret);
             Assert.AreEqual(_returningList.First(x => x.Name == "FileSaveLocation").Value, result.FileSaveLocation);
+        }
+
+        [TestMethod]
+        public void GetValues_GivenMockRepo_ReturnsTrueIfMethodWasCalled()
+        {
+            // arrange
+            var config = new ConfigSingleton(_mockReadAllRepo.Object, _mockFileHelper.Object);
+
+            // act
+            var result = config.FileSaveLocation;
+
+            // assert
+            _mockFileHelper.Verify(x => x.CreateDirectory(It.IsAny<string>()), Times.Once);
         }
     }
 }

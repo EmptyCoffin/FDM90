@@ -48,11 +48,12 @@ namespace FDM90.Pages.Content
                             if (string.IsNullOrWhiteSpace((response as Task<string>)?.Result))
                             {
                                 GetFacebookData(false);
+                                signInArea.Visible = false;
                                 facebookDetailsErrorLabel.Text = "";
                             }
                             else
                             {
-                                detailsPanel.Visible = true;
+                                signInArea.Visible = true;
                                 facebookDetailsErrorLabel.Text = (response as Task<string>).Result;
                             }
                         });
@@ -111,8 +112,20 @@ namespace FDM90.Pages.Content
                 numberOfPageLikes.Text = _facebookData.FanCount.ToString();
                 numberOfNewLikes.Text = _facebookData.PageLikes.Values.Where(x => x.EndTime.Date >= DateTime.Now.AddDays(-7).Date && x.EndTime.Date <= DateTime.Now.Date).Sum(s => s.Value).ToString();
                 numberOfTalkingAbout.Text = _facebookData.PageStories.Values.Where(x => x.EndTime.Date >= DateTime.Now.AddDays(-7).Date && x.EndTime.Date <= DateTime.Now.Date).Sum(s => s.Value).ToString();
-                numberOfPostLikes.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Likes?.Count).ToString();
-                numberOfPostComments.Text = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date).Sum(s => s.Comments?.Count).ToString();
+
+                var postInThePastSevenDays = _facebookData.Posts.Where(x => x.CreatedTime.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedTime.Date <= DateTime.Now.Date);
+                if (postInThePastSevenDays.Count() > 0)
+                {
+                    numberOfPostLikes.Text = postInThePastSevenDays.Sum(s => s.Likes?.Count).ToString();
+                    numberOfPostComments.Text = postInThePastSevenDays.Sum(s => s.Comments?.Count).ToString();
+                    mostInteractedDay.Text = postInThePastSevenDays.GroupBy(x => x.CreatedTime.Date)
+                                                    .Select(x => new { EngagementCount = x.Sum(y => y.Likes?.Count) + x.Sum(y => y.Comments?.Count), Date = x.Key })
+                                                                    .OrderByDescending(x => x.EngagementCount).First().Date.DayOfWeek.ToString();
+                    mostInteractedHour.Text = postInThePastSevenDays.GroupBy(x => x.CreatedTime.Hour)
+                                                    .Select(x => new { EngagementCount = x.Sum(y => y.Likes?.Count) + x.Sum(y => y.Comments?.Count), Hour = x.Key })
+                                                            .OrderByDescending(x => x.EngagementCount).First().Hour + ":00";
+                }
+
                 postList.DataSource = _facebookData.Posts.OrderByDescending(x => x.CreatedTime);
                 postList.DataBind();
             }
@@ -141,9 +154,9 @@ namespace FDM90.Pages.Content
             {
                 if (imageSuffixes.Contains(FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.') + 1)))
                 {
-                    string fileName = UserSingleton.Instance.CurrentUser.UserId.ToString() + "_" + DateTime.Now.ToString() 
+                    string fileName = UserSingleton.Instance.CurrentUser.UserId.ToString() + "_" + DateTime.Now.ToString().Replace('/','-').Replace(':','-') 
                                                 + FacebookPostAttachement.FileName.Substring(FacebookPostAttachement.FileName.LastIndexOf('.'));
-                    FacebookPostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + fileName);
+                    FacebookPostAttachement.SaveAs(Server.MapPath(ConfigSingleton.Instance.FileSaveLocation + fileName));
                     facebookParameters.Add("picture", ConfigSingleton.Instance.FileSaveLocation + fileName);
                 }
             }
@@ -179,7 +192,7 @@ namespace FDM90.Pages.Content
             string errorMessage = 
                     _facebookHandler.CheckPostText((postList.Items[postList.EditIndex].FindControl("PostIdLabel") as Label).Text, _facebookHandler.MediaName);
 
-            if (string.IsNullOrWhiteSpace(errorMessage))
+            if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Visible = true;
                 (postList.Items[postList.EditIndex].FindControl("EditingErrorLabel") as Label).Text = errorMessage;
@@ -197,6 +210,7 @@ namespace FDM90.Pages.Content
             facebookParameters.Add("message", (postList.Items[postList.EditIndex].FindControl("MessagePostTextBox") as TextBox).Text);
 
             _facebookHandler.PostData(facebookParameters, UserSingleton.Instance.CurrentUser.UserId);
+            (postList.Items[postList.EditIndex].FindControl("MessagePostTextBox") as TextBox).Text = string.Empty;
             postList.EditIndex = -1;
             GetFacebookData(true);
         }

@@ -21,5 +21,7 @@ namespace FDM90.Handlers
         void DeleteForUser(Guid userId);
 
         void RemoveMediaAfterDelete(Guid userId, string mediaName);
+
+        void DeleteCampaign(Campaign deletingCampaign);
     }
 }

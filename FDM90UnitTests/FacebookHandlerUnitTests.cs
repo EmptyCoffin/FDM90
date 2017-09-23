@@ -34,6 +34,7 @@ namespace FDM90UnitTests
         private Dictionary<string, string> pastDictionary;
         private string pastAccessToken;
         List<FacebookCredentials> returningCredentials;
+        private Mock<IFileHelper> _mockFileHelper;
 
         [TestInitialize]
         public void StartUp()
@@ -104,13 +105,17 @@ namespace FDM90UnitTests
                 }).Returns(() => null)
                 .Verifiable();
 
+            _mockFileHelper = new Mock<IFileHelper>();
+            _mockFileHelper.Setup(x => x.DeleteFile(It.IsAny<string>())).Verifiable();
+
             _facebookHandler = new FacebookHandler(_mockFacebookCredsRepo.Object, _mockUserHandler.Object,
-                _mockFacebookClientWrapper.Object);
+                _mockFacebookClientWrapper.Object, _mockFileHelper.Object);
         }
 
         [TestCleanup]
         public void CleanUp()
         {
+            _mockFileHelper = null;
             pastDictionary = null;
             pastAccessToken = null;
             returningCredentials = null;
@@ -196,6 +201,8 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -245,6 +252,8 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Once);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -316,6 +325,8 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -377,6 +388,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         [TestMethod]
@@ -432,6 +446,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         [TestMethod]
@@ -475,6 +492,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         [TestMethod]
@@ -572,6 +592,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         [TestMethod]
@@ -670,6 +693,7 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -941,6 +965,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         [TestMethod]
@@ -1017,6 +1044,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         [TestMethod]
@@ -1059,6 +1089,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         [TestMethod]
@@ -1139,6 +1172,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         [TestMethod]
@@ -1194,6 +1230,8 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Once());
         }
 
         [TestMethod]
@@ -1240,6 +1278,9 @@ namespace FDM90UnitTests
 
             _mockUserHandler.Verify(handler => handler.UpdateUserMediaActivation(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<bool>()),
                 Times.Never);
+
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
+
         }
 
         public JsonObject GetBasicFacebookData()

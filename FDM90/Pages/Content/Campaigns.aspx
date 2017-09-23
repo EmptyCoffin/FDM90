@@ -5,6 +5,7 @@
     <asp:DropDownList runat="server" ID="currentCampaignDropDown" class="btn btn-info" AutoPostBack="true" OnSelectedIndexChanged="currentCampaignDropDown_SelectedIndexChanged"></asp:DropDownList>
     Metric: 
     <asp:DropDownList runat="server" ID="metricDropDown" class="btn btn-info" AutoPostBack="true" OnSelectedIndexChanged="metricDropDown_SelectedIndexChanged"></asp:DropDownList>
+    <asp:Button runat="server" ID="DeleteCampaignButton" class="btn btn-danger"  Text="Delete Campaign" OnClick="DeleteCampaignButton_Click" />
     <br />
     <asp:Chart ID="campaignChart" runat="server" Height="702px" Width="937px" EnableViewState="true">
     </asp:Chart>

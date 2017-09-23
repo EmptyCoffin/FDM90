@@ -521,7 +521,7 @@ namespace FDM90UnitTests
 
             //assert
             Assert.IsNotNull(result);
-            Assert.AreEqual(2, result.Count());
+            Assert.AreEqual(1, result.Count());
             AssertTwitterCampaignValues(result, twitterData);
         }
 

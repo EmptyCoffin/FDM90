@@ -31,24 +31,6 @@ namespace FDM90.Pages.Content {
         protected global::System.Web.UI.WebControls.ListView ScheduledPostsList;
         
         /// <summary>
-        /// PostText control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox PostText;
-        
-        /// <summary>
-        /// PostAttachement control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload PostAttachement;
-        
-        /// <summary>
         /// PostNowCheckbox control.
         /// </summary>
         /// <remarks>
@@ -137,6 +119,24 @@ namespace FDM90.Pages.Content {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label calendarErrorLabel;
+        
+        /// <summary>
+        /// PostText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox PostText;
+        
+        /// <summary>
+        /// PostAttachement control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload PostAttachement;
         
         /// <summary>
         /// PostButton control.

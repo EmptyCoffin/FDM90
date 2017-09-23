@@ -358,5 +358,10 @@ namespace FDM90.Handlers
                 _campaignRepo.Update(campaign);
             }
         }
+
+        public void DeleteCampaign(Campaign deletingCampaign)
+        {
+            _campaignRepo.Delete(deletingCampaign);
+        }
     }
 }

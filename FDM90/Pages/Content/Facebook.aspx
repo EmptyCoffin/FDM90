@@ -37,7 +37,7 @@
                                         Text='<%#Eval("Message") %>' />
                                     <br />
                                     <strong>Picture: </strong>
-                                    <asp:Image runat="server" ID="PostImage" Visible='<%#Eval("PictureUrl") != null %>'
+                                    <asp:Image runat="server" ID="PostImage" Height="150px" Width="250px" Visible='<%#Eval("PictureUrl") != null %>'
                                         ImageUrl='<%#Eval("PictureUrl") %>' />
                                     <br />
                                     <br />
@@ -73,7 +73,7 @@
                                         Text='<%#Eval("Message") %>' />
                                     <br />
                                     Picture:
-                                    <asp:Image runat="server" ID="PostImage" Visible='<%#Eval("PictureUrl") != null %>'
+                                    <asp:Image runat="server" ID="PostImage"  Height="150px" Width="250px"  Visible='<%#Eval("PictureUrl") != null %>'
                                         ImageUrl='<%#Eval("PictureUrl") %>' />
 
                                     <br />
@@ -141,6 +141,12 @@
                 <br />
                 Number of Post Comments (Past 7 Days):
                         <asp:Label ID="numberOfPostComments" runat="server"></asp:Label>
+                                <br />
+                Most Interacted Post Day (Past 7 Days):
+                        <asp:Label ID="mostInteractedDay" runat="server"></asp:Label>
+                <br />
+                Most Interacted Post Hour (Past 7 Days):
+                        <asp:Label ID="mostInteractedHour" runat="server"></asp:Label>
             </div>
         </div>
     </div>

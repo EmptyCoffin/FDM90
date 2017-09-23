@@ -270,7 +270,9 @@
     <Compile Include="Models\Helpers\EncryptionHelper.cs" />
     <Compile Include="Models\Helpers\FacebookClientWrapper.cs" />
     <Compile Include="Models\Helpers\FacebookHelper.cs" />
+    <Compile Include="Models\Helpers\FileHelper.cs" />
     <Compile Include="Models\Helpers\IFacebookClientWrapper.cs" />
+    <Compile Include="Models\Helpers\IFileHelper.cs" />
     <Compile Include="Models\Helpers\ITwitterClientWrapper.cs" />
     <Compile Include="Models\Helpers\JsonHelper.cs" />
     <Compile Include="Models\Helpers\PostEthicalHelper.cs" />

@@ -69,7 +69,7 @@ namespace FDM90.Models.Helpers
                 var mediaObject = new FacebookMediaStream();
                 mediaObject.ContentType = "image/" + postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('.') + 1);
                 mediaObject.FileName = postParameters["picture"].Substring(postParameters["picture"].LastIndexOf('\\') + 1);
-                mediaObject.SetValue(File.OpenRead(postParameters["picture"]));
+                mediaObject.SetValue(File.OpenRead(ConfigSingleton.Instance.AppPath + postParameters["picture"].Replace('~', '\\')));
                 postPath = "photos";
                 parameters.source = mediaObject;
             }

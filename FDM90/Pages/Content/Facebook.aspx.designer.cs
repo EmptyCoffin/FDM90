@@ -182,5 +182,23 @@ namespace FDM90.Pages.Content {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label numberOfPostComments;
+        
+        /// <summary>
+        /// mostInteractedDay control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label mostInteractedDay;
+        
+        /// <summary>
+        /// mostInteractedHour control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label mostInteractedHour;
     }
 }

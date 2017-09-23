@@ -48,13 +48,22 @@ namespace FDM90.Repository
 
         public void Delete(Campaign objectId)
         {
-            string sql = SQLHelper.Delete + _table + SQLHelper.Where + "[UserId] = @UserId" + SQLHelper.EndingSemiColon;
+            string sql = SQLHelper.Delete + _table + SQLHelper.Where + "[UserId] = @UserId" ;
+            Guid testGuid = Guid.Empty;
 
-            SqlParameter[] parameters = new SqlParameter[]{
+            List<SqlParameter> parameters = new List<SqlParameter>(){
                             new SqlParameter("@UserId", objectId.UserId)
                         };
 
-            SendVoidCommand(sql, parameters);
+            if (!string.IsNullOrWhiteSpace(objectId.CampaignName))
+            {
+                sql += SQLHelper.And + "[CampaignName] = @CampaignName" + SQLHelper.EndingSemiColon;
+                parameters.Add(new SqlParameter("@CampaignName", objectId.CampaignName));
+            }
+
+            sql += SQLHelper.EndingSemiColon;
+
+            SendVoidCommand(sql, parameters.ToArray());
         }
 
         public IEnumerable<Campaign> ReadAll()

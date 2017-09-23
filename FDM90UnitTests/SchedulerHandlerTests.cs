@@ -6,6 +6,7 @@ using FDM90.Repository;
 using FDM90.Models;
 using System.Collections.Generic;
 using System.Linq;
+using FDM90.Models.Helpers;
 
 namespace FDM90UnitTests
 {
@@ -23,6 +24,7 @@ namespace FDM90UnitTests
         private string _pastValue;
         private List<ScheduledPost> _returningScheduledPosts;
         private Dictionary<string, Dictionary<string, string>> _pastPostParameters;
+        private Mock<IFileHelper> _mockFileHelper;
 
         [TestInitialize]
         public void StartUp()
@@ -119,7 +121,10 @@ namespace FDM90UnitTests
 
             _userHandlerMock = new Mock<IUserHandler>();
 
-            _schedulerHandler = new SchedulerHandler(_schedulerRepoMock.Object, _facebookHandlerMock.Object, _twitterHandlerMock.Object, _userHandlerMock.Object);
+            _mockFileHelper = new Mock<IFileHelper>();
+            _mockFileHelper.Setup(x => x.DeleteFile(It.IsAny<string>())).Verifiable();
+
+            _schedulerHandler = new SchedulerHandler(_schedulerRepoMock.Object, _facebookHandlerMock.Object, _twitterHandlerMock.Object, _userHandlerMock.Object, _mockFileHelper.Object);
         }
 
         [TestCleanup]
@@ -197,6 +202,7 @@ namespace FDM90UnitTests
             _schedulerRepoMock.As<IReadMultipleSpecific<ScheduledPost>>().Verify(x => x.ReadMultipleSpecific(It.IsAny<string>()), Times.Never);
             _facebookHandlerMock.As<IMediaHandler>().Verify(p => p.PostData(It.IsAny<Dictionary<string, string>>(), It.IsAny<Guid>()), Times.Never);
             _twitterHandlerMock.As<IMediaHandler>().Verify(p => p.PostData(It.IsAny<Dictionary<string, string>>(), It.IsAny<Guid>()), Times.Never);
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -248,6 +254,7 @@ namespace FDM90UnitTests
             _schedulerRepoMock.As<IReadMultipleSpecific<ScheduledPost>>().Verify(x => x.ReadMultipleSpecific(It.IsAny<string>()), Times.Never);
             _facebookHandlerMock.As<IMediaHandler>().Verify(p => p.PostData(It.IsAny<Dictionary<string, string>>(), It.IsAny<Guid>()), Times.Never);
             _twitterHandlerMock.As<IMediaHandler>().Verify(p => p.PostData(It.IsAny<Dictionary<string, string>>(), It.IsAny<Guid>()), Times.Never);
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -287,6 +294,7 @@ namespace FDM90UnitTests
             _schedulerRepoMock.As<IReadMultipleSpecific<ScheduledPost>>().Verify(x => x.ReadMultipleSpecific(_specificGuid.ToString()), Times.Once);
             _facebookHandlerMock.As<IMediaHandler>().Verify(p => p.PostData(It.IsAny<Dictionary<string, string>>(), It.IsAny<Guid>()), Times.Never);
             _twitterHandlerMock.As<IMediaHandler>().Verify(p => p.PostData(It.IsAny<Dictionary<string, string>>(), It.IsAny<Guid>()), Times.Never);
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Never());
         }
 
         [TestMethod]
@@ -319,6 +327,7 @@ namespace FDM90UnitTests
             _schedulerRepoMock.Verify(x => x.Delete(It.IsAny<ScheduledPost>()), Times.Exactly(3));
             _facebookHandlerMock.As<IMediaHandler>().Verify(p => p.PostData(It.IsAny<Dictionary<string, string>>(), It.IsAny<Guid>()), Times.Once);
             _twitterHandlerMock.As<IMediaHandler>().Verify(p => p.PostData(It.IsAny<Dictionary<string, string>>(), It.IsAny<Guid>()), Times.Exactly(2));
+            _mockFileHelper.Verify(x => x.DeleteFile(It.IsAny<string>()), Times.Exactly(4));
         }
 
         [TestMethod]

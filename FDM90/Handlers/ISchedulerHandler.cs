@@ -14,7 +14,7 @@ namespace FDM90.Handlers
         void UpdateScheduledPost(ScheduledPost updatedPost);
         IEnumerable<ScheduledPost> GetSchedulerPostsForUser(Guid userId);
         void SchedulerPostsForTime(DateTime currentTime);
-        void DeleteScheduledPost(Guid postId);
+        void DeleteScheduledPost(ScheduledPost deletingPost);
         void DeletePostImage(Guid postId, string imagePath);
         void DeleteScheduledPostForUser(Guid userId);
     }

@@ -1,11 +1,11 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Pages/Site.Master" AutoEventWireup="true" CodeBehind="Scheduler.aspx.cs" Inherits="FDM90.Pages.Content.Scheduler" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <asp:ScriptManager runat="server" />
-    <asp:UpdatePanel ID="SchedulerPanel" runat="server" UpdateMode="Always" Visible="false">
+    <div class="row">
+        <div class="col-md-7">
+            <asp:scriptmanager runat="server" />
+            <asp:updatepanel id="SchedulerPanel" runat="server" updatemode="Always" visible="false">
         <ContentTemplate>
-            <div class="row">
-                <div class="col-md-7">
                     <h4>Scheduled Posts</h4>
                     <asp:ListView ID="ScheduledPostsList" runat="server" OnItemEditing="ScheduledPostsList_ItemEditing"
                         OnItemCanceling="ScheduledPostsList_ItemCanceling" OnItemUpdating="ScheduledPostsList_ItemUpdating"
@@ -29,8 +29,8 @@
                                         Text='<%#Eval("PostText") %>' />
                                     <br />
                                     <strong>Image: </strong>
-                                    <asp:Image runat="server" ID="PostImage" Visible='<%#(!string.IsNullOrEmpty(Eval("AttachmentPath").ToString()))%>'
-                                        ImageUrl='<%#Eval("AttachmentPath") %>' />
+                                    <asp:Image runat="server" ID="PostImage" Height="150px" Width="250px" Visible='<%#(!string.IsNullOrEmpty(Eval("AttachmentPath").ToString()))%>'
+                                        ImageUrl='<%# Eval("AttachmentPath") %>' />
                                     <asp:Label ID="Label1" runat="server" Visible='<%#(string.IsNullOrEmpty(Eval("AttachmentPath").ToString()))%>'>None</asp:Label>
                                     <br />
                                     <strong>Post To: </strong>
@@ -63,8 +63,8 @@
                                     <asp:TextBox ID="PostTextLabel" TextMode="MultiLine" Height="100px" Width="100%" runat="server" Visible='<%#Eval("PostText") != null %>'
                                         Text='<%#Eval("PostText") %>' />
                                     <br />
-                                   <asp:Panel runat="server" Visible='<%# !string.IsNullOrEmpty(Eval("AttachmentPath").ToString()) %>'>
-                                        Edit Attachment: <asp:Image runat="server" ID="PostImage"
+                                   <asp:Panel runat="server" ID="EditDeleteImagePanel" Visible='<%# !string.IsNullOrEmpty(Eval("AttachmentPath").ToString()) %>'>
+                                        Edit Attachment: <asp:Image runat="server" ID="PostImage"  Height="150px" Width="250px" 
                                             ImageUrl='<%#Eval("AttachmentPath") %>' />
                                         <asp:Button ID="DeleteImageButton" class="btn btn-danger" runat="server" Text="Delete Image (This will permanently delete the image)" OnClick="DeleteImageButton_Click" />
                                     </asp:Panel>
@@ -89,35 +89,41 @@
                             </tr>
                         </EditItemTemplate>
                     </asp:ListView>
-                </div>
-                <div class="col-md-4">
-                    <h4>Schedule New Posts</h4>
-                    Post Message: <asp:TextBox ID="PostText" runat="server" TextMode="MultiLine" Height="100px" Width="100%"></asp:TextBox>
+        </ContentTemplate>
+    </asp:updatepanel>
+        </div>
+        <div class="col-md-4" style="position: sticky; position: -webkit-sticky; top: 127px; padding: 5px;">
+            <h4>Schedule New Posts</h4>
+            <asp:checkbox runat="server" id="PostNowCheckbox" checked="false" text="Post Right Now?" autopostback="true" oncheckedchanged="PostNowCheckbox_CheckedChanged" />
+            <br />
+            <asp:checkboxlist runat="server" id="MediaChannelsCheckBoxList" />
+            <br />
+            <div runat="server" id="schedulerArea" visible="true">
+                Post Date:
+                <asp:button runat="server" id="PostDateButton" onclick="PostDateButton_Click" class="btn btn-primary" text="Not Set"></asp:button>
+                <br />
+                Post Time:
+                <asp:dropdownlist runat="server" class="btn btn-default" id="HoursDropDown"></asp:dropdownlist>
+                : 
+                        <asp:dropdownlist runat="server" class="btn btn-default" id="QuarterDropDowns"></asp:dropdownlist>
+                <div runat="server" id="calendarArea" visible="false">
                     <br />
+                    <asp:calendar runat="server" id="calendar"></asp:calendar>
                     <br />
-                    Post Image (Optional): <asp:FileUpload ID="PostAttachement" runat="server" />
-                    <br />
-                    <asp:CheckBox runat="server" ID="PostNowCheckbox" Checked="false" Text="Post Right Now?" AutoPostBack="true" OnCheckedChanged="PostNowCheckbox_CheckedChanged" />
-                    <br />
-                    <asp:CheckBoxList runat="server" ID="MediaChannelsCheckBoxList" />
-                    <br />
-                    <div runat="server" id="schedulerArea" visible="true">
-                        Post Date: <asp:Button runat="server" ID="PostDateButton" OnClick="PostDateButton_Click" class="btn btn-primary" Text="Not Set"></asp:Button>
-                        Post Time: <asp:DropDownList runat="server" class="btn btn-default" ID="HoursDropDown"></asp:DropDownList>: 
-                        <asp:DropDownList runat="server" class="btn btn-default" ID="QuarterDropDowns"></asp:DropDownList>
-                        <div runat="server" id="calendarArea" visible="false">
-                            <br />
-                            <asp:Calendar runat="server" ID="calendar"></asp:Calendar>
-                            <br />
-                            <asp:Button runat="server" ID="setCalendarDate" OnClick="setCalendarDate_Click" class="btn btn-primary" Text="Set Date"></asp:Button>
-                            <asp:Label runat="server" ID="calendarErrorLabel" Visible="false"></asp:Label>
-                        </div>
-                    </div>
-                    <br />
-                    <asp:Button ID="PostButton" runat="server" class="btn btn-primary" Text="Schedule" OnClick="PostButton_Click" />
-                    <asp:Label ID="SchedulerError" runat="server" Visible="false" />
+                    <asp:button runat="server" id="setCalendarDate" onclick="setCalendarDate_Click" class="btn btn-primary" text="Set Date"></asp:button>
+                    <asp:label runat="server" id="calendarErrorLabel" visible="false"></asp:label>
                 </div>
             </div>
-        </ContentTemplate>
-    </asp:UpdatePanel>
+            <br />
+            Post Message:
+            <asp:textbox id="PostText" runat="server" textmode="MultiLine" height="100px" width="100%"></asp:textbox>
+            <br />
+            <br />
+            Post Image (Optional):
+            <asp:fileupload id="PostAttachement" enableviewstate="true" runat="server" />
+            <br />
+            <asp:button id="PostButton" runat="server" class="btn btn-primary" text="Schedule" onclick="PostButton_Click" />
+            <asp:label id="SchedulerError" runat="server" visible="false" />
+        </div>
+    </div>
 </asp:Content>

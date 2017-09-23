@@ -318,8 +318,8 @@ namespace FDM90UnitTests
             _mockTwitterHandler.Verify(x => x.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()), Times.Once);
             _mockFacebookHandler.Verify(x => x.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()), Times.Once);
 
-            Assert.AreEqual(12, _passedFacebookHandlerDates.Count());
-            Assert.AreEqual(12, _passedTwitterHandlerDates.Count());
+            Assert.AreEqual(13, _passedFacebookHandlerDates.Count());
+            Assert.AreEqual(13, _passedTwitterHandlerDates.Count());
         }
 
         // starting date = previous date, filtered existing campaigns
@@ -372,8 +372,8 @@ namespace FDM90UnitTests
             Assert.IsTrue(!updatedCampaign.Progress.Contains($"Week{currentWeekNumber - 3}"));
             _mockTwitterHandler.Verify(t => t.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()), Times.Once);
             _mockFacebookHandler.Verify(f => f.GetCampaignInfo(It.IsAny<Guid>(), It.IsAny<DateTime[]>()), Times.Once);
-            Assert.AreEqual(4, _passedFacebookHandlerDates.Count());
-            Assert.AreEqual(4, _passedTwitterHandlerDates.Count());
+            Assert.AreEqual(5, _passedFacebookHandlerDates.Count());
+            Assert.AreEqual(5, _passedTwitterHandlerDates.Count());
         }
 
         // starting date = future date

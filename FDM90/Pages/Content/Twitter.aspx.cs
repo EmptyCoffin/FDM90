@@ -95,6 +95,18 @@ namespace FDM90.Pages.Content
             numberOfRetweets.Text = _data.NumberOfRetweets.ToString();
             numberOfFavorite.Text =  _data.NumberOfFavorited.ToString();
 
+            var tweetsInThePastSevenDays = _data.Tweets.Where(x => x.CreatedAt.Date >= DateTime.Now.AddDays(-7).Date && x.CreatedAt.Date <= DateTime.Now.Date);
+
+            if (tweetsInThePastSevenDays.Count() > 0)
+            {
+                mostInteractedDay.Text = tweetsInThePastSevenDays.GroupBy(x => x.CreatedAt.Date)
+                                    .Select(x => new { EngagementCount = x.Sum(s => s.FavoriteCount) + x.Sum(s => s.RetweetCount), Date = x.Key })
+                                                    .OrderByDescending(x => x.EngagementCount).First().Date.DayOfWeek.ToString();
+                mostInteractedHour.Text = tweetsInThePastSevenDays.GroupBy(x => x.CreatedAt.Hour)
+                                                .Select(x => new { EngagementCount = x.Sum(s => s.FavoriteCount) + x.Sum(s => s.RetweetCount), Hour = x.Key })
+                                                        .OrderByDescending(x => x.EngagementCount).First().Hour + ":00";
+            }
+
             int? y = null;
             var numberOfFollowersValues = _data.NumberOfFollowersByDate.Where(x => x.Key.Date >= DateTime.Now.AddDays(-7).Date && x.Key.Date <= DateTime.Now.Date).OrderBy(x => x.Key).ToList();
 

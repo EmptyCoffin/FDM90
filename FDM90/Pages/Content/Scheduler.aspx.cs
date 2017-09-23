@@ -81,27 +81,9 @@ namespace FDM90.Pages.Content
 
         protected void PostButton_Click(object sender, EventArgs e)
         {
-            if (PostAttachement.HasFile)
-            {
-                if (imageSuffixes.Contains(PostAttachement.FileName.Substring(PostAttachement.FileName.LastIndexOf('.') + 1)))
-                {
-                    PostAttachement.SaveAs(ConfigSingleton.Instance.FileSaveLocation + PostAttachement.FileName);
-                }
-            }
-
-            ScheduledPost newPost = new ScheduledPost()
-            {
-                UserId = UserSingleton.Instance.CurrentUser.UserId,
-                PostText = PostText.Text,
-                AttachmentPath = PostAttachement.HasFile ? ConfigSingleton.Instance.FileSaveLocation + PostAttachement.FileName : null,
-                MediaChannels = string.Join(",", MediaChannelsCheckBoxList.Items.Cast<ListItem>().Where(w => w.Selected).Select(s => s.Text))
-            };
-
-            DateTime postDate;
-            if (DateTime.TryParse(PostDateButton.Text, out postDate))
-                newPost.PostTime = new DateTime(postDate.Year, postDate.Month, postDate.Day, int.Parse(HoursDropDown.SelectedValue), int.Parse(QuarterDropDowns.SelectedValue), 00);
-
-            string returningError = _schedulerHandler.CheckPostText(newPost.PostText, newPost.MediaChannels, newPost.UserId);
+            string returningError = _schedulerHandler.CheckPostText(PostText.Text, 
+                                        string.Join(",", MediaChannelsCheckBoxList.Items.Cast<ListItem>().Where(w => w.Selected).Select(s => s.Text)), 
+                                                UserSingleton.Instance.CurrentUser.UserId);
 
             if (!string.IsNullOrWhiteSpace(returningError))
             {
@@ -115,6 +97,29 @@ namespace FDM90.Pages.Content
                 SchedulerError.Text = string.Empty;
             }
 
+            string fileName = string.Empty;
+            if (PostAttachement.HasFile)
+            {
+                if (imageSuffixes.Contains(PostAttachement.FileName.Substring(PostAttachement.FileName.LastIndexOf('.') + 1)))
+                {
+                    fileName = UserSingleton.Instance.CurrentUser.UserId.ToString() + "_" + DateTime.Now.ToString().Replace('/', '-').Replace(':', '-')
+                                            + PostAttachement.FileName.Substring(PostAttachement.FileName.LastIndexOf('.'));
+                    PostAttachement.SaveAs(Server.MapPath(ConfigSingleton.Instance.FileSaveLocation + fileName));
+                }
+            }
+
+            ScheduledPost newPost = new ScheduledPost()
+            {
+                UserId = UserSingleton.Instance.CurrentUser.UserId,
+                PostText = PostText.Text,
+                AttachmentPath = PostAttachement.HasFile ? ConfigSingleton.Instance.FileSaveLocation + fileName : null,
+                MediaChannels = string.Join(",", MediaChannelsCheckBoxList.Items.Cast<ListItem>().Where(w => w.Selected).Select(s => s.Text))
+            };
+
+            DateTime postDate;
+            if (DateTime.TryParse(PostDateButton.Text, out postDate))
+                newPost.PostTime = new DateTime(postDate.Year, postDate.Month, postDate.Day, int.Parse(HoursDropDown.SelectedValue), int.Parse(QuarterDropDowns.SelectedValue), 00);
+
             if (PostNowCheckbox.Checked)
             {
                 _schedulerHandler.PostNow(newPost);
@@ -124,6 +129,18 @@ namespace FDM90.Pages.Content
                 _schedulerHandler.CreateScheduledPost(newPost);
                 GetUserSchedule();
             }
+
+            ResetPostControls();
+        }
+
+        private void ResetPostControls()
+        {
+            PostText.Text = string.Empty;
+            MediaChannelsCheckBoxList.ClearSelection();
+            PostNowCheckbox.Checked = false;
+            PostDateButton.Text = "Not Set";
+            HoursDropDown.SelectedIndex = 0;
+            QuarterDropDowns.SelectedIndex = 0;
         }
 
         protected void ScheduledPostsList_ItemEditing(object sender, ListViewEditEventArgs e)
@@ -213,9 +230,11 @@ namespace FDM90.Pages.Content
 
                 if (newImage.HasFile)
                 {
-                    var filePath = ConfigSingleton.Instance.FileSaveLocation + newImage.FileName;
+                    var filePath = ConfigSingleton.Instance.FileSaveLocation + 
+                                        UserSingleton.Instance.CurrentUser.UserId.ToString() + "_" + DateTime.Now.ToString().Replace('/', '-').Replace(':', '-')
+                                                + newImage.FileName.Substring(newImage.FileName.LastIndexOf('.'));
 
-                    newImage.SaveAs(filePath);
+                    newImage.SaveAs(Server.MapPath(filePath));
                     editedPost.AttachmentPath = filePath;
                 }
             }
@@ -253,9 +272,10 @@ namespace FDM90.Pages.Content
         protected void ScheduledPostsList_ItemDeleting(object sender, ListViewDeleteEventArgs e)
         {
             Label lbl = (ScheduledPostsList.Items[e.ItemIndex].FindControl("PostIdLabel")) as Label;
+            Image image = (ScheduledPostsList.Items[e.ItemIndex].FindControl("PostImage")) as Image;
             if (lbl != null && _scheduledPosts.Any(x => x.PostId.Equals(Guid.Parse(lbl.Text))))
             {
-                _schedulerHandler.DeleteScheduledPost(Guid.Parse(lbl.Text));
+                _schedulerHandler.DeleteScheduledPost(new ScheduledPost() { PostId = Guid.Parse(lbl.Text), AttachmentPath = image?.ImageUrl });
                 GetUserSchedule();
             }
         }

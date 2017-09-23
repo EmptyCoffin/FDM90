@@ -74,6 +74,12 @@
                     <br />
                     Number of Favorited (Past 7 Days): 
                     <asp:Label ID="numberOfFavorite" runat="server"></asp:Label>
+                    <br />
+                    Most Interacted Tweet Day (Past 7 Days): 
+                    <asp:Label ID="mostInteractedDay" runat="server"></asp:Label>
+                    <br />
+                    Most Interacted Tweet Hour (Past 7 Days):
+                    <asp:Label ID="mostInteractedHour" runat="server"></asp:Label>
                 </div>
             </div>
 </asp:Content>

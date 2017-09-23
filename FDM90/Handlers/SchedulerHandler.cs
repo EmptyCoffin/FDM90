@@ -17,8 +17,9 @@ namespace FDM90.Handlers
         private ITwitterHandler _twitterHandler;
         private IUserHandler _userHandler;
         private List<IMediaHandler> _mediaHandlers = new List<IMediaHandler>();
+        private IFileHelper _fileHelper;
 
-        public SchedulerHandler(IRepository<ScheduledPost> schedulerRepo, IFacebookHandler facebookHandler, ITwitterHandler twitterHandler, IUserHandler userHandler)
+        public SchedulerHandler(IRepository<ScheduledPost> schedulerRepo, IFacebookHandler facebookHandler, ITwitterHandler twitterHandler, IUserHandler userHandler, IFileHelper fileHelper)
         {
             _schedulerRepo = schedulerRepo;
             _schedulerMultiReadRepo = (IReadMultipleSpecific<ScheduledPost>)schedulerRepo;
@@ -26,9 +27,10 @@ namespace FDM90.Handlers
             _twitterHandler = twitterHandler;
             _userHandler = userHandler;
             _mediaHandlers.AddRange(new IMediaHandler[] { _facebookHandler, twitterHandler });
+            _fileHelper = fileHelper;
         }
 
-        public SchedulerHandler():this(new SchedulerRepository(), new FacebookHandler(), new TwitterHandler(), new UserHandler())
+        public SchedulerHandler():this(new SchedulerRepository(), new FacebookHandler(), new TwitterHandler(), new UserHandler(), new FileHelper())
         {
 
         }
@@ -54,18 +56,22 @@ namespace FDM90.Handlers
             foreach(ScheduledPost post in _schedulerMultiReadRepo.ReadMultipleSpecific(currentTime.ToString()))
             {
                 PostNow(post);
-                DeleteScheduledPost(post.PostId);
+                DeleteScheduledPost(post);
             }
         }
 
-        public void DeleteScheduledPost(Guid postId)
+        public void DeleteScheduledPost(ScheduledPost postToDelete)
         {
-            _schedulerRepo.Delete(new ScheduledPost() { PostId = postId });
+            _schedulerRepo.Delete(new ScheduledPost() { PostId = postToDelete.PostId });
+            if (!string.IsNullOrWhiteSpace(postToDelete.AttachmentPath))
+            {
+                _fileHelper.DeleteFile(postToDelete.AttachmentPath.Replace('~', '\\'));
+            }
         }
 
         public void DeletePostImage(Guid postId, string imagePath)
         {
-            File.Delete(imagePath);
+            _fileHelper.DeleteFile(imagePath.Replace('~', '\\'));
         }
 
         public string CheckPostText(string textToPost, string medias, Guid userId)
@@ -92,23 +98,28 @@ namespace FDM90.Handlers
         public void PostNow(ScheduledPost newPost)
         {
             User postingUser = _userHandler.GetUser(newPost.UserId.ToString());
+            Dictionary<string, string> postParameters = new Dictionary<string, string>();
+
+            if (!string.IsNullOrEmpty(newPost.PostText))
+            {
+                postParameters.Add("message", newPost.PostText);
+            }
+
+            if (!string.IsNullOrEmpty(newPost.AttachmentPath))
+            {
+                postParameters.Add("picture", newPost.AttachmentPath);
+            }
+
             foreach (IMediaHandler mediaHandler in _mediaHandlers.Where(w =>
                                                         postingUser.GetIntegratedMediaChannels().Contains(w.MediaName)
                                                                 && newPost.MediaChannels.Split(',').Contains(w.MediaName)))
             {
-                Dictionary<string, string> postParameters = new Dictionary<string, string>();
-
-                if (!string.IsNullOrEmpty(newPost.PostText))
-                {
-                    postParameters.Add("message", newPost.PostText);
-                }
-
-                if (!string.IsNullOrEmpty(newPost.AttachmentPath))
-                {
-                    postParameters.Add("picture", newPost.AttachmentPath);
-                }
-
                 mediaHandler.PostData(postParameters, newPost.UserId);
+            }
+
+            if (postParameters.ContainsKey("picture"))
+            {
+                _fileHelper.DeleteFile(postParameters["picture"].Replace('~', '\\'));
             }
         }
 
@@ -116,7 +127,7 @@ namespace FDM90.Handlers
         {
             foreach(ScheduledPost post in GetSchedulerPostsForUser(userId))
             {
-                DeleteScheduledPost(post.PostId);
+                DeleteScheduledPost(post);
             }
         }
     }

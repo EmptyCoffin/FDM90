@@ -75,7 +75,7 @@ namespace FDM90.Handlers
             var twitterDetails = _twitterReadSpecificRepo.ReadSpecific(new TwitterCredentials() { UserId = userId });
 
             var data = TwitterData.Parse(twitterDetails.TwitterData, new TwitterData());
-            data.Tweets = data.Tweets.OrderBy(x => x.CreatedAt).ToList();
+            data.Tweets = data.Tweets.Where(tweet => dates.Contains(tweet.CreatedAt.Date)).OrderBy(x => x.CreatedAt).ToList();
             int screenNameFollowerCount = data.NumberOfFollowers;
             // get exposure - followers and followers of those retweeted/favorited
             foreach (var tweetDate in data.Tweets.GroupBy(x => x.CreatedAt.Date))

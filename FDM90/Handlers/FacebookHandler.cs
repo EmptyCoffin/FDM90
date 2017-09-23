@@ -8,9 +8,11 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace FDM90.Handlers
 {
@@ -21,6 +23,7 @@ namespace FDM90.Handlers
         private IRepository<FacebookCredentials> _facebookRepo;
         private IUserHandler _userHandler;
         private IFacebookClientWrapper _facebookClientWrapper;
+        private IFileHelper _fileHelper;
 
         public string MediaName
         {
@@ -38,19 +41,20 @@ namespace FDM90.Handlers
             }
         }
 
-        public FacebookHandler() : this(new FacebookRepository(), new UserHandler(), new FacebookClientWrapper())
+        public FacebookHandler() : this(new FacebookRepository(), new UserHandler(), new FacebookClientWrapper(), new FileHelper())
         {
 
         }
 
         public FacebookHandler(IRepository<FacebookCredentials> facebookRepo, IUserHandler userHandler,
-            IFacebookClientWrapper facebookClientWrapper)
+            IFacebookClientWrapper facebookClientWrapper, IFileHelper fileHelper)
         {
             _facebookRepo = facebookRepo;
             _facebookReadAllRepo = (IReadAll<FacebookCredentials>)facebookRepo;
             _facebookReadSpecificRepo = (IReadSpecific<FacebookCredentials>)facebookRepo;
             _userHandler = userHandler;
             _facebookClientWrapper = facebookClientWrapper;
+            _fileHelper = fileHelper;
         }
 
         public string CheckPostText(string textToPost, string medias, Guid userId)
@@ -276,6 +280,11 @@ namespace FDM90.Handlers
         {
             _facebookClientWrapper.PostData(postParameters, 
                                 EncryptionHelper.DecryptString(_facebookReadSpecificRepo.ReadSpecific(new FacebookCredentials() { UserId = userId }).PermanentAccessToken));
+
+            if (postParameters.ContainsKey("picture"))
+            {
+                _fileHelper.DeleteFile(postParameters["picture"].Replace('~', '\\'));
+            }
         }
 
         public List<Task> DailyUpdate()

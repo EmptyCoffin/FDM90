@@ -19,7 +19,7 @@ namespace FDM90.Pages.Content
     [ExcludeFromCodeCoverage]
     public partial class Campaigns : System.Web.UI.Page
     {
-        private List<Campaign> _userCampaigns;
+        private static List<Campaign> _userCampaigns;
         private ICampaignHandler _campaignHandler;
         private IMarketingModelHandler _marketingModelHandler;
         private string[] metrics = { "Exposure", "Influence", "Engagement", "Acquisition" };
@@ -241,6 +241,12 @@ namespace FDM90.Pages.Content
             {
                 marketingModels_SelectedIndexChanged(sender, e);
             }
+        }
+
+        protected void DeleteCampaignButton_Click(object sender, EventArgs e)
+        {
+            _campaignHandler.DeleteCampaign(_userCampaigns.First(x => x.CampaignName == currentCampaignDropDown.SelectedValue));
+            LoadData();
         }
     }
 }
